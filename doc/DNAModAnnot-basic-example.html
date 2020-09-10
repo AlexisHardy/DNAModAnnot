@@ -351,7 +351,7 @@ div.blue {  border-left: 5px solid blue; padding: 10px}
 <span id="cb1-6"><a href="#cb1-6"></a><span class="co"># Installation from tar.gz file</span></span>
 <span id="cb1-7"><a href="#cb1-7"></a><span class="kw">setwd</span>(<span class="st">&quot;path/to/package/file/&quot;</span>)</span>
 <span id="cb1-8"><a href="#cb1-8"></a></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="kw">install.packages</span>(<span class="st">&quot;DNAModAnnot_0.0.0.9012.tar.gz&quot;</span>, <span class="dt">repos =</span> <span class="ot">NULL</span>, <span class="dt">type =</span> <span class="st">&#39;source&#39;</span>)</span></code></pre></div>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="kw">install.packages</span>(<span class="st">&quot;DNAModAnnot_0.0.0.9013.tar.gz&quot;</span>, <span class="dt">repos =</span> <span class="ot">NULL</span>, <span class="dt">type =</span> <span class="st">&#39;source&#39;</span>)</span></code></pre></div>
 <p>You should then be able to load the package into your R session with:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">library</span>(DNAModAnnot)</span></code></pre></div>
 </div>
@@ -820,7 +820,7 @@ After preparing a set of tracks, you can display them using the <code>plotTracks
 <span id="cb27-10"><a href="#cb27-10"></a>                   <span class="dt">dnastringsetGenome =</span> ptetraurelia_genome)</span></code></pre></div>
 <p>To plot an Ideogram, you can use the <code>IdeogramTrack</code> function from <em>Gviz</em> package. But if you do not have any information on cytobands, you can use the <code>AdaptedIdeogramTrackWithoutBandsData</code> function to plot an empty representation of chromosome.</p>
 <blockquote>
-<p>If the chromosome names that you are using are present in UCSC database, you can use the command <code>options(ucscChromosomeNames=TRUE)</code> before using the <em>Gviz</em> package. Otherwise, you must use <code>options(ucscChromosomeNames=TRUE)</code> instead.</p>
+<p>If the chromosome names that you are using are present in the UCSC database, you can use the command <code>options(ucscChromosomeNames=TRUE)</code> before using the <em>Gviz</em> package. Otherwise, you must use <code>options(ucscChromosomeNames=FALSE)</code> command instead.</p>
 </blockquote>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>cContigToViz &lt;-<span class="st"> </span><span class="kw">unique</span>(GenomicRanges<span class="op">::</span><span class="kw">seqnames</span>(ptetraurelia_genome_range))</span>
 <span id="cb28-2"><a href="#cb28-2"></a></span>
@@ -842,7 +842,7 @@ After preparing a set of tracks, you can display them using the <code>plotTracks
 <span id="cb29-10"><a href="#cb29-10"></a>                                     <span class="dt">complement=</span><span class="ot">FALSE</span>, <span class="dt">cex=</span><span class="fl">0.8</span>, <span class="dt">stream =</span> <span class="ot">TRUE</span>)</span>
 <span id="cb29-11"><a href="#cb29-11"></a></span>
 <span id="cb29-12"><a href="#cb29-12"></a><span class="co">#DATATRACK--------</span></span>
-<span id="cb29-13"><a href="#cb29-13"></a>trackData6mATipdRatio &lt;-<span class="st"> </span>Gviz<span class="op">::</span><span class="kw">DataTrack</span>(<span class="st">&quot;D:/WORK/SD_Lab/DNAModAnnot_Working_Directory/ipdRatio6mATsites.bw&quot;</span>, </span>
+<span id="cb29-13"><a href="#cb29-13"></a>trackData6mATipdRatio &lt;-<span class="st"> </span>Gviz<span class="op">::</span><span class="kw">DataTrack</span>(ipdRatio6mABigwig, </span>
 <span id="cb29-14"><a href="#cb29-14"></a>                                         <span class="dt">stream =</span> <span class="ot">TRUE</span>, <span class="dt">name =</span> <span class="st">&quot;6mAT</span><span class="ch">\n</span><span class="st">ipdRatio&quot;</span>, <span class="dt">type=</span><span class="st">&quot;histogram&quot;</span>, </span>
 <span id="cb29-15"><a href="#cb29-15"></a>                                         <span class="dt">col.histogram=</span><span class="kw">c</span>(<span class="st">&quot;red&quot;</span>), <span class="dt">fill =</span> <span class="st">&quot;red&quot;</span>,</span>
 <span id="cb29-16"><a href="#cb29-16"></a>                                         <span class="dt">background.title =</span> <span class="st">&quot;darkred&quot;</span>, <span class="dt">col =</span> <span class="ot">NULL</span></span>
@@ -856,7 +856,7 @@ After preparing a set of tracks, you can display them using the <code>plotTracks
 <span id="cb29-24"><a href="#cb29-24"></a>)</span></code></pre></div>
 <p>To display genomic annotations (in adapted bam file; see <code>ExportFilesForGViz</code> function documentation) using streaming, you must use the <code>ImportBamExtendedAnnotationTrack</code> function as the import function (via <code>stream</code> and <code>importFunction</code> options while making the annotation track).</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="co">#Generating Annotation TRACK with streaming--------</span></span>
-<span id="cb30-2"><a href="#cb30-2"></a>trackAnnotation &lt;-<span class="st"> </span>Gviz<span class="op">::</span><span class="kw">AnnotationTrack</span>(<span class="st">&quot;D:/WORK/SD_Lab/DNAModAnnot_Working_Directory/ptet51Genes.bam&quot;</span>, </span>
+<span id="cb30-2"><a href="#cb30-2"></a>trackAnnotation &lt;-<span class="st"> </span>Gviz<span class="op">::</span><span class="kw">AnnotationTrack</span>(ptet51GenesBam, </span>
 <span id="cb30-3"><a href="#cb30-3"></a>                                   <span class="dt">name =</span> <span class="st">&quot;Gene&quot;</span>, <span class="dt">stacking =</span> <span class="st">&quot;squish&quot;</span>, </span>
 <span id="cb30-4"><a href="#cb30-4"></a>                                   <span class="dt">stream =</span> <span class="ot">TRUE</span>, <span class="dt">importFunction =</span> ImportBamExtendedAnnotationTrack,</span>
 <span id="cb30-5"><a href="#cb30-5"></a>                                   <span class="dt">group=</span><span class="st">&quot;tag&quot;</span>, <span class="dt">groupAnnotation =</span> <span class="st">&quot;tag&quot;</span>, </span>
@@ -897,7 +897,7 @@ After preparing a set of tracks, you can display them using the <code>plotTracks
 <span id="cb33-16"><a href="#cb33-16"></a><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span id="cb33-17"><a href="#cb33-17"></a><span class="co">#&gt; </span></span>
 <span id="cb33-18"><a href="#cb33-18"></a><span class="co">#&gt; other attached packages:</span></span>
-<span id="cb33-19"><a href="#cb33-19"></a><span class="co">#&gt; [1] DNAModAnnot_0.0.0.9012</span></span>
+<span id="cb33-19"><a href="#cb33-19"></a><span class="co">#&gt; [1] DNAModAnnot_0.0.0.9013</span></span>
 <span id="cb33-20"><a href="#cb33-20"></a><span class="co">#&gt; </span></span>
 <span id="cb33-21"><a href="#cb33-21"></a><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span id="cb33-22"><a href="#cb33-22"></a><span class="co">#&gt;   [1] colorspace_1.4-1            ellipsis_0.3.1             </span></span>

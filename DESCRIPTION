@@ -1,7 +1,7 @@
 Package: DNAModAnnot
 Type: Package
 Title: Toolbox for DNA Modifications filtering and annotation
-Version: 0.0.0.9012
+Version: 0.0.0.9013
 Authors@R: 
     person(given = "Alexis",
            family = "Hardy",

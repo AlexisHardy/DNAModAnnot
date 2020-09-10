@@ -44,7 +44,7 @@ BiocManager::install(c('Biostrings', 'BSgenome', 'Gviz', 'Logolas'))
 # Installation from tar.gz file
 setwd("path/to/package/file/")
 
-install.packages("DNAModAnnot_0.0.0.9012.tar.gz", repos = NULL, type = 'source')
+install.packages("DNAModAnnot_0.0.0.9013.tar.gz", repos = NULL, type = 'source')
 ```
 
 You should then be able to load the package into your R session with:
@@ -625,7 +625,7 @@ ExportFilesForGViz(cFileNames = c(ipdRatio6mABigwig,
 
 To plot an Ideogram, you can use the `IdeogramTrack` function from *Gviz* package. But if you do not have any information on cytobands, you can use the `AdaptedIdeogramTrackWithoutBandsData` function to plot an empty representation of chromosome.
 
-> If the chromosome names that you are using are present in UCSC database, you can use the command `options(ucscChromosomeNames=TRUE)` before using the *Gviz* package. Otherwise, you must use `options(ucscChromosomeNames=TRUE)` instead.
+> If the chromosome names that you are using are present in the UCSC database, you can use the command `options(ucscChromosomeNames=TRUE)` before using the *Gviz* package. Otherwise, you must use `options(ucscChromosomeNames=FALSE)` command instead.
 
 ```{r}
 cContigToViz <- unique(GenomicRanges::seqnames(ptetraurelia_genome_range))
@@ -652,7 +652,7 @@ trackSequence <- Gviz::SequenceTrack(ptetraurelia_genome_fa,
                                      complement=FALSE, cex=0.8, stream = TRUE)
 
 #DATATRACK--------
-trackData6mATipdRatio <- Gviz::DataTrack("D:/WORK/SD_Lab/DNAModAnnot_Working_Directory/ipdRatio6mATsites.bw", 
+trackData6mATipdRatio <- Gviz::DataTrack(ipdRatio6mABigwig, 
                                          stream = TRUE, name = "6mAT\nipdRatio", type="histogram", 
                                          col.histogram=c("red"), fill = "red",
                                          background.title = "darkred", col = NULL
@@ -671,7 +671,7 @@ To display genomic annotations (in adapted bam file; see `ExportFilesForGViz` fu
 
 ```{r}
 #Generating Annotation TRACK with streaming--------
-trackAnnotation <- Gviz::AnnotationTrack("D:/WORK/SD_Lab/DNAModAnnot_Working_Directory/ptet51Genes.bam", 
+trackAnnotation <- Gviz::AnnotationTrack(ptet51GenesBam, 
                                    name = "Gene", stacking = "squish", 
                                    stream = TRUE, importFunction = ImportBamExtendedAnnotationTrack,
                                    group="tag", groupAnnotation = "tag", 

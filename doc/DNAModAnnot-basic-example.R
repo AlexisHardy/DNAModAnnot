@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 #  # Installation from tar.gz file
 #  setwd("path/to/package/file/")
 #  
-#  install.packages("DNAModAnnot_0.0.0.9012.tar.gz", repos = NULL, type = 'source')
+#  install.packages("DNAModAnnot_0.0.0.9013.tar.gz", repos = NULL, type = 'source')
 
 ## ----setup--------------------------------------------------------------------
 library(DNAModAnnot)
@@ -389,7 +389,7 @@ trackSequence <- Gviz::SequenceTrack(ptetraurelia_genome_fa,
                                      complement=FALSE, cex=0.8, stream = TRUE)
 
 #DATATRACK--------
-trackData6mATipdRatio <- Gviz::DataTrack("D:/WORK/SD_Lab/DNAModAnnot_Working_Directory/ipdRatio6mATsites.bw", 
+trackData6mATipdRatio <- Gviz::DataTrack(ipdRatio6mABigwig, 
                                          stream = TRUE, name = "6mAT\nipdRatio", type="histogram", 
                                          col.histogram=c("red"), fill = "red",
                                          background.title = "darkred", col = NULL
@@ -404,7 +404,7 @@ trackDataNuclCoverage <- Gviz::DataTrack(bamfile_path,
 
 ## -----------------------------------------------------------------------------
 #Generating Annotation TRACK with streaming--------
-trackAnnotation <- Gviz::AnnotationTrack("D:/WORK/SD_Lab/DNAModAnnot_Working_Directory/ptet51Genes.bam", 
+trackAnnotation <- Gviz::AnnotationTrack(ptet51GenesBam, 
                                    name = "Gene", stacking = "squish", 
                                    stream = TRUE, importFunction = ImportBamExtendedAnnotationTrack,
                                    group="tag", groupAnnotation = "tag", 
