@@ -33,7 +33,7 @@ myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "ext
 #Preparing a gposPacBioCSV dataset
 myGposPacBioCSV <-
    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+                                 "ptetraurelia.bases.sca171819.csv"),
                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
                                                "score", "ipdRatio", "coverage"),
                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,

@@ -47,7 +47,7 @@ Import DeepSignal call_modification_frequency.py output file and convert it as a
 #Loading Nanopore data
 myDeepSignalModPath <- system.file(
   package="DNAModAnnot", "extdata",
-  "Notts.FAB39088-288418386-NC_000001.11_Sample.CpG.call_mods.frequency.tsv")
+  "FAB39088-288418386-Chr1.CpG.call_mods.frequency.tsv")
 mygposDeepSignalModBase <- ImportDeepSignalModFrequency(cDeepSignalModPath=myDeepSignalModPath,
                                                         lSortGPos=TRUE,
                                                         cContigToBeAnalyzed = "all")

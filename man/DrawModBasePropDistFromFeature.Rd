@@ -62,13 +62,13 @@ myAnnotations <- readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
 #Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
 myGrangesPacBioGFF <-
    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.combinationC_merged_sca171819_sample.gff"),
+                                 "ptetraurelia.modifications.sca171819.gff"),
                    cNameModToExtract = "m6A",
                    cModNameInOutput = "6mA",
                    cContigToBeAnalyzed = names(myGenome))
 myGposPacBioCSV <-
    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+                                 "ptetraurelia.bases.sca171819.csv"),
                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
                                                "score", "ipdRatio", "coverage"),
                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,

@@ -2,7 +2,7 @@
 ### Functions from FDREst category
 ### -------------------------------------------------------------------------
 ###
-### DNAModAnnot v.0.0.0.9001 - 2020/04/04
+### DNAModAnnot v.0.0.0.9014 - 2020/09/10
 ### Licence GPL-3
 ###
 ### Contributor:
@@ -72,7 +72,7 @@
 #' #Preparing a gposPacBioCSV dataset with sequences
 #' myGposPacBioCSV <-
 #'   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                   "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+#'                                   "ptetraurelia.bases.sca171819.csv"),
 #'                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base", "score",
 #'                                                        "ipdRatio", "coverage"),
 #'                   lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
@@ -218,7 +218,7 @@ GetFdrEstListByThresh <- function(grangesDataWithSeq,
 #' #Preparing a gposPacBioCSV dataset with sequences
 #' myGposPacBioCSV <-
 #'   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+#'                                  "ptetraurelia.bases.sca171819.csv"),
 #'                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base", "score",
 #'                                                        "ipdRatio", "coverage"),
 #'                   lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
@@ -362,7 +362,7 @@ DrawFdrEstList <- function(listFdrEstByThr,
 #' #Preparing a gposPacBioCSV dataset with sequences
 #' myGposPacBioCSV <-
 #'   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                   "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+#'                                   "ptetraurelia.bases.sca171819.csv"),
 #'                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
 #'                                                        "score", "ipdRatio", "coverage"),
 #'                   lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,

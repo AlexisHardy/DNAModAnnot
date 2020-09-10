@@ -2,7 +2,7 @@
 ### Functions from ModAn and ModAnPlot categories
 ### -------------------------------------------------------------------------
 ###
-### DNAModAnnot v.0.0.0.9001 - 2020/04/04
+### DNAModAnnot v.0.0.0.9014 - 2020/09/10
 ### Licence GPL-3
 ###
 ### Contributor:
@@ -53,7 +53,7 @@
 #' #Preparing a gposPacBioCSV dataset
 #' myGposPacBioCSV <-
 #'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+#'                                  "ptetraurelia.bases.sca171819.csv"),
 #'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
 #'                                                "score", "ipdRatio", "coverage"),
 #'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
@@ -192,7 +192,7 @@ DrawBarplotBothStrands <- function(nParamByContigForward,
 #' #Preparing a gposPacBioCSV dataset
 #' myGposPacBioCSV <-
 #'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+#'                                  "ptetraurelia.bases.sca171819.csv"),
 #'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
 #'                                                "score", "ipdRatio", "coverage"),
 #'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
@@ -270,14 +270,14 @@ DrawDistriHistBox <- function(nParam,
 #' #Preparing a grangesPacBioGFF datasets
 #' myGrangesPacBioGFF <-
 #'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.combinationC_merged_sca171819_sample.gff"),
+#'                                  "ptetraurelia.modifications.sca171819.gff"),
 #'                    cNameModToExtract = "m6A",
 #'                    cModNameInOutput = "6mA",
 #'                    cContigToBeAnalyzed = names(myGenome))
 #'
 #' myGposPacBioCSV <-
 #'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+#'                                  "ptetraurelia.bases.sca171819.csv"),
 #'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
 #'                                                "score", "ipdRatio", "coverage"),
 #'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
@@ -368,7 +368,7 @@ GetModReportPacBio <- function(dnastringsetGenome,
 #' #Loading Nanopore data
 #' myDeepSignalModPath <- system.file(
 #'   package="DNAModAnnot", "extdata",
-#'   "Notts.FAB39088-288418386-NC_000001.11_Sample.CpG.call_mods.frequency.tsv")
+#'   "FAB39088-288418386-Chr1.CpG.call_mods.frequency.tsv")
 #' mygposDeepSignalModBase <- ImportDeepSignalModFrequency(cDeepSignalModPath=myDeepSignalModPath,
 #'                                                         lSortGPos=TRUE,
 #'                                                         cContigToBeAnalyzed = "all")
@@ -469,7 +469,7 @@ GetModReportDeepSignal <- function(dnastringsetGenome,
 #' #Preparing a grangesPacBioGFF datasets
 #' myGrangesPacBioGFF <-
 #'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.combinationC_merged_sca171819_sample.gff"),
+#'                                  "ptetraurelia.modifications.sca171819.gff"),
 #'                    cNameModToExtract = "m6A",
 #'                    cModNameInOutput = "6mA",
 #'                    cContigToBeAnalyzed = names(myGenome))
@@ -595,14 +595,14 @@ GetGRangesWindowSeqandParam <- function(grangesData,
 #' #Preparing a grangesPacBioGFF and gposPacBioCSV datasets
 #' myGrangesPacBioGFF <-
 #'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.combinationC_merged_sca171819_sample.gff"),
+#'                                  "ptetraurelia.modifications.sca171819.gff"),
 #'                    cNameModToExtract = "m6A",
 #'                    cModNameInOutput = "6mA",
 #'                    cContigToBeAnalyzed = names(myGenome))
 #'
 #' myGposPacBioCSV <-
 #'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+#'                                  "ptetraurelia.bases.sca171819.csv"),
 #'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
 #'                                                "score", "ipdRatio", "coverage"),
 #'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
@@ -699,7 +699,7 @@ GetModRatioByContig <- function(grangesModPos,
 #' #Preparing a grangesPacBioGFF datasets
 #' myGrangesPacBioGFF <-
 #'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.combinationC_merged_sca171819_sample.gff"),
+#'                                  "ptetraurelia.modifications.sca171819.gff"),
 #'                                  cNameModToExtract = "m6A",
 #'                                  cModNameInOutput = "6mA",
 #'                                  cContigToBeAnalyzed = names(myGenome))
@@ -789,7 +789,7 @@ DrawModLogo <- function(dnastringsetSeqAroundMod,
 #' #Preparing a grangesPacBioGFF dataset
 #' myGrangesPacBioGFF <-
 #'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.combinationC_merged_sca171819_sample.gff"),
+#'                                  "ptetraurelia.modifications.sca171819.gff"),
 #'                    cNameModToExtract = "m6A",
 #'                    cModNameInOutput = "6mA",
 #'                    cContigToBeAnalyzed = names(myGenome))

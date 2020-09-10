@@ -2,7 +2,7 @@
 ### Functions from Filter category
 ### -------------------------------------------------------------------------
 ###
-### DNAModAnnot v.0.0.0.9001 - 2020/04/04
+### DNAModAnnot v.0.0.0.9014 - 2020/09/10
 ### Licence GPL-3
 ###
 ### Contributor:
@@ -54,13 +54,13 @@
 #' #Preparing a gposPacBioCSV and a grangesPacBioGFF datasets
 #' myGrangesPacBioGFF <-
 #'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                    "ptetraurelia.combinationC_merged_sca171819_sample.gff"),
+#'                                    "ptetraurelia.modifications.sca171819.gff"),
 #'                    cNameModToExtract = "m6A",
 #'                    cModNameInOutput = "6mA",
 #'                    cContigToBeAnalyzed = names(myGenome))
 #' myGposPacBioCSV <-
 #'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+#'                                  "ptetraurelia.bases.sca171819.csv"),
 #'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
 #'                                                "score", "ipdRatio", "coverage"),
 #'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
@@ -163,7 +163,7 @@ FiltContig <- function(gposModBasePos,
 #' #Preparing a grangesPacBioGFF dataset
 #' myGrangesPacBioGFF <-
 #'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                    "ptetraurelia.combinationC_merged_sca171819_sample.gff"),
+#'                                    "ptetraurelia.modifications.sca171819.gff"),
 #'                    cNameModToExtract = "m6A",
 #'                    cModNameInOutput = "6mA",
 #'                    cContigToBeAnalyzed = c("scaffold51_17", "scaffold51_18", "scaffold51_19"))
@@ -272,7 +272,7 @@ FiltParam <- function(grangesModPos,
 #' #Preparing a grangesPacBioGFF dataset
 #' myGrangesPacBioGFF <-
 #'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                    "ptetraurelia.combinationC_merged_sca171819_sample.gff"),
+#'                                    "ptetraurelia.modifications.sca171819.gff"),
 #'                    cNameModToExtract = "m6A",
 #'                    cModNameInOutput = "6mA",
 #'                    cContigToBeAnalyzed = c("scaffold51_17", "scaffold51_18", "scaffold51_19"))
@@ -387,13 +387,13 @@ FiltFdrBased <- function(grangesModPosWithSeq,
 #' #Preparing a gposPacBioCSV and a grangesPacBioGFF datasets
 #' myGrangesPacBioGFF <-
 #'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                    "ptetraurelia.combinationC_merged_sca171819_sample.gff"),
+#'                                    "ptetraurelia.modifications.sca171819.gff"),
 #'                    cNameModToExtract = "m6A",
 #'                    cModNameInOutput = "6mA",
 #'                    cContigToBeAnalyzed = names(myGenome))
 #' myGposPacBioCSV <-
 #'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+#'                                  "ptetraurelia.bases.sca171819.csv"),
 #'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
 #'                                                "score", "ipdRatio", "coverage"),
 #'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
@@ -558,7 +558,7 @@ FiltPacBio <- function(grangesPacBioGFF, #PacBioGFF: granges or grangesList
 #' #Loading Nanopore data
 #' myDeepSignalModPath <- system.file(
 #'   package="DNAModAnnot", "extdata",
-#'   "Notts.FAB39088-288418386-NC_000001.11_Sample.CpG.call_mods.frequency.tsv")
+#'   "FAB39088-288418386-Chr1.CpG.call_mods.frequency.tsv")
 #' mygposDeepSignalModBase <- ImportDeepSignalModFrequency(cDeepSignalModPath=myDeepSignalModPath,
 #'                                                         lSortGPos=TRUE,
 #'                                                         cContigToBeAnalyzed = "all")

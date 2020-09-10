@@ -45,7 +45,7 @@ names(myGenome)
 #Loading PacBio data
 myGrangesPacBioCSV <-
  ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
- "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+ "ptetraurelia.bases.sca171819.csv"),
 cSelectColumnsToExtract = c("refName", "tpl", "strand", "base", "score", "ipdRatio", "coverage"),
 lKeepExtraColumnsInGPos = TRUE,
 lSortGPos = TRUE,
@@ -55,7 +55,7 @@ myGrangesPacBioCSV
 #Loading PacBio data for 2 scaffolds only
 myGrangesPacBioCSV <-
    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+                                 "ptetraurelia.bases.sca171819.csv"),
                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
                                                "score", "ipdRatio", "coverage"),
                    lKeepExtraColumnsInGPos = TRUE,

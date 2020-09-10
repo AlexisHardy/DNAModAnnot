@@ -2,7 +2,7 @@
 ### Functions from DaLoad category
 ### -------------------------------------------------------------------------
 ###
-### DNAModAnnot v.0.0.0.9001 - 2020/04/04
+### DNAModAnnot v.0.0.0.9014 - 2020/09/10
 ### Licence GPL-3
 ###
 ### Contributor:
@@ -217,7 +217,7 @@ PredictMissingAnnotation <- function(grangesAnnotations, grangesGenome,
 #' #Loading PacBio data
 #' myGrangesPacBioGFF <-
 #'   ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia.combinationC_merged_sca171819_sample.gff"),
+#'                                          "ptetraurelia.modifications.sca171819.gff"),
 #'                            cNameModToExtract = "m6A",
 #'                            cModNameInOutput = "6mA",
 #'                            cContigToBeAnalyzed = names(myGenome))
@@ -226,7 +226,7 @@ PredictMissingAnnotation <- function(grangesAnnotations, grangesGenome,
 #' #Loading PacBio data for 2 scaffolds only
 #' myGrangesPacBioGFF <-
 #'   ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia.combinationC_merged_sca171819_sample.gff"),
+#'                                          "ptetraurelia.modifications.sca171819.gff"),
 #'                            cNameModToExtract = "m6A",
 #'                            cModNameInOutput = "6mA",
 #'                            cContigToBeAnalyzed = c("scaffold51_18", "scaffold51_19"))
@@ -299,7 +299,7 @@ ImportPacBioGFF <- function(cPacBioGFFPath,
 #' #Loading PacBio data
 #' myGrangesPacBioCSV <-
 #'  ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'  "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+#'  "ptetraurelia.bases.sca171819.csv"),
 #' cSelectColumnsToExtract = c("refName", "tpl", "strand", "base", "score", "ipdRatio", "coverage"),
 #' lKeepExtraColumnsInGPos = TRUE,
 #' lSortGPos = TRUE,
@@ -309,7 +309,7 @@ ImportPacBioGFF <- function(cPacBioGFFPath,
 #' #Loading PacBio data for 2 scaffolds only
 #' myGrangesPacBioCSV <-
 #'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+#'                                  "ptetraurelia.bases.sca171819.csv"),
 #'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
 #'                                                "score", "ipdRatio", "coverage"),
 #'                    lKeepExtraColumnsInGPos = TRUE,
@@ -419,7 +419,7 @@ GetGenomeGRanges <- function(dnastringsetGenome) {
 #' #Loading Nanopore data
 #' myDeepSignalModPath <- system.file(
 #'   package="DNAModAnnot", "extdata",
-#'   "Notts.FAB39088-288418386-NC_000001.11_Sample.CpG.call_mods.frequency.tsv")
+#'   "FAB39088-288418386-Chr1.CpG.call_mods.frequency.tsv")
 #' mygposDeepSignalModBase <- ImportDeepSignalModFrequency(cDeepSignalModPath=myDeepSignalModPath,
 #'                                                         lSortGPos=TRUE,
 #'                                                         cContigToBeAnalyzed = "all")

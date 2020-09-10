@@ -63,7 +63,7 @@ myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "ext
 #Preparing a grangesPacBioGFF dataset
 myGrangesPacBioGFF <-
    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                   "ptetraurelia.combinationC_merged_sca171819_sample.gff"),
+                                   "ptetraurelia.modifications.sca171819.gff"),
                    cNameModToExtract = "m6A",
                    cModNameInOutput = "6mA",
                    cContigToBeAnalyzed = c("scaffold51_17", "scaffold51_18", "scaffold51_19"))

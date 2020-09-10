@@ -57,13 +57,13 @@ myAnnotations <- rtracklayer::readGFFAsGRanges(system.file(package="DNAModAnnot"
 #Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
 myGrangesPacBioGFF <-
    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.combinationC_merged_sca171819_sample.gff"),
+                                 "ptetraurelia.modifications.sca171819.gff"),
                    cNameModToExtract = "m6A",
                    cModNameInOutput = "6mA",
                    cContigToBeAnalyzed = names(myGenome))
 myGposPacBioCSV <-
    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv"),
+                                 "ptetraurelia.bases.sca171819.csv"),
                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
                                                "score", "ipdRatio", "coverage"),
                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
@@ -100,7 +100,7 @@ DrawModBasePropDistFromFeature(
 
 #Loading Bam data
 myBamfile <- Rsamtools::BamFile(file = system.file(package="DNAModAnnot", "extdata",
-                     "PTET_MonoNuc_3-2new_CTTGTA.BOWTIE.pt_51.pe.sca171819_sample.sorted.bam"))
+                     "PTET_MonoNuc_3-2new.pe.sca171819.sorted.bam"))
 myBam_GRanges <- as(GenomicAlignments::readGAlignments(myBamfile), "GRanges")
 myBam_GRanges <- GetGposCenterFromGRanges(grangesData=myBam_GRanges)
 
