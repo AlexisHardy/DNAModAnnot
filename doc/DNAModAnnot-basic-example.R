@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 #  # Installation from tar.gz file
 #  setwd("path/to/package/file/")
 #  
-#  install.packages("DNAModAnnot_0.0.0.9013.tar.gz", repos = NULL, type = 'source')
+#  install.packages("DNAModAnnot_0.0.0.9014.tar.gz", repos = NULL, type = 'source')
 
 ## ----setup--------------------------------------------------------------------
 library(DNAModAnnot)
@@ -45,14 +45,14 @@ DrawContigCumulLength(
 
 ## ----warning=FALSE, results="hide"--------------------------------------------
 # loading SMRT-seq data (PacBio gff and csv files)
-PacBioGFF_path <- system.file(package = "DNAModAnnot", "extdata", "ptetraurelia.combinationC_merged_sca171819_sample.gff")
+PacBioGFF_path <- system.file(package = "DNAModAnnot", "extdata", "ptetraurelia.modifications.sca171819.gff")
 PacBioGFF_granges <- ImportPacBioGFF(
   cPacBioGFFPath = PacBioGFF_path,
   cNameModToExtract = "m6A",
   cModNameInOutput = "6mA",
   cContigToBeAnalyzed = names(ptetraurelia_genome)
 )
-PacBioGFF_path <- system.file(package = "DNAModAnnot", "extdata", "ptetraurelia.combinationC.all.corrected_sca171819_sample.csv")
+PacBioGFF_path <- system.file(package = "DNAModAnnot", "extdata", "ptetraurelia.bases.sca171819.csv")
 PacBioCSV_gpos <- ImportPacBioCSV(
   cPacBioCSVPath = PacBioGFF_path,
   cSelectColumnsToExtract = c(
@@ -248,7 +248,7 @@ DrawModBasePropByFeature(
 
 ## -----------------------------------------------------------------------------
 # Loading additional Data: RNA-seq dataset
-expression_file_path <- system.file(package = "DNAModAnnot", "extdata", "ptetraurelia.whole_gene_expression.multiple_timepoints_sca171819.tsv")
+expression_file_path <- system.file(package = "DNAModAnnot", "extdata", "ptetraurelia.gene_expression.sca171819.tsv")
 expression_dataframe <- read.table(
   file = expression_file_path,
   header = TRUE, sep = "\t", dec = ",",
@@ -328,7 +328,7 @@ DrawModBasePropDistFromFeature(
 )
 
 # ModBase and Reads center (from Bam file) distance from feature/feature limit
-bamfile_path <- system.file(package = "DNAModAnnot", "extdata", "PTET_MonoNuc_3-2new_CTTGTA.BOWTIE.pt_51.pe.sca171819_sample.sorted.bam")
+bamfile_path <- system.file(package = "DNAModAnnot", "extdata", "PTET_MonoNuc_3-2new.pe.sca171819.sorted.bam")
 bamfile_object <- Rsamtools::BamFile(file = bamfile_path)
 bamfile_ranges <- as(GenomicAlignments::readGAlignments(bamfile_object), "GRanges")
 bamfile_ranges <- GetGposCenterFromGRanges(grangesData = bamfile_ranges)

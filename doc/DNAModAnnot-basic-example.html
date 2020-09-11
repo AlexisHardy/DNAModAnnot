@@ -351,7 +351,7 @@ div.blue {  border-left: 5px solid blue; padding: 10px}
 <span id="cb1-6"><a href="#cb1-6"></a><span class="co"># Installation from tar.gz file</span></span>
 <span id="cb1-7"><a href="#cb1-7"></a><span class="kw">setwd</span>(<span class="st">&quot;path/to/package/file/&quot;</span>)</span>
 <span id="cb1-8"><a href="#cb1-8"></a></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="kw">install.packages</span>(<span class="st">&quot;DNAModAnnot_0.0.0.9013.tar.gz&quot;</span>, <span class="dt">repos =</span> <span class="ot">NULL</span>, <span class="dt">type =</span> <span class="st">&#39;source&#39;</span>)</span></code></pre></div>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="kw">install.packages</span>(<span class="st">&quot;DNAModAnnot_0.0.0.9014.tar.gz&quot;</span>, <span class="dt">repos =</span> <span class="ot">NULL</span>, <span class="dt">type =</span> <span class="st">&#39;source&#39;</span>)</span></code></pre></div>
 <p>You should then be able to load the package into your R session with:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">library</span>(DNAModAnnot)</span></code></pre></div>
 </div>
@@ -405,14 +405,14 @@ The <code>GetGenomeGRanges</code> function will return a GRanges object represen
 <p>Note that <code>ImportPacBioGFF</code> will import one modification type at a time that you must precise using <code>cNameModToExtract</code> option.</p>
 </blockquote>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># loading SMRT-seq data (PacBio gff and csv files)</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a>PacBioGFF_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="dt">package =</span> <span class="st">&quot;DNAModAnnot&quot;</span>, <span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ptetraurelia.combinationC_merged_sca171819_sample.gff&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2"></a>PacBioGFF_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="dt">package =</span> <span class="st">&quot;DNAModAnnot&quot;</span>, <span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ptetraurelia.modifications.sca171819.gff&quot;</span>)</span>
 <span id="cb6-3"><a href="#cb6-3"></a>PacBioGFF_granges &lt;-<span class="st"> </span><span class="kw">ImportPacBioGFF</span>(</span>
 <span id="cb6-4"><a href="#cb6-4"></a>  <span class="dt">cPacBioGFFPath =</span> PacBioGFF_path,</span>
 <span id="cb6-5"><a href="#cb6-5"></a>  <span class="dt">cNameModToExtract =</span> <span class="st">&quot;m6A&quot;</span>,</span>
 <span id="cb6-6"><a href="#cb6-6"></a>  <span class="dt">cModNameInOutput =</span> <span class="st">&quot;6mA&quot;</span>,</span>
 <span id="cb6-7"><a href="#cb6-7"></a>  <span class="dt">cContigToBeAnalyzed =</span> <span class="kw">names</span>(ptetraurelia_genome)</span>
 <span id="cb6-8"><a href="#cb6-8"></a>)</span>
-<span id="cb6-9"><a href="#cb6-9"></a>PacBioGFF_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="dt">package =</span> <span class="st">&quot;DNAModAnnot&quot;</span>, <span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ptetraurelia.combinationC.all.corrected_sca171819_sample.csv&quot;</span>)</span>
+<span id="cb6-9"><a href="#cb6-9"></a>PacBioGFF_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="dt">package =</span> <span class="st">&quot;DNAModAnnot&quot;</span>, <span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ptetraurelia.bases.sca171819.csv&quot;</span>)</span>
 <span id="cb6-10"><a href="#cb6-10"></a>PacBioCSV_gpos &lt;-<span class="st"> </span><span class="kw">ImportPacBioCSV</span>(</span>
 <span id="cb6-11"><a href="#cb6-11"></a>  <span class="dt">cPacBioCSVPath =</span> PacBioGFF_path,</span>
 <span id="cb6-12"><a href="#cb6-12"></a>  <span class="dt">cSelectColumnsToExtract =</span> <span class="kw">c</span>(</span>
@@ -669,7 +669,7 @@ The <code>DrawModBasePropByFeature</code> function can then calculate (and draw 
 <p>You can also compare a quantitative parameter versus Modifications counts in features.</p>
 <p>Here you can load an example with RNA-seq data for the annotation provided:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="co"># Loading additional Data: RNA-seq dataset</span></span>
-<span id="cb21-2"><a href="#cb21-2"></a>expression_file_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="dt">package =</span> <span class="st">&quot;DNAModAnnot&quot;</span>, <span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ptetraurelia.whole_gene_expression.multiple_timepoints_sca171819.tsv&quot;</span>)</span>
+<span id="cb21-2"><a href="#cb21-2"></a>expression_file_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="dt">package =</span> <span class="st">&quot;DNAModAnnot&quot;</span>, <span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ptetraurelia.gene_expression.sca171819.tsv&quot;</span>)</span>
 <span id="cb21-3"><a href="#cb21-3"></a>expression_dataframe &lt;-<span class="st"> </span><span class="kw">read.table</span>(</span>
 <span id="cb21-4"><a href="#cb21-4"></a>  <span class="dt">file =</span> expression_file_path,</span>
 <span id="cb21-5"><a href="#cb21-5"></a>  <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">dec =</span> <span class="st">&quot;,&quot;</span>,</span>
@@ -773,7 +773,7 @@ Here is an example using MNase-seq data to represent nucleosomes:</p>
 <span id="cb25-28"><a href="#cb25-28"></a>)</span>
 <span id="cb25-29"><a href="#cb25-29"></a></span>
 <span id="cb25-30"><a href="#cb25-30"></a><span class="co"># ModBase and Reads center (from Bam file) distance from feature/feature limit</span></span>
-<span id="cb25-31"><a href="#cb25-31"></a>bamfile_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="dt">package =</span> <span class="st">&quot;DNAModAnnot&quot;</span>, <span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;PTET_MonoNuc_3-2new_CTTGTA.BOWTIE.pt_51.pe.sca171819_sample.sorted.bam&quot;</span>)</span>
+<span id="cb25-31"><a href="#cb25-31"></a>bamfile_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="dt">package =</span> <span class="st">&quot;DNAModAnnot&quot;</span>, <span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;PTET_MonoNuc_3-2new.pe.sca171819.sorted.bam&quot;</span>)</span>
 <span id="cb25-32"><a href="#cb25-32"></a>bamfile_object &lt;-<span class="st"> </span>Rsamtools<span class="op">::</span><span class="kw">BamFile</span>(<span class="dt">file =</span> bamfile_path)</span>
 <span id="cb25-33"><a href="#cb25-33"></a>bamfile_ranges &lt;-<span class="st"> </span><span class="kw">as</span>(GenomicAlignments<span class="op">::</span><span class="kw">readGAlignments</span>(bamfile_object), <span class="st">&quot;GRanges&quot;</span>)</span>
 <span id="cb25-34"><a href="#cb25-34"></a>bamfile_ranges &lt;-<span class="st"> </span><span class="kw">GetGposCenterFromGRanges</span>(<span class="dt">grangesData =</span> bamfile_ranges)</span>
@@ -882,7 +882,7 @@ After preparing a set of tracks, you can display them using the <code>plotTracks
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="kw">sessionInfo</span>()</span>
 <span id="cb33-2"><a href="#cb33-2"></a><span class="co">#&gt; R version 4.0.2 (2020-06-22)</span></span>
 <span id="cb33-3"><a href="#cb33-3"></a><span class="co">#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)</span></span>
-<span id="cb33-4"><a href="#cb33-4"></a><span class="co">#&gt; Running under: Windows 10 x64 (build 18362)</span></span>
+<span id="cb33-4"><a href="#cb33-4"></a><span class="co">#&gt; Running under: Windows 10 x64 (build 19041)</span></span>
 <span id="cb33-5"><a href="#cb33-5"></a><span class="co">#&gt; </span></span>
 <span id="cb33-6"><a href="#cb33-6"></a><span class="co">#&gt; Matrix products: default</span></span>
 <span id="cb33-7"><a href="#cb33-7"></a><span class="co">#&gt; </span></span>
@@ -897,7 +897,7 @@ After preparing a set of tracks, you can display them using the <code>plotTracks
 <span id="cb33-16"><a href="#cb33-16"></a><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span id="cb33-17"><a href="#cb33-17"></a><span class="co">#&gt; </span></span>
 <span id="cb33-18"><a href="#cb33-18"></a><span class="co">#&gt; other attached packages:</span></span>
-<span id="cb33-19"><a href="#cb33-19"></a><span class="co">#&gt; [1] DNAModAnnot_0.0.0.9013</span></span>
+<span id="cb33-19"><a href="#cb33-19"></a><span class="co">#&gt; [1] DNAModAnnot_0.0.0.9014</span></span>
 <span id="cb33-20"><a href="#cb33-20"></a><span class="co">#&gt; </span></span>
 <span id="cb33-21"><a href="#cb33-21"></a><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span id="cb33-22"><a href="#cb33-22"></a><span class="co">#&gt;   [1] colorspace_1.4-1            ellipsis_0.3.1             </span></span>
