@@ -52,9 +52,9 @@ PacBioGFF_granges <- ImportPacBioGFF(
   cModNameInOutput = "6mA",
   cContigToBeAnalyzed = names(ptetraurelia_genome)
 )
-PacBioGFF_path <- system.file(package = "DNAModAnnot", "extdata", "ptetraurelia.bases.sca171819.csv")
+PacBioCSV_path <- system.file(package = "DNAModAnnot", "extdata", "ptetraurelia.bases.sca171819.csv")
 PacBioCSV_gpos <- ImportPacBioCSV(
-  cPacBioCSVPath = PacBioGFF_path,
+  cPacBioCSVPath = PacBioCSV_path,
   cSelectColumnsToExtract = c(
     "refName", "tpl", "strand",
     "base", "score",

@@ -412,9 +412,9 @@ The <code>GetGenomeGRanges</code> function will return a GRanges object represen
 <span id="cb6-6"><a href="#cb6-6"></a>  <span class="dt">cModNameInOutput =</span> <span class="st">&quot;6mA&quot;</span>,</span>
 <span id="cb6-7"><a href="#cb6-7"></a>  <span class="dt">cContigToBeAnalyzed =</span> <span class="kw">names</span>(ptetraurelia_genome)</span>
 <span id="cb6-8"><a href="#cb6-8"></a>)</span>
-<span id="cb6-9"><a href="#cb6-9"></a>PacBioGFF_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="dt">package =</span> <span class="st">&quot;DNAModAnnot&quot;</span>, <span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ptetraurelia.bases.sca171819.csv&quot;</span>)</span>
+<span id="cb6-9"><a href="#cb6-9"></a>PacBioCSV_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="dt">package =</span> <span class="st">&quot;DNAModAnnot&quot;</span>, <span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ptetraurelia.bases.sca171819.csv&quot;</span>)</span>
 <span id="cb6-10"><a href="#cb6-10"></a>PacBioCSV_gpos &lt;-<span class="st"> </span><span class="kw">ImportPacBioCSV</span>(</span>
-<span id="cb6-11"><a href="#cb6-11"></a>  <span class="dt">cPacBioCSVPath =</span> PacBioGFF_path,</span>
+<span id="cb6-11"><a href="#cb6-11"></a>  <span class="dt">cPacBioCSVPath =</span> PacBioCSV_path,</span>
 <span id="cb6-12"><a href="#cb6-12"></a>  <span class="dt">cSelectColumnsToExtract =</span> <span class="kw">c</span>(</span>
 <span id="cb6-13"><a href="#cb6-13"></a>    <span class="st">&quot;refName&quot;</span>, <span class="st">&quot;tpl&quot;</span>, <span class="st">&quot;strand&quot;</span>,</span>
 <span id="cb6-14"><a href="#cb6-14"></a>    <span class="st">&quot;base&quot;</span>, <span class="st">&quot;score&quot;</span>,</span>
