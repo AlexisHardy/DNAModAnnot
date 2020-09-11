@@ -15,7 +15,7 @@ Description: Use modifications detection output (from
 	used for analysis.
 License: GPL-3
 Depends: R (>= 3.6.1)
-Imports: methods, Biostrings, GenomicRanges, BSgenome, Biobase, 
+Imports: methods, Biostrings, GenomicRanges (>= 1.38.0), BSgenome, Biobase, 
 	BiocGenerics, GenomeInfoDb, Gviz, IRanges, Logolas, 
 	S4Vectors, data.table, rtracklayer
 Suggests: 
