@@ -27,21 +27,31 @@ A list composed of 3 dataframes: 1 dataframe for each strand and 1 dataframe wit
 Return a list with the mean by strand of the parameter provided for all scaffolds of genome assembly provided.
 }
 \examples{
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 
-#Preparing a gposPacBioCSV dataset
+# Preparing a gposPacBioCSV dataset
 myGposPacBioCSV <-
-   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.bases.sca171819.csv"),
-                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-                                               "score", "ipdRatio", "coverage"),
-                   lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioCSV(
+    cPacBioCSVPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.bases.sca171819.csv"
+    ),
+    cSelectColumnsToExtract = c(
+      "refName", "tpl", "strand", "base",
+      "score", "ipdRatio", "coverage"
+    ),
+    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+    cContigToBeAnalyzed = names(myGenome)
+  )
 
-myMean_cov_list <- GetMeanParamByContig(grangesData = myGposPacBioCSV,
-                                            dnastringsetGenome = myGenome,
-                                            cParamName = "coverage")
+myMean_cov_list <- GetMeanParamByContig(
+  grangesData = myGposPacBioCSV,
+  dnastringsetGenome = myGenome,
+  cParamName = "coverage"
+)
 myMean_cov_list
 }
 \keyword{GetMeanParamByContig}

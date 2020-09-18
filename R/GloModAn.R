@@ -47,58 +47,77 @@
 #' @importFrom Biobase isUnique
 #' @export
 #' @examples
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
-#' #Preparing a gposPacBioCSV dataset
+#' # Preparing a gposPacBioCSV dataset
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #'
-#' myMean_cov_list <- GetMeanParamByContig(grangesData = myGposPacBioCSV,
-#'                                             dnastringsetGenome = myGenome,
-#'                                             cParamName = "coverage")
+#' myMean_cov_list <- GetMeanParamByContig(
+#'   grangesData = myGposPacBioCSV,
+#'   dnastringsetGenome = myGenome,
+#'   cParamName = "coverage"
+#' )
 #' myMean_cov_list
 GetMeanParamByContig <- function(grangesData,
                                  dnastringsetGenome,
                                  cParamName) {
-  count_table <- data.frame(refName=as.factor(seqnames(grangesData)),
-                            strand=as.factor(strand(grangesData)),
-                            parameter=mcols(grangesData)[[cParamName]])
-  mean_table <- aggregate(count_table$parameter,
-                          list(count_table$refName, count_table$strand),
-                          mean)
-  colnames(mean_table) <- c("refName", "strand", paste("mean_", cParamName, sep="") )
+  count_table <- data.frame(
+    refName = as.factor(seqnames(grangesData)),
+    strand = as.factor(strand(grangesData)),
+    parameter = mcols(grangesData)[[cParamName]]
+  )
+  mean_table <- aggregate(
+    count_table$parameter,
+    list(count_table$refName, count_table$strand),
+    mean
+  )
+  colnames(mean_table) <- c("refName", "strand", paste("mean_", cParamName, sep = ""))
 
   mean_table <- merge(mean_table,
-                      data.frame(refName = names(dnastringsetGenome),
-                                 width = width(dnastringsetGenome) ),
-                      by = "refName",
-                      all.y = TRUE)
+    data.frame(
+      refName = names(dnastringsetGenome),
+      width = width(dnastringsetGenome)
+    ),
+    by = "refName",
+    all.y = TRUE
+  )
 
-  #those who have NA for one or both strands : add missing strands with 0 mean_param
-  if(length(which(is.na(mean_table$strand)))>0){
-    mean_table[is.na(mean_table$strand), paste("mean_", cParamName, sep="")] <- 0
+  # those who have NA for one or both strands : add missing strands with 0 mean_param
+  if (length(which(is.na(mean_table$strand))) > 0) {
+    mean_table[is.na(mean_table$strand), paste("mean_", cParamName, sep = "")] <- 0
     mean_table[is.na(mean_table$strand), "strand"] <- "+"
   }
-  if(length(which(isUnique(mean_table$refName)))>0){
-    mean_table2 <- mean_table[isUnique(mean_table$refName),]
+  if (length(which(isUnique(mean_table$refName))) > 0) {
+    mean_table2 <- mean_table[isUnique(mean_table$refName), ]
     mean_table2$strand <- ifelse(mean_table2$strand == "+", "-", "+")
-    mean_table2[,paste("mean_", cParamName, sep="")] <- 0
+    mean_table2[, paste("mean_", cParamName, sep = "")] <- 0
     mean_table <- rbind(mean_table, mean_table2)
   }
-  mean_table <- mean_table[with(mean_table, order(width, refName, strand, decreasing = TRUE)),]
+  mean_table <- mean_table[with(mean_table, order(width, refName, strand, decreasing = TRUE)), ]
 
   f_strand <- subset(mean_table, strand == "+")
   r_strand <- subset(mean_table, strand == "-")
 
-  return(list(mean_table=mean_table,
-              f_strand=f_strand,
-              r_strand=r_strand))
+  return(list(
+    mean_table = mean_table,
+    f_strand = f_strand,
+    r_strand = r_strand
+  ))
 }
 
 #' DrawBarplotBothStrands Function (GloModAn)
@@ -116,59 +135,64 @@ GetMeanParamByContig <- function(grangesData,
 #' @keywords DrawBarplotBothStrands
 #' @export
 #' @examples
-#' DrawBarplotBothStrands(nParamByContigForward = c(100,86,75,56),
-#'                               nParamByContigReverse = c(96,88,80,83),
-#'                               cContigNames = c("chrI","chrII","chrIII","chrIV"),
-#'                               cGraphName = "Mean Coverage per contig",
-#'                               lIsOrderedLargestToSmallest = TRUE)
+#' DrawBarplotBothStrands(
+#'   nParamByContigForward = c(100, 86, 75, 56),
+#'   nParamByContigReverse = c(96, 88, 80, 83),
+#'   cContigNames = c("chrI", "chrII", "chrIII", "chrIV"),
+#'   cGraphName = "Mean Coverage per contig",
+#'   lIsOrderedLargestToSmallest = TRUE
+#' )
 DrawBarplotBothStrands <- function(nParamByContigForward,
                                    nParamByContigReverse,
                                    cContigNames,
                                    cGraphName,
-                                   lIsOrderedLargestToSmallest = TRUE){
-  layout( matrix(c(4, 4,
-                   3, 1,
-                   3, 2),
-                 nrow = 3, ncol = 2, byrow = TRUE), widths = c(1,29), heights = c(1,2,2) )
+                                   lIsOrderedLargestToSmallest = TRUE) {
+  layout(matrix(c(
+    4, 4,
+    3, 1,
+    3, 2
+  ),
+  nrow = 3, ncol = 2, byrow = TRUE
+  ), widths = c(1, 29), heights = c(1, 2, 2))
 
-  nMarLeft <- max(nchar(c(pretty(nParamByContigForward), pretty(nParamByContigReverse))))*1.1 +1
+  nMarLeft <- max(nchar(c(pretty(nParamByContigForward), pretty(nParamByContigReverse)))) * 1.1 + 1
   opar <- par()
-  par(mar = c(0, nMarLeft, 4, 2) )
+  par(mar = c(0, nMarLeft, 4, 2))
 
-  ylim_max <- max(  max(nParamByContigForward), max(nParamByContigReverse)  )
+  ylim_max <- max(max(nParamByContigForward), max(nParamByContigReverse))
 
   bp <- barplot(nParamByContigForward,
-                ylab = "Forward strand", ylim = c(0, ylim_max),
-                col = c("grey30", "grey70"),
-                las = 2, xaxs = "i", yaxs = "i", cex.axis=1.25, cex.lab=1.5, mgp=c(nMarLeft*3.5/5,1,0)
+    ylab = "Forward strand", ylim = c(0, ylim_max),
+    col = c("grey30", "grey70"),
+    las = 2, xaxs = "i", yaxs = "i", cex.axis = 1.25, cex.lab = 1.5, mgp = c(nMarLeft * 3.5 / 5, 1, 0)
   )
 
-  axis(side=3, pos=NA, at=bp, labels=cContigNames, las=2, cex.axis=1.25)
+  axis(side = 3, pos = NA, at = bp, labels = cContigNames, las = 2, cex.axis = 1.25)
 
-  par(mar = c(4, nMarLeft, 0, 2)  )
+  par(mar = c(4, nMarLeft, 0, 2))
 
   barplot(nParamByContigReverse,
-          ylab = "Reverse strand", ylim = par("usr")[c(4,3)],
-          col = c("grey30", "grey70"),
-          las = 1, xaxs = "i", yaxs = "i", cex.axis=1.25, cex.lab=1.5, mgp=c(nMarLeft*3.5/5,1,0)
+    ylab = "Reverse strand", ylim = par("usr")[c(4, 3)],
+    col = c("grey30", "grey70"),
+    las = 1, xaxs = "i", yaxs = "i", cex.axis = 1.25, cex.lab = 1.5, mgp = c(nMarLeft * 3.5 / 5, 1, 0)
   )
   par(xpd = NA)
-  if(lIsOrderedLargestToSmallest){
+  if (lIsOrderedLargestToSmallest) {
     mtext("Contigs (from largest to smallest)", cex = 1.25, side = 1, line = 1.5)
   } else {
     mtext("Contigs", cex = 1.25, side = 1, line = 1.5)
   }
   par(xpd = FALSE)
 
-  par(mar = c(0, 0, 0, 0.5)  )
-  barplot(height=1, col="white", border="white", axes = FALSE)
+  par(mar = c(0, 0, 0, 0.5))
+  barplot(height = 1, col = "white", border = "white", axes = FALSE)
 
   par(xpd = NA)
   mtext(cGraphName, cex = 1.25, side = 4, srt = 90)
   par(xpd = FALSE)
 
-  layout(matrix(c(1,1,1,1), nrow = 2, ncol = 2))
-  par(mar=opar$mar)
+  layout(matrix(c(1, 1, 1, 1), nrow = 2, ncol = 2))
+  par(mar = opar$mar)
 }
 
 #' DrawDistriHistBox Function (GloModAn)
@@ -185,67 +209,81 @@ DrawBarplotBothStrands <- function(nParamByContigForward,
 #' @keywords DrawDistriHistBox
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
-#' #Preparing a gposPacBioCSV dataset
+#' # Preparing a gposPacBioCSV dataset
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #'
 #' DrawDistriHistBox(head(myGposPacBioCSV$coverage, 100000),
-#'                          cGraphName = "Coverage distribution of some bases sequenced",
-#'                          cParamName = "Coverage",
-#'                          lTrimOutliers = TRUE )
+#'   cGraphName = "Coverage distribution of some bases sequenced",
+#'   cParamName = "Coverage",
+#'   lTrimOutliers = TRUE
+#' )
 DrawDistriHistBox <- function(nParam,
                               cGraphName,
                               cParamName,
                               lTrimOutliers = FALSE,
-                              nXLimits = NULL){
+                              nXLimits = NULL) {
   d <- density(nParam)
   h <- hist(nParam, plot = FALSE)
-  if( length( seq(from=min(h$breaks), to=max(h$breaks), by=1) ) < 10) {
-    breaks_v = seq(from=min(h$breaks), to=max(h$breaks), length.out = 200)
+  if (length(seq(from = min(h$breaks), to = max(h$breaks), by = 1)) < 10) {
+    breaks_v <- seq(from = min(h$breaks), to = max(h$breaks), length.out = 200)
   } else {
-    breaks_v = seq(from=min(h$breaks), to=max(h$breaks), by=1)
+    breaks_v <- seq(from = min(h$breaks), to = max(h$breaks), by = 1)
   }
   h <- hist(nParam, breaks = breaks_v, plot = FALSE)
 
-  if(lTrimOutliers){ b <- boxplot(nParam, plot=FALSE) }
+  if (lTrimOutliers) {
+    b <- boxplot(nParam, plot = FALSE)
+  }
 
-  if(is.null(nXLimits)) {
+  if (is.null(nXLimits)) {
     nXLimits <- c()
-    nXLimits[1] <- ifelse(!lTrimOutliers, min(h$breaks), b$stats[1] )
-    nXLimits[2] <- ifelse(!lTrimOutliers, max(h$breaks), b$stats[5] )
+    nXLimits[1] <- ifelse(!lTrimOutliers, min(h$breaks), b$stats[1])
+    nXLimits[2] <- ifelse(!lTrimOutliers, max(h$breaks), b$stats[5])
   }
 
   opar <- par()
-  layout(matrix(c(1,2),2,1), heights = c(1,9))
-  par(mar = c(0.1, 5.1, 2.1, 2.1) )
-  b <- boxplot(nParam, horizontal=TRUE, xaxt="n", frame=FALSE, outline=!lTrimOutliers,
-               main= ifelse(!lTrimOutliers,
-                            cGraphName,
-                            paste(cGraphName, " (no outliers)",sep="") ),
-               outcol= rgb(0,0,0,0.01),
-               ylim=nXLimits
+  layout(matrix(c(1, 2), 2, 1), heights = c(1, 9))
+  par(mar = c(0.1, 5.1, 2.1, 2.1))
+  b <- boxplot(nParam,
+    horizontal = TRUE, xaxt = "n", frame = FALSE, outline = !lTrimOutliers,
+    main = ifelse(!lTrimOutliers,
+      cGraphName,
+      paste(cGraphName, " (no outliers)", sep = "")
+    ),
+    outcol = rgb(0, 0, 0, 0.01),
+    ylim = nXLimits
   )
 
-  par(mar = c(5, 5.1, 0.1, 2.1) )
-  hist(nParam, freq = FALSE, probability = TRUE,
-       xlab = cParamName, ylab = "Density (%)", main = NULL,
-       col="gray",
-       xlim = nXLimits,
-       ylim = c(0, ifelse(max(h$density) < max(d$y), max(d$y), max(h$density)) ),
-       breaks = breaks_v
+  par(mar = c(5, 5.1, 0.1, 2.1))
+  hist(nParam,
+    freq = FALSE, probability = TRUE,
+    xlab = cParamName, ylab = "Density (%)", main = NULL,
+    col = "gray",
+    xlim = nXLimits,
+    ylim = c(0, ifelse(max(h$density) < max(d$y), max(d$y), max(h$density))),
+    breaks = breaks_v
   )
-  lines(d, col="red")
-  layout(matrix(c(1),1,1))
-  par(mar=opar$mar)
+  lines(d, col = "red")
+  layout(matrix(c(1), 1, 1))
+  par(mar = opar$mar)
 }
 
 #' GetModReportPacBio Function (GloModAn)
@@ -262,36 +300,50 @@ DrawDistriHistBox <- function(nParam,
 #' @keywords GetModReportPacBio
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #' myGrangesGenome <- GetGenomeGRanges(myGenome)
 #'
-#' #Preparing a grangesPacBioGFF datasets
+#' # Preparing a grangesPacBioGFF datasets
 #' myGrangesPacBioGFF <-
-#'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.modifications.sca171819.gff"),
-#'                    cNameModToExtract = "m6A",
-#'                    cModNameInOutput = "6mA",
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #'
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <- myGposPacBioCSV[myGposPacBioCSV$base == "A"]
 #'
-#' #Mod report
-#' myReport_Mod <- GetModReportPacBio(grangesGenome = myGrangesGenome,
-#'                                  dnastringsetGenome = myGenome,
-#'                                  grangesPacBioGFF = myGrangesPacBioGFF,
-#'                                  gposPacBioCSVBase = myGposPacBioCSV,
-#'                                  cOrgAssemblyName="ptetraurelia_mac_51",
-#'                                  cBaseLetterForMod = "A",
-#'                                  cModNameInOutput = "6mA")
+#' # Mod report
+#' myReport_Mod <- GetModReportPacBio(
+#'   grangesGenome = myGrangesGenome,
+#'   dnastringsetGenome = myGenome,
+#'   grangesPacBioGFF = myGrangesPacBioGFF,
+#'   gposPacBioCSVBase = myGposPacBioCSV,
+#'   cOrgAssemblyName = "ptetraurelia_mac_51",
+#'   cBaseLetterForMod = "A",
+#'   cModNameInOutput = "6mA"
+#' )
 #' myReport_Mod
 GetModReportPacBio <- function(dnastringsetGenome,
                                grangesGenome,
@@ -304,44 +356,51 @@ GetModReportPacBio <- function(dnastringsetGenome,
     row.names = cOrgAssemblyName,
     nbMod = length(grangesPacBioGFF),
     nbBaseSequenced = length(gposPacBioCSVBase),
-    nbBaseAssembly = letterFrequency(dnastringsetGenome, letters=cBaseLetterForMod, collapse=TRUE) +
-      letterFrequency(reverseComplement(dnastringsetGenome), letters=cBaseLetterForMod, collapse=TRUE)
+    nbBaseAssembly = letterFrequency(dnastringsetGenome, letters = cBaseLetterForMod, collapse = TRUE) +
+      letterFrequency(reverseComplement(dnastringsetGenome), letters = cBaseLetterForMod, collapse = TRUE)
   )
 
-  dReportTable$ratioMod = dReportTable$nbMod / dReportTable$nbBaseSequenced
-  dReportTable$ratioMod_corrected = dReportTable$ratioMod * mean(grangesPacBioGFF$frac)
-  dReportTable$ratioModAllAssemblyBases = dReportTable$nbMod / dReportTable$nbBaseAssembly
-  dReportTable$ratioModAllAssemblyBases_corrected = dReportTable$ratioModAllAssemblyBases * mean(grangesPacBioGFF$frac)
-  dReportTable$mean_frac_Mod = mean(grangesPacBioGFF$frac)
-  dReportTable$mean_coverage_Mod = mean(grangesPacBioGFF$coverage)
-  dReportTable$mean_score_Mod = mean(grangesPacBioGFF$score)
-  dReportTable$mean_ipdRatio_Mod = mean(grangesPacBioGFF$ipdRatio)
-  dReportTable$mean_identificationQv_Mod = mean(grangesPacBioGFF$identificationQv)
+  dReportTable$ratioMod <- dReportTable$nbMod / dReportTable$nbBaseSequenced
+  dReportTable$ratioMod_corrected <- dReportTable$ratioMod * mean(grangesPacBioGFF$frac)
+  dReportTable$ratioModAllAssemblyBases <- dReportTable$nbMod / dReportTable$nbBaseAssembly
+  dReportTable$ratioModAllAssemblyBases_corrected <- dReportTable$ratioModAllAssemblyBases * mean(grangesPacBioGFF$frac)
+  dReportTable$mean_frac_Mod <- mean(grangesPacBioGFF$frac)
+  dReportTable$mean_coverage_Mod <- mean(grangesPacBioGFF$coverage)
+  dReportTable$mean_score_Mod <- mean(grangesPacBioGFF$score)
+  dReportTable$mean_ipdRatio_Mod <- mean(grangesPacBioGFF$ipdRatio)
+  dReportTable$mean_identificationQv_Mod <- mean(grangesPacBioGFF$identificationQv)
 
-  colnames(dReportTable) <- gsub(pattern="Base", replacement = cBaseLetterForMod,
-                                 x = colnames(dReportTable))
-  colnames(dReportTable) <- gsub(pattern="Mod", replacement = cModNameInOutput,
-                                 x = colnames(dReportTable))
-
-  dReportTable <- .AddModMotifPctToDf(dReportTable,
-                                      grangesModPos = grangesPacBioGFF, grangesGenome=grangesGenome,
-                                      dnastringsetGenome=dnastringsetGenome,
-                                      nModPositionInMotif = 1, nUpstreamBpToAdd=0, nDownstreamBpToAdd=1,
-                                      cBaseLetterForMod=cBaseLetterForMod, cModNameInOutput=cModNameInOutput)
-
+  colnames(dReportTable) <- gsub(
+    pattern = "Base", replacement = cBaseLetterForMod,
+    x = colnames(dReportTable)
+  )
+  colnames(dReportTable) <- gsub(
+    pattern = "Mod", replacement = cModNameInOutput,
+    x = colnames(dReportTable)
+  )
 
   dReportTable <- .AddModMotifPctToDf(dReportTable,
-                                      grangesModPos = grangesPacBioGFF, grangesGenome=grangesGenome,
-                                      dnastringsetGenome=dnastringsetGenome,
-                                      nModPositionInMotif = 2, nUpstreamBpToAdd=1, nDownstreamBpToAdd=0,
-                                      cBaseLetterForMod=cBaseLetterForMod, cModNameInOutput=cModNameInOutput)
+    grangesModPos = grangesPacBioGFF, grangesGenome = grangesGenome,
+    dnastringsetGenome = dnastringsetGenome,
+    nModPositionInMotif = 1, nUpstreamBpToAdd = 0, nDownstreamBpToAdd = 1,
+    cBaseLetterForMod = cBaseLetterForMod, cModNameInOutput = cModNameInOutput
+  )
 
 
   dReportTable <- .AddModMotifPctToDf(dReportTable,
-                                      grangesModPos = grangesPacBioGFF, grangesGenome=grangesGenome,
-                                      dnastringsetGenome=dnastringsetGenome,
-                                      nModPositionInMotif = 2, nUpstreamBpToAdd=1, nDownstreamBpToAdd=1,
-                                      cBaseLetterForMod=cBaseLetterForMod, cModNameInOutput=cModNameInOutput)
+    grangesModPos = grangesPacBioGFF, grangesGenome = grangesGenome,
+    dnastringsetGenome = dnastringsetGenome,
+    nModPositionInMotif = 2, nUpstreamBpToAdd = 1, nDownstreamBpToAdd = 0,
+    cBaseLetterForMod = cBaseLetterForMod, cModNameInOutput = cModNameInOutput
+  )
+
+
+  dReportTable <- .AddModMotifPctToDf(dReportTable,
+    grangesModPos = grangesPacBioGFF, grangesGenome = grangesGenome,
+    dnastringsetGenome = dnastringsetGenome,
+    nModPositionInMotif = 2, nUpstreamBpToAdd = 1, nDownstreamBpToAdd = 1,
+    cBaseLetterForMod = cBaseLetterForMod, cModNameInOutput = cModNameInOutput
+  )
 
   return(t(dReportTable))
 }
@@ -360,35 +419,41 @@ GetModReportPacBio <- function(dnastringsetGenome,
 #' @keywords GetModReportDeepSignal
 #' @export
 #' @examples
-#' #preparing genome (simulated)
+#' # preparing genome (simulated)
 #' myGenome <- Biostrings::DNAStringSet(paste0(rep("ATCG", 100000), collapse = ""))
 #' names(myGenome) <- "NC_000001.11"
 #' myGrangesGenome <- GetGenomeGRanges(myGenome)
 #'
-#' #Loading Nanopore data
+#' # Loading Nanopore data
 #' myDeepSignalModPath <- system.file(
-#'   package="DNAModAnnot", "extdata",
-#'   "FAB39088-288418386-Chr1.CpG.call_mods.frequency.tsv")
-#' mygposDeepSignalModBase <- ImportDeepSignalModFrequency(cDeepSignalModPath=myDeepSignalModPath,
-#'                                                         lSortGPos=TRUE,
-#'                                                         cContigToBeAnalyzed = "all")
+#'   package = "DNAModAnnot", "extdata",
+#'   "FAB39088-288418386-Chr1.CpG.call_mods.frequency.tsv"
+#' )
+#' mygposDeepSignalModBase <- ImportDeepSignalModFrequency(
+#'   cDeepSignalModPath = myDeepSignalModPath,
+#'   lSortGPos = TRUE,
+#'   cContigToBeAnalyzed = "all"
+#' )
 #'
-#' #Filtering
-#' mygposDeepSignalMod <- FiltDeepSignal(gposDeepSignalModBase = mygposDeepSignalModBase,
-#'                                       cParamNameForFilter = "frac",
-#'                                       lFiltParam = TRUE,
-#'                                       nFiltParamLoBoundaries = 0,
-#'                                       nFiltParamUpBoundaries = 1,
-#'                                       cFiltParamBoundariesToInclude = "upperOnly")$Mod
+#' # Filtering
+#' mygposDeepSignalMod <- FiltDeepSignal(
+#'   gposDeepSignalModBase = mygposDeepSignalModBase,
+#'   cParamNameForFilter = "frac",
+#'   lFiltParam = TRUE,
+#'   nFiltParamLoBoundaries = 0,
+#'   nFiltParamUpBoundaries = 1,
+#'   cFiltParamBoundariesToInclude = "upperOnly"
+#' )$Mod
 #'
-#' #Mod report
+#' # Mod report
 #' myReport_Mod <- GetModReportDeepSignal(
 #'   dnastringsetGenome = myGenome,
 #'   grangesGenome = myGrangesGenome,
 #'   gposDeepSignalMod = as(mygposDeepSignalMod, "GRanges"),
 #'   gposDeepSignalModBase = as(mygposDeepSignalModBase, "GRanges"),
 #'   cOrgAssemblyName = "Test_function",
-#'   cBaseLetterForMod = "C", cModNameInOutput = "5mC")
+#'   cBaseLetterForMod = "C", cModNameInOutput = "5mC"
+#' )
 #' myReport_Mod
 GetModReportDeepSignal <- function(dnastringsetGenome,
                                    grangesGenome,
@@ -401,44 +466,51 @@ GetModReportDeepSignal <- function(dnastringsetGenome,
     row.names = cOrgAssemblyName,
     nbMod = length(gposDeepSignalMod),
     nbSitesSequenced = length(gposDeepSignalModBase),
-    nbBaseAssembly = letterFrequency(dnastringsetGenome, letters=cBaseLetterForMod, collapse=TRUE) +
-      letterFrequency(reverseComplement(dnastringsetGenome), letters=cBaseLetterForMod, collapse=TRUE)
+    nbBaseAssembly = letterFrequency(dnastringsetGenome, letters = cBaseLetterForMod, collapse = TRUE) +
+      letterFrequency(reverseComplement(dnastringsetGenome), letters = cBaseLetterForMod, collapse = TRUE)
   )
 
-  dReportTable$ratioMod = dReportTable$nbMod / dReportTable$nbSitesSequenced
-  dReportTable$ratioMod_corrected = dReportTable$ratioMod * mean(gposDeepSignalMod$frac)
-  dReportTable$ratioModAllAssemblyBases = dReportTable$nbMod / dReportTable$nbBaseAssembly
-  dReportTable$ratioModAllAssemblyBases_corrected = dReportTable$ratioModAllAssemblyBases * mean(gposDeepSignalMod$frac)
+  dReportTable$ratioMod <- dReportTable$nbMod / dReportTable$nbSitesSequenced
+  dReportTable$ratioMod_corrected <- dReportTable$ratioMod * mean(gposDeepSignalMod$frac)
+  dReportTable$ratioModAllAssemblyBases <- dReportTable$nbMod / dReportTable$nbBaseAssembly
+  dReportTable$ratioModAllAssemblyBases_corrected <- dReportTable$ratioModAllAssemblyBases * mean(gposDeepSignalMod$frac)
 
-  dReportTable$mean_prob1sum_Mod = mean(gposDeepSignalMod$prob_1_sum)
-  dReportTable$mean_countModified_Mod = mean(gposDeepSignalMod$count_modified)
-  dReportTable$mean_coverage_Mod = mean(gposDeepSignalMod$coverage)
-  dReportTable$mean_frac_Mod = mean(gposDeepSignalMod$frac)
+  dReportTable$mean_prob1sum_Mod <- mean(gposDeepSignalMod$prob_1_sum)
+  dReportTable$mean_countModified_Mod <- mean(gposDeepSignalMod$count_modified)
+  dReportTable$mean_coverage_Mod <- mean(gposDeepSignalMod$coverage)
+  dReportTable$mean_frac_Mod <- mean(gposDeepSignalMod$frac)
 
-  colnames(dReportTable) <- gsub(pattern="Base", replacement = cBaseLetterForMod,
-                                 x = colnames(dReportTable))
-  colnames(dReportTable) <- gsub(pattern="Mod", replacement = cModNameInOutput,
-                                 x = colnames(dReportTable))
-
-  dReportTable <- .AddModMotifPctToDf(dReportTable,
-                                      grangesModPos = gposDeepSignalMod, grangesGenome=grangesGenome,
-                                      dnastringsetGenome=dnastringsetGenome,
-                                      nModPositionInMotif = 1, nUpstreamBpToAdd=0, nDownstreamBpToAdd=1,
-                                      cBaseLetterForMod=cBaseLetterForMod, cModNameInOutput=cModNameInOutput)
-
+  colnames(dReportTable) <- gsub(
+    pattern = "Base", replacement = cBaseLetterForMod,
+    x = colnames(dReportTable)
+  )
+  colnames(dReportTable) <- gsub(
+    pattern = "Mod", replacement = cModNameInOutput,
+    x = colnames(dReportTable)
+  )
 
   dReportTable <- .AddModMotifPctToDf(dReportTable,
-                                      grangesModPos = gposDeepSignalMod, grangesGenome=grangesGenome,
-                                      dnastringsetGenome=dnastringsetGenome,
-                                      nModPositionInMotif = 2, nUpstreamBpToAdd=1, nDownstreamBpToAdd=0,
-                                      cBaseLetterForMod=cBaseLetterForMod, cModNameInOutput=cModNameInOutput)
+    grangesModPos = gposDeepSignalMod, grangesGenome = grangesGenome,
+    dnastringsetGenome = dnastringsetGenome,
+    nModPositionInMotif = 1, nUpstreamBpToAdd = 0, nDownstreamBpToAdd = 1,
+    cBaseLetterForMod = cBaseLetterForMod, cModNameInOutput = cModNameInOutput
+  )
 
 
   dReportTable <- .AddModMotifPctToDf(dReportTable,
-                                      grangesModPos = gposDeepSignalMod, grangesGenome=grangesGenome,
-                                      dnastringsetGenome=dnastringsetGenome,
-                                      nModPositionInMotif = 2, nUpstreamBpToAdd=1, nDownstreamBpToAdd=1,
-                                      cBaseLetterForMod=cBaseLetterForMod, cModNameInOutput=cModNameInOutput)
+    grangesModPos = gposDeepSignalMod, grangesGenome = grangesGenome,
+    dnastringsetGenome = dnastringsetGenome,
+    nModPositionInMotif = 2, nUpstreamBpToAdd = 1, nDownstreamBpToAdd = 0,
+    cBaseLetterForMod = cBaseLetterForMod, cModNameInOutput = cModNameInOutput
+  )
+
+
+  dReportTable <- .AddModMotifPctToDf(dReportTable,
+    grangesModPos = gposDeepSignalMod, grangesGenome = grangesGenome,
+    dnastringsetGenome = dnastringsetGenome,
+    nModPositionInMotif = 2, nUpstreamBpToAdd = 1, nDownstreamBpToAdd = 1,
+    cBaseLetterForMod = cBaseLetterForMod, cModNameInOutput = cModNameInOutput
+  )
 
   return(t(dReportTable))
 }
@@ -461,48 +533,55 @@ GetModReportDeepSignal <- function(dnastringsetGenome,
 #' @importFrom BSgenome getSeq
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #' myGrangesGenome <- GetGenomeGRanges(myGenome)
 #'
-#' #Preparing a grangesPacBioGFF datasets
+#' # Preparing a grangesPacBioGFF datasets
 #' myGrangesPacBioGFF <-
-#'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.modifications.sca171819.gff"),
-#'                    cNameModToExtract = "m6A",
-#'                    cModNameInOutput = "6mA",
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #'
-#' #Retrieve GRanges with sequence
-#' myPositions_Mod_Granges_wSeq <- GetGRangesWindowSeqandParam(grangesData=myGrangesPacBioGFF,
-#'                                                             grangesGenome = myGrangesGenome,
-#'                                                             dnastringsetGenome = myGenome,
-#'                                                             nUpstreamBpToAdd = 5,
-#'                                                             nDownstreamBpToAdd = 5)
+#' # Retrieve GRanges with sequence
+#' myPositions_Mod_Granges_wSeq <- GetGRangesWindowSeqandParam(
+#'   grangesData = myGrangesPacBioGFF,
+#'   grangesGenome = myGrangesGenome,
+#'   dnastringsetGenome = myGenome,
+#'   nUpstreamBpToAdd = 5,
+#'   nDownstreamBpToAdd = 5
+#' )
 #' myPositions_Mod_Granges_wSeq
 GetGRangesWindowSeqandParam <- function(grangesData,
-                                               grangesGenome,
-                                               dnastringsetGenome,
-                                               nUpstreamBpToAdd=0, nDownstreamBpToAdd=0){
-
+                                        grangesGenome,
+                                        dnastringsetGenome,
+                                        nUpstreamBpToAdd = 0, nDownstreamBpToAdd = 0) {
   ans <- grangesData
 
   print("Window adjustment...")
-  ans <- resize(ans, width = width(ans)+nUpstreamBpToAdd, fix = 'end')
-  ans  <- resize(ans, width = width(ans)+nDownstreamBpToAdd, fix = 'start')
+  ans <- resize(ans, width = width(ans) + nUpstreamBpToAdd, fix = "end")
+  ans <- resize(ans, width = width(ans) + nDownstreamBpToAdd, fix = "start")
 
   # remove windows not included completely in contig windows
   gr_a <- grangesGenome
   print("Removing Windows not included completely in contig windows...")
-  ans <- subsetByOverlaps(ans, gr_a, ignore.strand = FALSE, type="within")
+  ans <- subsetByOverlaps(ans, gr_a, ignore.strand = FALSE, type = "within")
 
   print("Getting sequence...")
   ans$sequence <- as.factor(as.character(getSeq(dnastringsetGenome, ans)))
 
   print("Window adjustment...")
-  ans <- resize(ans, width = width(ans)-nUpstreamBpToAdd, fix = 'end')
-  ans  <- resize(ans, width = width(ans)-nDownstreamBpToAdd, fix = 'start')
+  ans <- resize(ans, width = width(ans) - nUpstreamBpToAdd, fix = "end")
+  ans <- resize(ans, width = width(ans) - nDownstreamBpToAdd, fix = "start")
 
   return(ans)
 }
@@ -527,24 +606,26 @@ GetGRangesWindowSeqandParam <- function(grangesData,
 #' @keywords internal
 #' @importFrom BiocGenerics table
 .AddModMotifPctToDf <- function(dReportTable,
-                                         grangesModPos,
-                                         grangesGenome,
-                                         dnastringsetGenome,
-                                         cBaseLetterForMod,
-                                         cModNameInOutput,
-                                         nModPositionInMotif = 1,
-                                         nUpstreamBpToAdd=0,
-                                         nDownstreamBpToAdd=0){
-  positions_Mod_Granges_wSeq <- GetGRangesWindowSeqandParam(grangesModPos, grangesGenome, dnastringsetGenome,
-                                                                   nUpstreamBpToAdd, nDownstreamBpToAdd)
+                                grangesModPos,
+                                grangesGenome,
+                                dnastringsetGenome,
+                                cBaseLetterForMod,
+                                cModNameInOutput,
+                                nModPositionInMotif = 1,
+                                nUpstreamBpToAdd = 0,
+                                nDownstreamBpToAdd = 0) {
+  positions_Mod_Granges_wSeq <- GetGRangesWindowSeqandParam(
+    grangesModPos, grangesGenome, dnastringsetGenome,
+    nUpstreamBpToAdd, nDownstreamBpToAdd
+  )
 
   motif_pct <- as.data.frame.matrix(
-    t(table(positions_Mod_Granges_wSeq$sequence))/sum(t(table(positions_Mod_Granges_wSeq$sequence)))
-    )
+    t(table(positions_Mod_Granges_wSeq$sequence)) / sum(t(table(positions_Mod_Granges_wSeq$sequence)))
+  )
 
   motif_pct <- .IncludeModPosInMot(motif_pct, cBaseLetterForMod, cModNameInOutput, nModPositionInMotif)
 
-  names(motif_pct) <- paste("pct_", names(motif_pct), sep="")
+  names(motif_pct) <- paste("pct_", names(motif_pct), sep = "")
 
   dReportTable <- cbind(dReportTable, motif_pct)
 
@@ -563,15 +644,17 @@ GetGRangesWindowSeqandParam <- function(grangesData,
 #' motifs that include DNA modifications. Defaults to TRUE.
 #' @keywords internal
 .IncludeModPosInMot <- function(nParamByMotif,
-                                       cBaseLetterForMod,
-                                       cModNameInOutput,
-                                       nModPositionInMotif = 1,
-                                       lExtractOnlyMotifWithMod = TRUE){
-  pattern=paste("^(.{",(nModPositionInMotif-1),"})",cBaseLetterForMod,"(.*)$",sep="")
-  replacement = paste("\\1",cModNameInOutput,"\\2",sep="")
-  names(nParamByMotif) <- gsub(pattern=pattern, replacement = replacement,
-                               x = names(nParamByMotif))
-  if(lExtractOnlyMotifWithMod) {
+                                cBaseLetterForMod,
+                                cModNameInOutput,
+                                nModPositionInMotif = 1,
+                                lExtractOnlyMotifWithMod = TRUE) {
+  pattern <- paste("^(.{", (nModPositionInMotif - 1), "})", cBaseLetterForMod, "(.*)$", sep = "")
+  replacement <- paste("\\1", cModNameInOutput, "\\2", sep = "")
+  names(nParamByMotif) <- gsub(
+    pattern = pattern, replacement = replacement,
+    x = names(nParamByMotif)
+  )
+  if (lExtractOnlyMotifWithMod) {
     nParamByMotif <- nParamByMotif[grep(cModNameInOutput, names(nParamByMotif))]
   }
   return(nParamByMotif)
@@ -588,74 +671,97 @@ GetGRangesWindowSeqandParam <- function(grangesData,
 #' @keywords GetModRatioByContig
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
-#' #Preparing a grangesPacBioGFF and gposPacBioCSV datasets
+#' # Preparing a grangesPacBioGFF and gposPacBioCSV datasets
 #' myGrangesPacBioGFF <-
-#'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.modifications.sca171819.gff"),
-#'                    cNameModToExtract = "m6A",
-#'                    cModNameInOutput = "6mA",
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #'
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <- myGposPacBioCSV[myGposPacBioCSV$base == "A"]
 #'
-#' #Mod report
-#' myMod_ratio_list <- GetModRatioByContig(grangesModPos = myGrangesPacBioGFF,
-#'                                         gposModTargetBasePos = myGposPacBioCSV,
-#'                                         dnastringsetGenome = myGenome,
-#'                                         cBaseLetterForMod = "A")
+#' # Mod report
+#' myMod_ratio_list <- GetModRatioByContig(
+#'   grangesModPos = myGrangesPacBioGFF,
+#'   gposModTargetBasePos = myGposPacBioCSV,
+#'   dnastringsetGenome = myGenome,
+#'   cBaseLetterForMod = "A"
+#' )
 #' myMod_ratio_list
 GetModRatioByContig <- function(grangesModPos,
                                 gposModTargetBasePos,
                                 dnastringsetGenome,
                                 cBaseLetterForMod) {
-
-  mod_count_table <- data.frame(refName=as.factor(seqnames(grangesModPos)),
-                                strand=as.factor(strand(grangesModPos))  )
+  mod_count_table <- data.frame(
+    refName = as.factor(seqnames(grangesModPos)),
+    strand = as.factor(strand(grangesModPos))
+  )
   mod_count_table <- as.data.frame(table(mod_count_table))
   colnames(mod_count_table) <- c("refName", "strand", "Mod_count")
 
-  baseS_count_table <- data.frame(refName=as.factor(seqnames(gposModTargetBasePos)),
-                                  strand=as.factor(strand(gposModTargetBasePos))  )
+  baseS_count_table <- data.frame(
+    refName = as.factor(seqnames(gposModTargetBasePos)),
+    strand = as.factor(strand(gposModTargetBasePos))
+  )
   baseS_count_table <- as.data.frame(table(baseS_count_table))
   colnames(baseS_count_table) <- c("refName", "strand", "BaseSequenced_count")
 
-  dnastringsetGenome_order <- dnastringsetGenome[order(names(dnastringsetGenome)),]
-  baseA_count_table <- data.frame(names(dnastringsetGenome_order), "+",
-                                  letterFrequency(dnastringsetGenome_order, letters=cBaseLetterForMod),
-                                  width(dnastringsetGenome_order))
-  tmp_table <- data.frame(names(dnastringsetGenome_order), "-",
-                          letterFrequency(reverseComplement(dnastringsetGenome_order), letters=cBaseLetterForMod),
-                          width(dnastringsetGenome_order))
+  dnastringsetGenome_order <- dnastringsetGenome[order(names(dnastringsetGenome)), ]
+  baseA_count_table <- data.frame(
+    names(dnastringsetGenome_order), "+",
+    letterFrequency(dnastringsetGenome_order, letters = cBaseLetterForMod),
+    width(dnastringsetGenome_order)
+  )
+  tmp_table <- data.frame(
+    names(dnastringsetGenome_order), "-",
+    letterFrequency(reverseComplement(dnastringsetGenome_order), letters = cBaseLetterForMod),
+    width(dnastringsetGenome_order)
+  )
   baseA_count_table <- rbind(baseA_count_table, tmp_table)
   colnames(baseA_count_table) <- c("refName", "strand", "BaseAssembly_count", "width")
 
   base_count_table <- merge(baseS_count_table,
-                            baseA_count_table,
-                            by = c("refName", "strand"),
-                            all.y = TRUE)
+    baseA_count_table,
+    by = c("refName", "strand"),
+    all.y = TRUE
+  )
 
   mod_count_table <- merge(mod_count_table,
-                           base_count_table,
-                           by = c("refName", "strand"),
-                           all.y = TRUE)
+    base_count_table,
+    by = c("refName", "strand"),
+    all.y = TRUE
+  )
 
-  #those who have NA for one or both strands : replace NA by 0
-  mod_count_table[is.na(mod_count_table$Mod_count),"Mod_count"] <- 0
-  mod_count_table[is.na(mod_count_table$BaseSequenced_count),"BaseSequenced_count"] <- 0
-  mod_count_table[is.na(mod_count_table$BaseAssembly_count),"BaseAssembly_count"] <- 0
+  # those who have NA for one or both strands : replace NA by 0
+  mod_count_table[is.na(mod_count_table$Mod_count), "Mod_count"] <- 0
+  mod_count_table[is.na(mod_count_table$BaseSequenced_count), "BaseSequenced_count"] <- 0
+  mod_count_table[is.na(mod_count_table$BaseAssembly_count), "BaseAssembly_count"] <- 0
 
-  mod_count_table <- mod_count_table[with(mod_count_table, order(width, refName, strand, decreasing = TRUE)),]
+  mod_count_table <- mod_count_table[with(mod_count_table, order(width, refName, strand, decreasing = TRUE)), ]
 
   mod_count_table$Mod_ratio <- mod_count_table$Mod_count / mod_count_table$BaseSequenced_count
   mod_count_table$Mod_ratio_AllAssemblyBases <- mod_count_table$Mod_count / mod_count_table$BaseAssembly_count
@@ -663,9 +769,11 @@ GetModRatioByContig <- function(grangesModPos,
   f_strand <- subset(mod_count_table, strand == "+")
   r_strand <- subset(mod_count_table, strand == "-")
 
-  return(list(mod_count_table=mod_count_table,
-              f_strand=f_strand,
-              r_strand=r_strand))
+  return(list(
+    mod_count_table = mod_count_table,
+    f_strand = f_strand,
+    r_strand = r_strand
+  ))
 }
 
 #' DrawModLogo Function (GloModAn)
@@ -691,62 +799,65 @@ GetModRatioByContig <- function(grangesModPos,
 #' @importFrom Biostrings consensusMatrix
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #' myGrangesGenome <- GetGenomeGRanges(myGenome)
 #'
-#' #Preparing a grangesPacBioGFF datasets
+#' # Preparing a grangesPacBioGFF datasets
 #' myGrangesPacBioGFF <-
-#'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.modifications.sca171819.gff"),
-#'                                  cNameModToExtract = "m6A",
-#'                                  cModNameInOutput = "6mA",
-#'                                  cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #'
-#' #Retrieve GRanges with sequence
-#' myPositions_Mod_Granges_wSeq <- GetGRangesWindowSeqandParam(grangesData=myGrangesPacBioGFF,
-#'                                                             grangesGenome = myGrangesGenome,
-#'                                                             dnastringsetGenome = myGenome,
-#'                                                             nUpstreamBpToAdd = 5,
-#'                                                             nDownstreamBpToAdd = 5)
+#' # Retrieve GRanges with sequence
+#' myPositions_Mod_Granges_wSeq <- GetGRangesWindowSeqandParam(
+#'   grangesData = myGrangesPacBioGFF,
+#'   grangesGenome = myGrangesGenome,
+#'   dnastringsetGenome = myGenome,
+#'   nUpstreamBpToAdd = 5,
+#'   nDownstreamBpToAdd = 5
+#' )
 #'
-#' DrawModLogo(dnastringsetSeqAroundMod = as(myPositions_Mod_Granges_wSeq$sequence,"DNAStringSet"),
-#'                    cLogoType = "EDLogo",
-#'                    nGenomicBgACGT = c(0.35, 0.15, 0.15, 0.35))
+#' DrawModLogo(
+#'   dnastringsetSeqAroundMod = as(myPositions_Mod_Granges_wSeq$sequence, "DNAStringSet"),
+#'   cLogoType = "EDLogo",
+#'   nGenomicBgACGT = c(0.35, 0.15, 0.15, 0.35)
+#' )
 DrawModLogo <- function(dnastringsetSeqAroundMod,
-                               cLogoType = "EDLogo",
-                               nGenomicBgACGT=c(0.25, 0.25, 0.25, 0.25),
-                               cColorsCTAG=c("orange2","green3","red2","blue2")){
+                        cLogoType = "EDLogo",
+                        nGenomicBgACGT = c(0.25, 0.25, 0.25, 0.25),
+                        cColorsCTAG = c("orange2", "green3", "red2", "blue2")) {
   names(nGenomicBgACGT) <- c("A", "C", "G", "T")
 
-  mConsensus <- consensusMatrix(dnastringsetSeqAroundMod, as.prob=TRUE)
+  mConsensus <- consensusMatrix(dnastringsetSeqAroundMod, as.prob = TRUE)
   nFixedPositions <- which(apply(mConsensus, 2, function(x) any(x == 1)))
 
-  #remove all sequences that do not have full width
-  dnastringsetSeqAroundMod <- dnastringsetSeqAroundMod[which( width(dnastringsetSeqAroundMod) == max(width(dnastringsetSeqAroundMod)) )]
-  #remove all sequences that have some N or some gaps "-"
-  dnastringsetSeqAroundMod <- dnastringsetSeqAroundMod[which(letterFrequency(dnastringsetSeqAroundMod, letters="N-" ) == 0)]
+  # remove all sequences that do not have full width
+  dnastringsetSeqAroundMod <- dnastringsetSeqAroundMod[which(width(dnastringsetSeqAroundMod) == max(width(dnastringsetSeqAroundMod)))]
+  # remove all sequences that have some N or some gaps "-"
+  dnastringsetSeqAroundMod <- dnastringsetSeqAroundMod[which(letterFrequency(dnastringsetSeqAroundMod, letters = "N-") == 0)]
 
-  bgmatrix <- matrix(rep(nGenomicBgACGT, max(width(dnastringsetSeqAroundMod)) ),
-                     ncol = max(width(dnastringsetSeqAroundMod)), byrow = FALSE)
-  #remove background correction for fixed positions (example: Position Of The Modification)
-  bgmatrix[,nFixedPositions] <- c(0.25,0.25,0.25,0.25)
+  bgmatrix <- matrix(rep(nGenomicBgACGT, max(width(dnastringsetSeqAroundMod))),
+    ncol = max(width(dnastringsetSeqAroundMod)), byrow = FALSE
+  )
+  # remove background correction for fixed positions (example: Position Of The Modification)
+  bgmatrix[, nFixedPositions] <- c(0.25, 0.25, 0.25, 0.25)
 
   logomaker(as.character(dnastringsetSeqAroundMod),
-            type = cLogoType,
-            color_type = "per_row",
-            colors = cColorsCTAG,
-            bg=bgmatrix)
-
-  # #alternative method
-  # c_m <- consensusMatrix(dnastringsetSeqAroundMod)
-  # f_m_corrected <- prop.table(c_m, 2)/nGenomicBgACGT
-  # logomaker(f_m_corrected,
-  #           type = cLogoType,
-  #           color_type = "per_row",
-  #           colors = cColorsCTAG)
-
+    type = cLogoType,
+    color_type = "per_row",
+    colors = cColorsCTAG,
+    bg = bgmatrix
+  )
 }
 
 #' ExtractListModPosByModMotif Function (GloModAn)
@@ -781,49 +892,59 @@ DrawModLogo <- function(dnastringsetSeqAroundMod,
 #' @importFrom S4Vectors isEmpty
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #' myGrangesGenome <- GetGenomeGRanges(myGenome)
 #'
-#' #Preparing a grangesPacBioGFF dataset
+#' # Preparing a grangesPacBioGFF dataset
 #' myGrangesPacBioGFF <-
-#'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.modifications.sca171819.gff"),
-#'                    cNameModToExtract = "m6A",
-#'                    cModNameInOutput = "6mA",
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #'
-#' #Retrieve GRanges with sequence
-#' myMotif_pct_and_GRangesList <- ExtractListModPosByModMotif(grangesModPos=myGrangesPacBioGFF,
-#'                                                         grangesGenome = myGrangesGenome,
-#'                                                         dnastringsetGenome = myGenome,
-#'                                                         nUpstreamBpToAdd = 0,
-#'                                                         nDownstreamBpToAdd = 1,
-#'                                                         nModMotifMinProp = 0.05,
-#'                                                         cBaseLetterForMod = "A",
-#'                                                         cModNameInOutput = "6mA")
+#' # Retrieve GRanges with sequence
+#' myMotif_pct_and_GRangesList <- ExtractListModPosByModMotif(
+#'   grangesModPos = myGrangesPacBioGFF,
+#'   grangesGenome = myGrangesGenome,
+#'   dnastringsetGenome = myGenome,
+#'   nUpstreamBpToAdd = 0,
+#'   nDownstreamBpToAdd = 1,
+#'   nModMotifMinProp = 0.05,
+#'   cBaseLetterForMod = "A",
+#'   cModNameInOutput = "6mA"
+#' )
 #'
 #' myMotif_pct_and_GRangesList$motifs_to_analyse
 #' myMotif_pct_and_GRangesList$mod_motif
 #' myMotif_pct_and_GRangesList$motif_pct
 #' myMotif_pct_and_GRangesList$GRangesbyMotif
 ExtractListModPosByModMotif <- function(grangesModPos,
-                                             grangesGenome,
-                                             dnastringsetGenome,
-                                             nUpstreamBpToAdd = 0, nDownstreamBpToAdd = 1,
-                                             nModMotifMinProp,
-                                             nModPositionInMotif = 1+nUpstreamBpToAdd,
-                                             cBaseLetterForMod,
-                                             cModNameInOutput) {
-  ans <- GetGRangesWindowSeqandParam(grangesData = grangesModPos,
-                                            grangesGenome=grangesGenome,
-                                            dnastringsetGenome = dnastringsetGenome,
-                                            nUpstreamBpToAdd=nUpstreamBpToAdd, nDownstreamBpToAdd=nDownstreamBpToAdd)
+                                        grangesGenome,
+                                        dnastringsetGenome,
+                                        nUpstreamBpToAdd = 0, nDownstreamBpToAdd = 1,
+                                        nModMotifMinProp,
+                                        nModPositionInMotif = 1 + nUpstreamBpToAdd,
+                                        cBaseLetterForMod,
+                                        cModNameInOutput) {
+  ans <- GetGRangesWindowSeqandParam(
+    grangesData = grangesModPos,
+    grangesGenome = grangesGenome,
+    dnastringsetGenome = dnastringsetGenome,
+    nUpstreamBpToAdd = nUpstreamBpToAdd, nDownstreamBpToAdd = nDownstreamBpToAdd
+  )
 
-  motif_pct <- table(ans$sequence)/sum(table(ans$sequence))
-  if( isEmpty(which(motif_pct >= nModMotifMinProp)) ){
-    print(paste("No ", unique(width(ans$sequence)),"nt motif is represented at least ",nModMotifMinProp*100,"% of 6mA detected.",sep=""))
+  motif_pct <- table(ans$sequence) / sum(table(ans$sequence))
+  if (isEmpty(which(motif_pct >= nModMotifMinProp))) {
+    print(paste("No ", unique(width(ans$sequence)), "nt motif is represented at least ", nModMotifMinProp * 100, "% of 6mA detected.", sep = ""))
     print("Motif width or minimum proportion might be too high.")
   } else {
     motif_to_analyze <- names(motif_pct[motif_pct >= nModMotifMinProp])
@@ -833,8 +954,10 @@ ExtractListModPosByModMotif <- function(grangesModPos,
   }
   mod_motif <- .IncludeModPosInMot(motif_pct, cBaseLetterForMod, cModNameInOutput, nModPositionInMotif)
 
-  return(list(motifs_to_analyse = names(motif_pct[motif_pct >= nModMotifMinProp]),
-              mod_motif         = names(mod_motif[motif_pct >= nModMotifMinProp]),
-              motif_pct         = motif_pct,
-              GRangesbyMotif    = ans))
+  return(list(
+    motifs_to_analyse = names(motif_pct[motif_pct >= nModMotifMinProp]),
+    mod_motif = names(mod_motif[motif_pct >= nModMotifMinProp]),
+    motif_pct = motif_pct,
+    GRangesbyMotif = ans
+  ))
 }

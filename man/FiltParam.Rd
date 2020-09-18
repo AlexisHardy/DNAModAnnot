@@ -56,46 +56,60 @@ A filtered grangesModPos object.
 Filter out modifications which have a chosen parameter that do not reach criterias of selection.
 }
 \examples{
-#loading genome
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# loading genome
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 
-#Preparing a grangesPacBioGFF dataset
+# Preparing a grangesPacBioGFF dataset
 myGrangesPacBioGFF <-
-   ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                   "ptetraurelia.modifications.sca171819.gff"),
-                   cNameModToExtract = "m6A",
-                   cModNameInOutput = "6mA",
-                   cContigToBeAnalyzed = c("scaffold51_17", "scaffold51_18", "scaffold51_19"))
+  ImportPacBioGFF(
+    cPacBioGFFPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.modifications.sca171819.gff"
+    ),
+    cNameModToExtract = "m6A",
+    cModNameInOutput = "6mA",
+    cContigToBeAnalyzed = c("scaffold51_17", "scaffold51_18", "scaffold51_19")
+  )
 
-#Preparing ParamByStrand List
-myMean_fra_list <- GetMeanParamByContig(grangesData = myGrangesPacBioGFF,
-                                        dnastringsetGenome = myGenome,
-                                        cParamName = "frac")
+# Preparing ParamByStrand List
+myMean_fra_list <- GetMeanParamByContig(
+  grangesData = myGrangesPacBioGFF,
+  dnastringsetGenome = myGenome,
+  cParamName = "frac"
+)
 
-#Filtering Out Modif with Frac 20\% above/below the mean Frac
-myGRangesPacBioGFF_filt <- FiltParam(grangesModPos = myGrangesPacBioGFF,
-                                     cParamNameForFilter = "frac",
-                                        listMeanParamByContig = myMean_fra_list,
-                                        nContigFiltParamLoBound = 0.2,
-                                        nContigFiltParamUpBound = 0.2)
+# Filtering Out Modif with Frac 20\% above/below the mean Frac
+myGRangesPacBioGFF_filt <- FiltParam(
+  grangesModPos = myGrangesPacBioGFF,
+  cParamNameForFilter = "frac",
+  listMeanParamByContig = myMean_fra_list,
+  nContigFiltParamLoBound = 0.2,
+  nContigFiltParamUpBound = 0.2
+)
 myGRangesPacBioGFF_filt
 
-#Filtering Out Modif with Frac below 5\%
-myGRangesPacBioGFF_filt <- FiltParam(grangesModPos = myGrangesPacBioGFF,
-                                     cParamNameForFilter = "frac",
-                                        listMeanParamByContig = myMean_fra_list,
-                                        lFiltParam = TRUE,
-                                        nFiltParamLoBoundaries = 0.05,
-                                        nFiltParamUpBoundaries = 1.00)
+# Filtering Out Modif with Frac below 5\%
+myGRangesPacBioGFF_filt <- FiltParam(
+  grangesModPos = myGrangesPacBioGFF,
+  cParamNameForFilter = "frac",
+  listMeanParamByContig = myMean_fra_list,
+  lFiltParam = TRUE,
+  nFiltParamLoBoundaries = 0.05,
+  nFiltParamUpBoundaries = 1.00
+)
 myGRangesPacBioGFF_filt
 
-#Keeping Modif with Frac between 40\% and 60\%;
-#or between 90\% and 100\%  (adapted to genome of diploid organisms)
-myGRangesPacBioGFF_filt <- FiltParam(grangesModPos = myGrangesPacBioGFF,
-                                     cParamNameForFilter = "frac",
-                                        lFiltParam = TRUE,
-                                        nFiltParamLoBoundaries = c(0.40, 0.90),
-                                        nFiltParamUpBoundaries = c(0.60, 1.00))
+# Keeping Modif with Frac between 40\% and 60\%;
+# or between 90\% and 100\%  (adapted to genome of diploid organisms)
+myGRangesPacBioGFF_filt <- FiltParam(
+  grangesModPos = myGrangesPacBioGFF,
+  cParamNameForFilter = "frac",
+  lFiltParam = TRUE,
+  nFiltParamLoBoundaries = c(0.40, 0.90),
+  nFiltParamUpBoundaries = c(0.60, 1.00)
+)
 }
 \keyword{FiltParam}

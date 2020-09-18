@@ -35,28 +35,38 @@ If a position is fixed with one base only, that position will not be corrected w
 the background in order to avoid other letters to appear below this base if using cLogoType="EDLogo".
 }
 \examples{
-#loading genome
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# loading genome
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 myGrangesGenome <- GetGenomeGRanges(myGenome)
 
-#Preparing a grangesPacBioGFF datasets
+# Preparing a grangesPacBioGFF datasets
 myGrangesPacBioGFF <-
-   ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.modifications.sca171819.gff"),
-                                 cNameModToExtract = "m6A",
-                                 cModNameInOutput = "6mA",
-                                 cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioGFF(
+    cPacBioGFFPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.modifications.sca171819.gff"
+    ),
+    cNameModToExtract = "m6A",
+    cModNameInOutput = "6mA",
+    cContigToBeAnalyzed = names(myGenome)
+  )
 
-#Retrieve GRanges with sequence
-myPositions_Mod_Granges_wSeq <- GetGRangesWindowSeqandParam(grangesData=myGrangesPacBioGFF,
-                                                            grangesGenome = myGrangesGenome,
-                                                            dnastringsetGenome = myGenome,
-                                                            nUpstreamBpToAdd = 5,
-                                                            nDownstreamBpToAdd = 5)
+# Retrieve GRanges with sequence
+myPositions_Mod_Granges_wSeq <- GetGRangesWindowSeqandParam(
+  grangesData = myGrangesPacBioGFF,
+  grangesGenome = myGrangesGenome,
+  dnastringsetGenome = myGenome,
+  nUpstreamBpToAdd = 5,
+  nDownstreamBpToAdd = 5
+)
 
-DrawModLogo(dnastringsetSeqAroundMod = as(myPositions_Mod_Granges_wSeq$sequence,"DNAStringSet"),
-                   cLogoType = "EDLogo",
-                   nGenomicBgACGT = c(0.35, 0.15, 0.15, 0.35))
+DrawModLogo(
+  dnastringsetSeqAroundMod = as(myPositions_Mod_Granges_wSeq$sequence, "DNAStringSet"),
+  cLogoType = "EDLogo",
+  nGenomicBgACGT = c(0.35, 0.15, 0.15, 0.35)
+)
 }
 \keyword{DrawModLogo}

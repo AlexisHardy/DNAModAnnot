@@ -46,37 +46,53 @@ the base modified (Mod) and the base letter of the modified base (Base).
 Example: for Mod="6mA", Base="A"; for Mod="5mC", Base="C".
 }
 \examples{
-#loading genome
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# loading genome
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 
-#loading annotation
+# loading annotation
 library(rtracklayer)
-myAnnotations <- readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-                                          "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
+myAnnotations <- readGFFAsGRanges(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+))
 
-#Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
+# Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
 myGrangesPacBioGFF <-
-   ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                   "ptetraurelia.modifications.sca171819.gff"),
-                   cNameModToExtract = "m6A",
-                   cModNameInOutput = "6mA",
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioGFF(
+    cPacBioGFFPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.modifications.sca171819.gff"
+    ),
+    cNameModToExtract = "m6A",
+    cModNameInOutput = "6mA",
+    cContigToBeAnalyzed = names(myGenome)
+  )
 myGposPacBioCSV <-
-   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.bases.sca171819.csv"),
-                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-                                               "score", "ipdRatio", "coverage"),
-                   lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioCSV(
+    cPacBioCSVPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.bases.sca171819.csv"
+    ),
+    cSelectColumnsToExtract = c(
+      "refName", "tpl", "strand", "base",
+      "score", "ipdRatio", "coverage"
+    ),
+    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+    cContigToBeAnalyzed = names(myGenome)
+  )
 myGposPacBioCSV <- myGposPacBioCSV[myGposPacBioCSV$base == "A"]
 
-#Retrieve annotations with "Mod" and "Base" counts (and counts per kbp)
+# Retrieve annotations with "Mod" and "Base" counts (and counts per kbp)
 myAnn_ModBase_counts_by_window <-
-   GetModBaseCountsWithinFeature(grangesAnnotations=myAnnotations[myAnnotations$type == "gene",],
-                                 grangesModPos=myGrangesPacBioGFF,
-                                 gposModTargetBasePos=myGposPacBioCSV,
-                                 nWindowsNb = 20)
+  GetModBaseCountsWithinFeature(
+    grangesAnnotations = myAnnotations[myAnnotations$type == "gene", ],
+    grangesModPos = myGrangesPacBioGFF,
+    gposModTargetBasePos = myGposPacBioCSV,
+    nWindowsNb = 20
+  )
 myAnn_ModBase_counts_by_window
 }
 \keyword{GetModBaseCountsWithinFeature}

@@ -38,15 +38,17 @@ NULL
 #' @keywords GetGposCenterFromGRanges
 #' @export
 #' @examples
-#' myRanges <- as(c("chrI:300-500:+", "chrI:308-680:+" , "chrII:30-550:-"), "GRanges")
-#' myCenterPos <- GetGposCenterFromGRanges(grangesData=myRanges)
+#' myRanges <- as(c("chrI:300-500:+", "chrI:308-680:+", "chrII:30-550:-"), "GRanges")
+#' myCenterPos <- GetGposCenterFromGRanges(grangesData = myRanges)
 #' myCenterPos
 GetGposCenterFromGRanges <- function(grangesData) {
-  grangesData$center <- start(grangesData) + ceiling( ( end(grangesData) - start(grangesData) )/2 )
-  grangesData <- GPos(seqnames = seqnames(grangesData),
-                         pos = grangesData$center,
-                         strand = strand(grangesData),
-                         stitch = FALSE)
+  grangesData$center <- start(grangesData) + ceiling((end(grangesData) - start(grangesData)) / 2)
+  grangesData <- GPos(
+    seqnames = seqnames(grangesData),
+    pos = grangesData$center,
+    strand = strand(grangesData),
+    stitch = FALSE
+  )
   return(grangesData)
 }
 
@@ -65,56 +67,62 @@ GetGposCenterFromGRanges <- function(grangesData) {
 #' @importFrom GenomeInfoDb sortSeqlevels
 #' @export
 #' @examples
-#' #Loading genome data
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # Loading genome data
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #' myGrangesGenome <- GetGenomeGRanges(myGenome)
 #'
-#' #Loading annotation data
+#' # Loading annotation data
 #' myAnnotations <-
-#'   rtracklayer::readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-#'                                             "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
+#'   rtracklayer::readGFFAsGRanges(system.file(
+#'     package = "DNAModAnnot", "extdata",
+#'     "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+#'   ))
 #'
-#' #Completing annotation data
+#' # Completing annotation data
 #' levels(myAnnotations$type)
-#' myAnnotations <- PredictMissingAnnotation(grangesAnnotations = myAnnotations,
-#'                                                     grangesGenome = myGrangesGenome,
-#'                                                     cFeaturesColName = "type",
-#'                                                     cGeneCategories = c("gene"),
-#'                                                     lAddIntronRangesUsingExon = TRUE)
+#' myAnnotations <- PredictMissingAnnotation(
+#'   grangesAnnotations = myAnnotations,
+#'   grangesGenome = myGrangesGenome,
+#'   cFeaturesColName = "type",
+#'   cGeneCategories = c("gene"),
+#'   lAddIntronRangesUsingExon = TRUE
+#' )
 #' levels(myAnnotations$type)
 PredictMissingAnnotation <- function(grangesAnnotations, grangesGenome,
                                      cFeaturesColName = "type",
                                      cGeneCategories = c("gene"),
-                                     lAddIntronRangesUsingExon = FALSE){
+                                     lAddIntronRangesUsingExon = FALSE) {
+  colnames(mcols(grangesAnnotations))[which(colnames(mcols(grangesAnnotations)) == cFeaturesColName)] <- "type"
 
-  colnames( mcols(grangesAnnotations) )[which(colnames(mcols(grangesAnnotations)) == cFeaturesColName)] <- "type"
-
-  if(!cGeneCategories=="gene"){
+  if (!cGeneCategories == "gene") {
     grangesAnnotations$gene_type <- as.character(NA)
-    type_to_modif <-  which(grangesAnnotations$type %in% cGeneCategories)
+    type_to_modif <- which(grangesAnnotations$type %in% cGeneCategories)
     mcols(grangesAnnotations)[type_to_modif, "gene_type"] <- as.character(mcols(grangesAnnotations)[type_to_modif, cFeaturesColName])
     mcols(grangesAnnotations)[type_to_modif, cFeaturesColName] <- "gene"
   }
-  gene_check   <- "gene" %in% levels(grangesAnnotations$type)
-  if(!gene_check){
+  gene_check <- "gene" %in% levels(grangesAnnotations$type)
+  if (!gene_check) {
     print("No \"gene\" category recognized. Please, correct the annotation or provide names of sub-categories of genes from this genome annotation.")
   } else {
-    #adding intergenic Granges
-    intergenic_check   <- "intergenic" %in% levels(grangesAnnotations$type)
-    if(!intergenic_check){
+    # adding intergenic Granges
+    intergenic_check <- "intergenic" %in% levels(grangesAnnotations$type)
+    if (!intergenic_check) {
       gr_a <- grangesGenome
 
       gr_b <- subset(grangesAnnotations, type == "gene")
       hits <- findOverlaps(gr_a, gr_b, ignore.strand = TRUE)
       toSubtract <- reduce(extractList(gr_b, as(hits, "List")),
-                           ignore.strand = TRUE)
+        ignore.strand = TRUE
+      )
       ans <- psetdiff(gr_a, toSubtract, ignore.strand = TRUE)
       ans <- unlist(ans)
       ans <- subset(ans, width(ans) > 0L)
       mcols(ans)[cFeaturesColName] <- as.factor("intergenic")
 
-      if(length(grangesAnnotations) >= length(ans)){
+      if (length(grangesAnnotations) >= length(ans)) {
         grangesAnnotations <- c(grangesAnnotations, ans)
       } else {
         grangesAnnotations <- c(ans, grangesAnnotations)
@@ -127,7 +135,7 @@ PredictMissingAnnotation <- function(grangesAnnotations, grangesGenome,
       ans <- pintersect(pairs, ignore.strand = FALSE)
       mcols(ans)[cFeaturesColName] <- as.factor("antisense_strand_of_gene")
 
-      if(length(grangesAnnotations) >= length(ans)){
+      if (length(grangesAnnotations) >= length(ans)) {
         grangesAnnotations <- c(grangesAnnotations, ans)
       } else {
         grangesAnnotations <- c(ans, grangesAnnotations)
@@ -135,57 +143,53 @@ PredictMissingAnnotation <- function(grangesAnnotations, grangesGenome,
     }
 
     if (lAddIntronRangesUsingExon) {
-      #adding exon/intron Granges
-      mRNA_check   <- "mRNA" %in% levels(grangesAnnotations$type)
-      exon_check   <- "exon" %in% levels(grangesAnnotations$type)
+      # adding exon/intron Granges
+      mRNA_check <- "mRNA" %in% levels(grangesAnnotations$type)
+      exon_check <- "exon" %in% levels(grangesAnnotations$type)
       intron_check <- "intron" %in% levels(grangesAnnotations$type)
 
-      if( mRNA_check & (exon_check | intron_check) ){
-        if(!exon_check){
-
+      if (mRNA_check & (exon_check | intron_check)) {
+        if (!exon_check) {
           gr_a <- subset(grangesAnnotations, type == "mRNA")
           gr_b <- subset(grangesAnnotations, type == "intron")
           hits <- findOverlaps(gr_a, gr_b, ignore.strand = FALSE)
           toSubtract <- reduce(extractList(gr_b, as(hits, "List")),
-                               ignore.strand = TRUE)
+            ignore.strand = TRUE
+          )
           ans <- psetdiff(gr_a, toSubtract, ignore.strand = TRUE)
           ans <- unlist(ans)
           ans <- subset(ans, width > 0L)
           mcols(ans)[cFeaturesColName] <- as.factor("exon")
 
-          if(length(grangesAnnotations) >= length(ans)){
+          if (length(grangesAnnotations) >= length(ans)) {
             grangesAnnotations <- c(grangesAnnotations, ans)
           } else {
             grangesAnnotations <- c(ans, grangesAnnotations)
           }
-
-        } else if(!intron_check){
-
+        } else if (!intron_check) {
           gr_a <- subset(grangesAnnotations, type == "mRNA")
           gr_b <- subset(grangesAnnotations, type == "exon")
           hits <- findOverlaps(gr_a, gr_b, ignore.strand = FALSE)
           toSubtract <- reduce(extractList(gr_b, as(hits, "List")),
-                               ignore.strand = TRUE)
+            ignore.strand = TRUE
+          )
           ans <- psetdiff(gr_a, toSubtract, ignore.strand = TRUE)
           ans <- unlist(ans)
           ans <- subset(ans, width > 0L)
           mcols(ans)[cFeaturesColName] <- as.factor("intron")
 
-          if(length(grangesAnnotations) >= length(ans)){
+          if (length(grangesAnnotations) >= length(ans)) {
             grangesAnnotations <- c(grangesAnnotations, ans)
           } else {
             grangesAnnotations <- c(ans, grangesAnnotations)
           }
-
         } else {
           print("\"Exon\"/\"Intron\" categories already detected: no need to fill exon/intron positions.")
         }
       } else {
         print("\"Exon\"/\"Intron\" categories cannot be predicted because of missing annotation (mRNA and (exon or intron)).")
       }
-
     }
-
   }
   grangesAnnotations <- sortSeqlevels(grangesAnnotations)
   grangesAnnotations <- sort(grangesAnnotations)
@@ -209,27 +213,37 @@ PredictMissingAnnotation <- function(grangesAnnotations, grangesGenome,
 #' @importFrom GenomeInfoDb seqlevels seqlevelsInUse seqlevels<-
 #' @export
 #' @examples
-#' #Loading genome data
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # Loading genome data
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #' names(myGenome)
 #'
-#' #Loading PacBio data
+#' # Loading PacBio data
 #' myGrangesPacBioGFF <-
-#'   ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia.modifications.sca171819.gff"),
-#'                            cNameModToExtract = "m6A",
-#'                            cModNameInOutput = "6mA",
-#'                            cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGrangesPacBioGFF
 #'
-#' #Loading PacBio data for 2 scaffolds only
+#' # Loading PacBio data for 2 scaffolds only
 #' myGrangesPacBioGFF <-
-#'   ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia.modifications.sca171819.gff"),
-#'                            cNameModToExtract = "m6A",
-#'                            cModNameInOutput = "6mA",
-#'                            cContigToBeAnalyzed = c("scaffold51_18", "scaffold51_19"))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = c("scaffold51_18", "scaffold51_19")
+#'   )
 #' myGrangesPacBioGFF
 ImportPacBioGFF <- function(cPacBioGFFPath,
                             cNameModToExtract,
@@ -237,7 +251,7 @@ ImportPacBioGFF <- function(cPacBioGFFPath,
                             cContigToBeAnalyzed = NULL,
                             lKeepSequence = TRUE) {
   grangesPacBioGFF <- import(cPacBioGFFPath)
-  if(!is.null(cContigToBeAnalyzed)){
+  if (!is.null(cContigToBeAnalyzed)) {
     grangesPacBioGFF <- subset(grangesPacBioGFF, seqnames(grangesPacBioGFF) %in% cContigToBeAnalyzed)
     seqlevels(grangesPacBioGFF) <- seqlevelsInUse(grangesPacBioGFF)
   }
@@ -245,15 +259,18 @@ ImportPacBioGFF <- function(cPacBioGFFPath,
   grangesPacBioGFF$type <- cModNameInOutput
 
   grangesPacBioGFF <- subset(grangesPacBioGFF,
-                             select=c("type",
-                                      "coverage", "score", "IPDRatio",
-                                      "frac", "fracLow", "fracUp",
-                                      "identificationQv"))
+    select = c(
+      "type",
+      "coverage", "score", "IPDRatio",
+      "frac", "fracLow", "fracUp",
+      "identificationQv"
+    )
+  )
 
   names(mcols(grangesPacBioGFF))[1] <- "base"
   names(mcols(grangesPacBioGFF))[4] <- "ipdRatio"
 
-  if(lKeepSequence){
+  if (lKeepSequence) {
     grangesPacBioGFF$base <- as.character(grangesPacBioGFF$base)
   } else {
     grangesPacBioGFF$base <- NULL
@@ -291,44 +308,57 @@ ImportPacBioGFF <- function(cPacBioGFFPath,
 #' @importFrom BiocGenerics sort
 #' @export
 #' @examples
-#' #Loading genome data
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # Loading genome data
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #' names(myGenome)
 #'
-#' #Loading PacBio data
+#' # Loading PacBio data
 #' myGrangesPacBioCSV <-
-#'  ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'  "ptetraurelia.bases.sca171819.csv"),
-#' cSelectColumnsToExtract = c("refName", "tpl", "strand", "base", "score", "ipdRatio", "coverage"),
-#' lKeepExtraColumnsInGPos = TRUE,
-#' lSortGPos = TRUE,
-#' cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c("refName", "tpl", "strand", "base", "score", "ipdRatio", "coverage"),
+#'     lKeepExtraColumnsInGPos = TRUE,
+#'     lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGrangesPacBioCSV
 #'
-#' #Loading PacBio data for 2 scaffolds only
+#' # Loading PacBio data for 2 scaffolds only
 #' myGrangesPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE,
-#'                    lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = c("scaffold51_18", "scaffold51_19"))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE,
+#'     lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = c("scaffold51_18", "scaffold51_19")
+#'   )
 #' myGrangesPacBioCSV
 ImportPacBioCSV <- function(cPacBioCSVPath,
-                                     cSelectColumnsToExtract=c("refName", "tpl", "strand", "base", "score", "ipdRatio", "coverage"),
-                                     lKeepExtraColumnsInGPos = TRUE,
-                                     lSortGPos = TRUE,
-                                     cContigToBeAnalyzed = NULL,
+                            cSelectColumnsToExtract = c("refName", "tpl", "strand", "base", "score", "ipdRatio", "coverage"),
+                            lKeepExtraColumnsInGPos = TRUE,
+                            lSortGPos = TRUE,
+                            cContigToBeAnalyzed = NULL,
                             lKeepSequence = TRUE) {
   print("Loading csv file...")
   gposPacBioCSV <- fread(cPacBioCSVPath,
-                         header = TRUE,
-                         sep = ",",
-                         select = cSelectColumnsToExtract)
+    header = TRUE,
+    sep = ",",
+    select = cSelectColumnsToExtract
+  )
 
-  if(!is.null(cContigToBeAnalyzed)){
+  if (!is.null(cContigToBeAnalyzed)) {
     print("Filtering contigs to be analysed...")
     gposPacBioCSV <- gposPacBioCSV[gposPacBioCSV$refName %in% cContigToBeAnalyzed]
   }
@@ -340,17 +370,23 @@ ImportPacBioCSV <- function(cPacBioCSVPath,
 
   if (lKeepExtraColumnsInGPos) {
     print("Creating GPos object with extra columns...")
-    gposPacBioCSV <- GPos(seqnames = gposPacBioCSV$refName,
-                          pos = IPos(pos=gposPacBioCSV$tpl),
-                          strand = gposPacBioCSV$strand,
-                          setDF(gposPacBioCSV[,-1:-3]),
-                          stitch = FALSE)
-    if(!lKeepSequence){gposPacBioCSV$base <- NULL}
+    gposPacBioCSV <- GPos(
+      seqnames = gposPacBioCSV$refName,
+      pos = IPos(pos = gposPacBioCSV$tpl),
+      strand = gposPacBioCSV$strand,
+      setDF(gposPacBioCSV[, -1:-3]),
+      stitch = FALSE
+    )
+    if (!lKeepSequence) {
+      gposPacBioCSV$base <- NULL
+    }
   } else {
-    gposPacBioCSV <- GPos(seqnames = gposPacBioCSV$refName,
-                          pos = IPos(pos=gposPacBioCSV$tpl),
-                          strand = gposPacBioCSV$strand,
-                          stitch = FALSE)
+    gposPacBioCSV <- GPos(
+      seqnames = gposPacBioCSV$refName,
+      pos = IPos(pos = gposPacBioCSV$tpl),
+      strand = gposPacBioCSV$strand,
+      stitch = FALSE
+    )
   }
 
   if (lSortGPos) {
@@ -379,16 +415,18 @@ ImportPacBioCSV <- function(cPacBioCSVPath,
 #' myRanges <- GetGenomeGRanges(mySeqs)
 #' myRanges
 GetGenomeGRanges <- function(dnastringsetGenome) {
-  if(is.null(names(dnastringsetGenome))){
+  if (is.null(names(dnastringsetGenome))) {
     names(dnastringsetGenome) <- paste0("seq", 1:length(dnastringsetGenome))
   }
   grangesGenome <- c(
     GRanges(dnastringsetGenome@ranges@NAMES,
-            IRanges(start=1,end=dnastringsetGenome@ranges@width),
-            strand="+"),
+      IRanges(start = 1, end = dnastringsetGenome@ranges@width),
+      strand = "+"
+    ),
     GRanges(dnastringsetGenome@ranges@NAMES,
-            IRanges(start=1,end=dnastringsetGenome@ranges@width),
-            strand="-")
+      IRanges(start = 1, end = dnastringsetGenome@ranges@width),
+      strand = "-"
+    )
   )
   return(sort(grangesGenome))
 }
@@ -416,50 +454,64 @@ GetGenomeGRanges <- function(dnastringsetGenome) {
 #' @keywords ImportDeepSignalModFrequency
 #' @export
 #' @examples
-#' #Loading Nanopore data
+#' # Loading Nanopore data
 #' myDeepSignalModPath <- system.file(
-#'   package="DNAModAnnot", "extdata",
-#'   "FAB39088-288418386-Chr1.CpG.call_mods.frequency.tsv")
-#' mygposDeepSignalModBase <- ImportDeepSignalModFrequency(cDeepSignalModPath=myDeepSignalModPath,
-#'                                                         lSortGPos=TRUE,
-#'                                                         cContigToBeAnalyzed = "all")
+#'   package = "DNAModAnnot", "extdata",
+#'   "FAB39088-288418386-Chr1.CpG.call_mods.frequency.tsv"
+#' )
+#' mygposDeepSignalModBase <- ImportDeepSignalModFrequency(
+#'   cDeepSignalModPath = myDeepSignalModPath,
+#'   lSortGPos = TRUE,
+#'   cContigToBeAnalyzed = "all"
+#' )
 #' mygposDeepSignalModBase
 ImportDeepSignalModFrequency <- function(cDeepSignalModPath,
-                                         cColumnNames=c("chrom", "pos", "strand", "pos_in_strand",
-                                                        "prob_0_sum", "prob_1_sum", "count_modified", "count_unmodified",
-                                                        "coverage", "modification_frequency", "k_mer"),
-                                         cSelectColumnsToExtract=c("chrom", "pos", "strand",
-                                                                   "prob_0_sum", "prob_1_sum", "count_modified", "count_unmodified",
-                                                                   "coverage", "modification_frequency", "k_mer"),
+                                         cColumnNames = c(
+                                           "chrom", "pos", "strand", "pos_in_strand",
+                                           "prob_0_sum", "prob_1_sum", "count_modified", "count_unmodified",
+                                           "coverage", "modification_frequency", "k_mer"
+                                         ),
+                                         cSelectColumnsToExtract = c(
+                                           "chrom", "pos", "strand",
+                                           "prob_0_sum", "prob_1_sum", "count_modified", "count_unmodified",
+                                           "coverage", "modification_frequency", "k_mer"
+                                         ),
                                          lSortGPos = TRUE,
                                          cContigToBeAnalyzed,
                                          lKeepSequence = TRUE) {
   cColumnNames <- gsub(cColumnNames,
-                       pattern = "modification_frequency", replacement = "frac")
+    pattern = "modification_frequency", replacement = "frac"
+  )
   cSelectColumnsToExtract <- gsub(cSelectColumnsToExtract,
-                                  pattern = "modification_frequency", replacement = "frac")
+    pattern = "modification_frequency", replacement = "frac"
+  )
 
   print("Loading tsv file...")
-  gposDeepSignalMod <- data.table::fread(cDeepSignalModPath,
-                                         header=FALSE,
-                                         sep = "\t")
+  gposDeepSignalMod <- fread(cDeepSignalModPath,
+    header = FALSE,
+    sep = "\t"
+  )
   colnames(gposDeepSignalMod) <- cColumnNames
-  gposDeepSignalMod <- gposDeepSignalMod[,colnames(gposDeepSignalMod) %in% cSelectColumnsToExtract, with=FALSE]
+  gposDeepSignalMod <- gposDeepSignalMod[, colnames(gposDeepSignalMod) %in% cSelectColumnsToExtract, with = FALSE]
 
-  if(cContigToBeAnalyzed != "all"){
+  if (cContigToBeAnalyzed != "all") {
     print("Filtering contigs to be analysed...")
     gposDeepSignalMod <- gposDeepSignalMod[gposDeepSignalMod$chrom %in% cContigToBeAnalyzed]
   }
 
   print("Creating GPos object with extra columns...")
-  gposDeepSignalMod <- GenomicRanges::GPos(seqnames = gposDeepSignalMod$chrom,
-                                           pos = IRanges::IPos(pos=gposDeepSignalMod$pos+1),
-                                           strand = gposDeepSignalMod$strand,
-                                           data.table::setDF(gposDeepSignalMod[,-1:-3]),
-                                           stitch = FALSE)
+  gposDeepSignalMod <- GPos(
+    seqnames = gposDeepSignalMod$chrom,
+    pos = IPos(pos = gposDeepSignalMod$pos + 1),
+    strand = gposDeepSignalMod$strand,
+    setDF(gposDeepSignalMod[, -1:-3]),
+    stitch = FALSE
+  )
   seqlevels(gposDeepSignalMod) <- seqlevelsInUse(gposDeepSignalMod)
 
-  if(!lKeepSequence){gposDeepSignalMod$k_mer <- NULL}
+  if (!lKeepSequence) {
+    gposDeepSignalMod$k_mer <- NULL
+  }
 
   if (lSortGPos) {
     print("Sorting GPos Object...")

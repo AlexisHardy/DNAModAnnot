@@ -56,28 +56,36 @@ A list of 4 objects:
 Return the GRanges object provided with the sequence associated to each position (and can also retrieve the sequence around each position).
 }
 \examples{
-#loading genome
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# loading genome
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 myGrangesGenome <- GetGenomeGRanges(myGenome)
 
-#Preparing a grangesPacBioGFF dataset
+# Preparing a grangesPacBioGFF dataset
 myGrangesPacBioGFF <-
-   ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.modifications.sca171819.gff"),
-                   cNameModToExtract = "m6A",
-                   cModNameInOutput = "6mA",
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioGFF(
+    cPacBioGFFPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.modifications.sca171819.gff"
+    ),
+    cNameModToExtract = "m6A",
+    cModNameInOutput = "6mA",
+    cContigToBeAnalyzed = names(myGenome)
+  )
 
-#Retrieve GRanges with sequence
-myMotif_pct_and_GRangesList <- ExtractListModPosByModMotif(grangesModPos=myGrangesPacBioGFF,
-                                                        grangesGenome = myGrangesGenome,
-                                                        dnastringsetGenome = myGenome,
-                                                        nUpstreamBpToAdd = 0,
-                                                        nDownstreamBpToAdd = 1,
-                                                        nModMotifMinProp = 0.05,
-                                                        cBaseLetterForMod = "A",
-                                                        cModNameInOutput = "6mA")
+# Retrieve GRanges with sequence
+myMotif_pct_and_GRangesList <- ExtractListModPosByModMotif(
+  grangesModPos = myGrangesPacBioGFF,
+  grangesGenome = myGrangesGenome,
+  dnastringsetGenome = myGenome,
+  nUpstreamBpToAdd = 0,
+  nDownstreamBpToAdd = 1,
+  nModMotifMinProp = 0.05,
+  cBaseLetterForMod = "A",
+  cModNameInOutput = "6mA"
+)
 
 myMotif_pct_and_GRangesList$motifs_to_analyse
 myMotif_pct_and_GRangesList$mod_motif

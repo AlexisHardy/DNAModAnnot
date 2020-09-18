@@ -30,27 +30,37 @@ Import PacBio GFF file, extract one modification, rename this modification and c
 as a GRanges object with new colnames similar to PacBio CSV file containing data from all bases sequenced.
 }
 \examples{
-#Loading genome data
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# Loading genome data
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 names(myGenome)
 
-#Loading PacBio data
+# Loading PacBio data
 myGrangesPacBioGFF <-
-  ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia.modifications.sca171819.gff"),
-                           cNameModToExtract = "m6A",
-                           cModNameInOutput = "6mA",
-                           cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioGFF(
+    cPacBioGFFPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.modifications.sca171819.gff"
+    ),
+    cNameModToExtract = "m6A",
+    cModNameInOutput = "6mA",
+    cContigToBeAnalyzed = names(myGenome)
+  )
 myGrangesPacBioGFF
 
-#Loading PacBio data for 2 scaffolds only
+# Loading PacBio data for 2 scaffolds only
 myGrangesPacBioGFF <-
-  ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia.modifications.sca171819.gff"),
-                           cNameModToExtract = "m6A",
-                           cModNameInOutput = "6mA",
-                           cContigToBeAnalyzed = c("scaffold51_18", "scaffold51_19"))
+  ImportPacBioGFF(
+    cPacBioGFFPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.modifications.sca171819.gff"
+    ),
+    cNameModToExtract = "m6A",
+    cModNameInOutput = "6mA",
+    cContigToBeAnalyzed = c("scaffold51_18", "scaffold51_19")
+  )
 myGrangesPacBioGFF
 }
 \keyword{ImportPacBioGFF}

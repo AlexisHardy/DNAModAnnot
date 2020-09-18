@@ -34,17 +34,23 @@
 #' @import Biostrings
 #' @export
 #' @examples
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
-#' myReport <- GetAssemblyReport(dnastringsetGenome = myGenome,
-#'                                   cOrgAssemblyName = "ptetraurelia_mac_51")
+#' myReport <- GetAssemblyReport(
+#'   dnastringsetGenome = myGenome,
+#'   cOrgAssemblyName = "ptetraurelia_mac_51"
+#' )
 #'
 #' myReport
 GetAssemblyReport <- function(dnastringsetGenome,
-                                  cOrgAssemblyName) {
-  freq_v <- alphabetFrequency(dnastringsetGenome, as.prob = TRUE,
-                              baseOnly=TRUE, collapse=TRUE)[1:4]
+                              cOrgAssemblyName) {
+  freq_v <- alphabetFrequency(dnastringsetGenome,
+    as.prob = TRUE,
+    baseOnly = TRUE, collapse = TRUE
+  )[1:4]
   dTable <- data.frame(
     row.names = cOrgAssemblyName,
     nbcontigs = length(dnastringsetGenome),
@@ -66,8 +72,8 @@ GetAssemblyReport <- function(dnastringsetGenome,
     n75 = .CalculateNLx(dnastringsetGenome, 75)[1],
     l50 = .CalculateNLx(dnastringsetGenome, 50)[2],
     l75 = .CalculateNLx(dnastringsetGenome, 75)[2],
-    gc_pct = sum( (freq_v / sum(freq_v))[c("G", "C")] )*100,
-    nb_N = letterFrequency(dnastringsetGenome, letters="N", collapse=TRUE)
+    gc_pct = sum((freq_v / sum(freq_v))[c("G", "C")]) * 100,
+    nb_N = letterFrequency(dnastringsetGenome, letters = "N", collapse = TRUE)
   )
   return(t(dTable))
 }
@@ -81,9 +87,9 @@ GetAssemblyReport <- function(dnastringsetGenome,
 .CalculateNLx <- function(dnastringsetGenome, nNLx = 50) {
   w_sort_v <- sort(dnastringsetGenome@ranges@width, decreasing = TRUE)
   vector_o <- c(NA, NA)
-  names(vector_o) <- paste(c("N", "L"), nNLx, sep="")
-  vector_o[1] <- head( w_sort_v[ cumsum(w_sort_v) >= (sum(dnastringsetGenome@ranges@width) * (nNLx/100)) ], 1)
-  vector_o[2] <- head( which(    cumsum(w_sort_v) >= (sum(dnastringsetGenome@ranges@width) * (nNLx/100)) ), 1)
+  names(vector_o) <- paste(c("N", "L"), nNLx, sep = "")
+  vector_o[1] <- head(w_sort_v[cumsum(w_sort_v) >= (sum(dnastringsetGenome@ranges@width) * (nNLx / 100))], 1)
+  vector_o[2] <- head(which(cumsum(w_sort_v) >= (sum(dnastringsetGenome@ranges@width) * (nNLx / 100))), 1)
   return(vector_o)
 }
 
@@ -100,8 +106,10 @@ GetAssemblyReport <- function(dnastringsetGenome,
 #' @keywords GetContigCumulLength
 #' @export
 #' @examples
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
 #' myContig_cumul_len_t <- GetContigCumulLength(dnastringsetGenome = myGenome)
 #'
@@ -129,38 +137,42 @@ GetContigCumulLength <- function(dnastringsetGenome) {
 #' @keywords DrawContigCumulLength
 #' @export
 #' @examples
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
 #' myContig_cumul_len_t <- GetContigCumulLength(dnastringsetGenome = myGenome)
 #'
-#' DrawContigCumulLength(nContigCumsumLength = myContig_cumul_len_t$cumsum_Mbp_length,
-#'                              cOrgAssemblyName="ptetraurelia_mac_51")
+#' DrawContigCumulLength(
+#'   nContigCumsumLength = myContig_cumul_len_t$cumsum_Mbp_length,
+#'   cOrgAssemblyName = "ptetraurelia_mac_51"
+#' )
 DrawContigCumulLength <- function(nContigCumsumLength,
-                                         cOrgAssemblyName,
-                                         lGridInBackground = FALSE,
-                                         cLineColor = "red",
-                                         nLineWidth = 2,
-                                         nLineType = 1) {
+                                  cOrgAssemblyName,
+                                  lGridInBackground = FALSE,
+                                  cLineColor = "red",
+                                  nLineWidth = 2,
+                                  nLineType = 1) {
   opar <- par()
   par(mar = c(5.5, 5, 2.5, 2))
   plot(nContigCumsumLength,
-       ylim = c(0, tail(nContigCumsumLength, 1)),
+    ylim = c(0, tail(nContigCumsumLength, 1)),
 
-       type = "s", lty = nLineType, lwd = nLineWidth, col = cLineColor,
+    type = "s", lty = nLineType, lwd = nLineWidth, col = cLineColor,
 
-       xlab = "Contigs (ordered from largest to smallest)",
-       ylab = "Cumulative length (Mbp)",
-       main = paste("Cumulative length of ", cOrgAssemblyName, " genome assembly", sep=""),
+    xlab = "Contigs (ordered from largest to smallest)",
+    ylab = "Cumulative length (Mbp)",
+    main = paste("Cumulative length of ", cOrgAssemblyName, " genome assembly", sep = ""),
 
-       las = 1, lab = c(10, 10, 7),
-       xaxs = "i", yaxs = "i", xaxt="n"
+    las = 1, lab = c(10, 10, 7),
+    xaxs = "i", yaxs = "i", xaxt = "n"
   )
-  axis(1,at=1:length(nContigCumsumLength),labels=1:length(nContigCumsumLength))
-  if(lGridInBackground) {
+  axis(1, at = 1:length(nContigCumsumLength), labels = 1:length(nContigCumsumLength))
+  if (lGridInBackground) {
     grid()
   }
-  par(mar=opar$mar)
+  par(mar = opar$mar)
 }
 
 #' GetSeqPctByContig Function (SeQual)
@@ -182,44 +194,60 @@ DrawContigCumulLength <- function(nContigCumsumLength,
 #' @importFrom GenomicRanges strand
 #' @export
 #' @examples
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #' myGrangesGenome <- GetGenomeGRanges(myGenome)
 #'
-#' #Preparing a gposPacBioCSV dataset
+#' # Preparing a gposPacBioCSV dataset
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #'
 #' myPct_seq_csv <- GetSeqPctByContig(myGposPacBioCSV, grangesGenome = myGrangesGenome)
 #' myPct_seq_csv
 GetSeqPctByContig <- function(gposPacBioCSV, grangesGenome) {
-  table_count <- table(  data.table(seqnames=as.factor(seqnames(gposPacBioCSV)),
-                                    strand=as.factor(strand(gposPacBioCSV)))  )
-  table_count <- table_count[,c("+","-")]
-  table_count <- table_count[rownames(table_count) %in% seqnames(grangesGenome),]
-  table_count <- data.frame(refName=rep(rownames(table_count),2),
-                            strand=c( rep("+",nrow(table_count)), rep("-",nrow(table_count))),
-                            nb_sequenced=as.numeric(table_count))
+  table_count <- table(data.table(
+    seqnames = as.factor(seqnames(gposPacBioCSV)),
+    strand = as.factor(strand(gposPacBioCSV))
+  ))
+  table_count <- table_count[, c("+", "-")]
+  table_count <- table_count[rownames(table_count) %in% seqnames(grangesGenome), ]
+  table_count <- data.frame(
+    refName = rep(rownames(table_count), 2),
+    strand = c(rep("+", nrow(table_count)), rep("-", nrow(table_count))),
+    nb_sequenced = as.numeric(table_count)
+  )
 
-  table_contig <- data.frame(refName=seqnames(grangesGenome),
-                             strand=strand(grangesGenome),
-                             width=width(grangesGenome))
+  table_contig <- data.frame(
+    refName = seqnames(grangesGenome),
+    strand = strand(grangesGenome),
+    width = width(grangesGenome)
+  )
 
-  table_contig <- merge(table_contig, table_count, by=c("refName", "strand"), all.x = TRUE)
+  table_contig <- merge(table_contig, table_count, by = c("refName", "strand"), all.x = TRUE)
 
-  table_contig[is.na(table_contig$nb_sequenced),"nb_sequenced"] <- 0
+  table_contig[is.na(table_contig$nb_sequenced), "nb_sequenced"] <- 0
   table_contig$seqPct <- 100 * table_contig$nb_sequenced / table_contig$width
 
-  table_contig <- table_contig[order(table_contig$width, decreasing = TRUE),]
+  table_contig <- table_contig[order(table_contig$width, decreasing = TRUE), ]
   f_strand <- subset(table_contig, strand == "+")
   r_strand <- subset(table_contig, strand == "-")
 
-  return(list(both_strand=table_contig,
-              f_strand=f_strand,
-              r_strand=r_strand))
+  return(list(
+    both_strand = table_contig,
+    f_strand = f_strand,
+    r_strand = r_strand
+  ))
 }

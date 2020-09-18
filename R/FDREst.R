@@ -65,81 +65,101 @@
 #' @export
 #' @examples
 #' library(Biostrings)
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                                      "ptetraurelia_mac_51_sca171819.fa"))
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #' myGrangesGenome <- GetGenomeGRanges(myGenome)
 #'
-#' #Preparing a gposPacBioCSV dataset with sequences
+#' # Preparing a gposPacBioCSV dataset with sequences
 #' myGposPacBioCSV <-
-#'   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                   "ptetraurelia.bases.sca171819.csv"),
-#'                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base", "score",
-#'                                                        "ipdRatio", "coverage"),
-#'                   lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                   cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base", "score",
+#'       "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGrangesBaseCSV <- as(myGposPacBioCSV[myGposPacBioCSV$base == "A"], "GRanges")
-#' myGrangesBaseCSVWithSeq <- GetGRangesWindowSeqandParam(grangesData = myGrangesBaseCSV,
-#'                                                        grangesGenome=myGrangesGenome,
-#'                                                        dnastringsetGenome = myGenome,
-#'                                                        nUpstreamBpToAdd=0,
-#'                                                        nDownstreamBpToAdd=1)
+#' myGrangesBaseCSVWithSeq <- GetGRangesWindowSeqandParam(
+#'   grangesData = myGrangesBaseCSV,
+#'   grangesGenome = myGrangesGenome,
+#'   dnastringsetGenome = myGenome,
+#'   nUpstreamBpToAdd = 0,
+#'   nDownstreamBpToAdd = 1
+#' )
 #'
-#' #FDR estimation by motif associated to modifications
+#' # FDR estimation by motif associated to modifications
 #' myFdr_score_per_motif_list <-
-#'   GetFdrEstListByThresh(grangesDataWithSeq = myGrangesBaseCSVWithSeq,
-#'                         cNameParamToTest = "score",
-#'                         nRoundDigits = 1,
-#'                         cModMotifsAsForeground=c("AG", "AT"))
+#'   GetFdrEstListByThresh(
+#'     grangesDataWithSeq = myGrangesBaseCSVWithSeq,
+#'     cNameParamToTest = "score",
+#'     nRoundDigits = 1,
+#'     cModMotifsAsForeground = c("AG", "AT")
+#'   )
 #' myFdr_score_per_motif_list
 #'
-#' ##NOT RUN!
-#' ##FDR estimation versus granges control
-#' #myFdr_score_vsCtrl_list <-
+#' ## NOT RUN!
+#' ## FDR estimation versus granges control
+#' # myFdr_score_vsCtrl_list <-
 #' #  GetFdrEstListByThresh(grangesDataWithSeq = myGrangesBaseCSVWithSeq,
 #' #                        grangesDataWithSeqControl = myGrangesBaseCSVWithSeq_control,
 #' #                        cNameParamToTest = "score",
 #' #                        nRoundDigits = 1)
-#' #myFdr_score_vsCtrl_list
+#' # myFdr_score_vsCtrl_list
 GetFdrEstListByThresh <- function(grangesDataWithSeq,
-                                       grangesDataWithSeqControl=NULL,
-                                       cNameParamToTest,
-                                       nRoundDigits=1,
-                                       cModMotifsAsForeground=NULL) {
+                                  grangesDataWithSeqControl = NULL,
+                                  cNameParamToTest,
+                                  nRoundDigits = 1,
+                                  cModMotifsAsForeground = NULL) {
   lTestBetweenMotifs <- is.null(grangesDataWithSeqControl)
-  ct_seq_param <- .GetCumsumTableParamByMotif(grangesDataWithSeq = grangesDataWithSeq,
-                                                   cNameParamToTest = cNameParamToTest, nRoundDigits = nRoundDigits,
-                                                   lTestBetweenMotifs=lTestBetweenMotifs)
+  ct_seq_param <- .GetCumsumTableParamByMotif(
+    grangesDataWithSeq = grangesDataWithSeq,
+    cNameParamToTest = cNameParamToTest, nRoundDigits = nRoundDigits,
+    lTestBetweenMotifs = lTestBetweenMotifs
+  )
   if (lTestBetweenMotifs) {
-    if(is.null(cModMotifsAsForeground)){
+    if (is.null(cModMotifsAsForeground)) {
       print("Error: if grangesDataWithSeqControl is NULL, cModMotifsAsForeground must be given.")
       listFdrEstByThr <- NULL
     } else {
-      listFdrEstByThr <- lapply(cModMotifsAsForeground, function(motif_fg){
-        nBg <- rowSums(ct_seq_param[,which(names(ct_seq_param) != motif_fg)])/as.numeric(sum(tail(ct_seq_param[,which(names(ct_seq_param) != motif_fg)],1)))
-        nFg <- ct_seq_param[,which(names(ct_seq_param) == motif_fg)]/as.numeric(tail(ct_seq_param[,which(names(ct_seq_param) == motif_fg)],1))
-        return(.EstimateFdr(nFg=nFg, nBg=nBg, nThreshold=as.numeric(rownames(ct_seq_param)) ))
+      listFdrEstByThr <- lapply(cModMotifsAsForeground, function(motif_fg) {
+        nBg <- rowSums(ct_seq_param[, which(names(ct_seq_param) != motif_fg)]) / as.numeric(sum(tail(ct_seq_param[, which(names(ct_seq_param) != motif_fg)], 1)))
+        nFg <- ct_seq_param[, which(names(ct_seq_param) == motif_fg)] / as.numeric(tail(ct_seq_param[, which(names(ct_seq_param) == motif_fg)], 1))
+        return(.EstimateFdr(nFg = nFg, nBg = nBg, nThreshold = as.numeric(rownames(ct_seq_param))))
       })
-      names(listFdrEstByThr) <- paste("FDRe_", cModMotifsAsForeground, sep="")
+      names(listFdrEstByThr) <- paste("FDRe_", cModMotifsAsForeground, sep = "")
     }
   } else {
-    ct_seq_param_ctrl <- .GetCumsumTableParamByMotif(grangesDataWithSeq = grangesDataWithSeqControl,
-                                                     cNameParamToTest = cNameParamToTest,
-                                                     nRoundDigits = nRoundDigits)
+    ct_seq_param_ctrl <- .GetCumsumTableParamByMotif(
+      grangesDataWithSeq = grangesDataWithSeqControl,
+      cNameParamToTest = cNameParamToTest,
+      nRoundDigits = nRoundDigits
+    )
 
     ct_seq_param$threshold <- as.numeric(rownames(ct_seq_param))
     ct_seq_param_ctrl$threshold <- as.numeric(rownames(ct_seq_param_ctrl))
 
-    mCounts <- merge(x=ct_seq_param, y=ct_seq_param_ctrl,
-                     by="threshold", all=TRUE, sort = TRUE)
-    mCounts <- mCounts[order(mCounts$threshold, decreasing = TRUE),]
+    mCounts <- merge(
+      x = ct_seq_param, y = ct_seq_param_ctrl,
+      by = "threshold", all = TRUE, sort = TRUE
+    )
+    mCounts <- mCounts[order(mCounts$threshold, decreasing = TRUE), ]
 
-    mCounts[is.na(mCounts[,2]),2] <- 0
-    mCounts[is.na(mCounts[,3]),3] <- 0
+    mCounts[is.na(mCounts[, 2]), 2] <- 0
+    mCounts[is.na(mCounts[, 3]), 3] <- 0
 
-    nFg <- mCounts[,2]/as.numeric(tail(mCounts[,2],1))
-    nBg <- mCounts[,3]/as.numeric(tail(mCounts[,3],1))
-    listFdrEstByThr <- list(FDRe_vsCtrl = .EstimateFdr(nFg=nFg, nBg=nBg,
-                                                       nThreshold=mCounts$threshold))
+    nFg <- mCounts[, 2] / as.numeric(tail(mCounts[, 2], 1))
+    nBg <- mCounts[, 3] / as.numeric(tail(mCounts[, 3], 1))
+    listFdrEstByThr <- list(FDRe_vsCtrl = .EstimateFdr(
+      nFg = nFg, nBg = nBg,
+      nThreshold = mCounts$threshold
+    ))
   }
   return(listFdrEstByThr)
 }
@@ -155,20 +175,20 @@ GetFdrEstListByThresh <- function(grangesDataWithSeq,
 #' Else, calculates the cumulative number of values of the parameter provided independantly of the sequence associated. Defaults to FALSE.
 #' @keywords internal
 .GetCumsumTableParamByMotif <- function(grangesDataWithSeq,
-                                             cNameParamToTest,
-                                             nRoundDigits=1,
-                                             lTestBetweenMotifs=FALSE){
+                                        cNameParamToTest,
+                                        nRoundDigits = 1,
+                                        lTestBetweenMotifs = FALSE) {
   data_t <- grangesDataWithSeq
   if (lTestBetweenMotifs) {
     data_t$sequence <- as.character(data_t$sequence)
-    data_t <- elementMetadata(data_t)[c(cNameParamToTest,"sequence")]
+    data_t <- elementMetadata(data_t)[c(cNameParamToTest, "sequence")]
   } else {
     data_t <- elementMetadata(data_t)[cNameParamToTest]
   }
   data_t[cNameParamToTest] <- round(as.data.frame(data_t[cNameParamToTest]), digits = nRoundDigits)
   data_t <- table(data_t)
   if (lTestBetweenMotifs) {
-    data_t <- data_t[order(as.numeric(rownames(data_t)), decreasing = TRUE),]
+    data_t <- data_t[order(as.numeric(rownames(data_t)), decreasing = TRUE), ]
     data_t <- as.data.frame.matrix(apply(data_t, 2, cumsum))
   } else {
     data_t <- data_t[order(as.numeric(names(data_t)), decreasing = TRUE)]
@@ -184,11 +204,13 @@ GetFdrEstListByThresh <- function(grangesDataWithSeq,
 #' @param nBg A numeric vector considered as the background signal.
 #' @param nThreshold A numeric vector describing the thresholds used.
 #' @keywords internal
-.EstimateFdr <- function(nFg, nBg, nThreshold){
-  fdr <- nBg/nFg
-  if( any(fdr>1) ){ fdr[fdr>1] = 1 }
+.EstimateFdr <- function(nFg, nBg, nThreshold) {
+  fdr <- nBg / nFg
+  if (any(fdr > 1)) {
+    fdr[fdr > 1] <- 1
+  }
   fdr <- rev(fdr)
-  fdr <- data.frame(fdr=fdr)
+  fdr <- data.frame(fdr = fdr)
   fdr$threshold <- rev(nThreshold)
   fdr$fdr_cummin <- cummin(fdr$fdr)
   return(fdr)
@@ -211,52 +233,68 @@ GetFdrEstListByThresh <- function(grangesDataWithSeq,
 #' @keywords DrawFdrEstList
 #' @export
 #' @examples
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #' myGrangesGenome <- GetGenomeGRanges(myGenome)
 #'
-#' #Preparing a gposPacBioCSV dataset with sequences
+#' # Preparing a gposPacBioCSV dataset with sequences
 #' myGposPacBioCSV <-
-#'   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base", "score",
-#'                                                        "ipdRatio", "coverage"),
-#'                   lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                   cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base", "score",
+#'       "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGrangesBaseCSV <- as(myGposPacBioCSV[myGposPacBioCSV$base == "A"], "GRanges")
-#' myGrangesBaseCSVWithSeq <- GetGRangesWindowSeqandParam(grangesData = myGrangesBaseCSV,
-#'                                                        grangesGenome=myGrangesGenome,
-#'                                                        dnastringsetGenome = myGenome,
-#'                                                        nUpstreamBpToAdd=0,
-#'                                                        nDownstreamBpToAdd=1)
+#' myGrangesBaseCSVWithSeq <- GetGRangesWindowSeqandParam(
+#'   grangesData = myGrangesBaseCSV,
+#'   grangesGenome = myGrangesGenome,
+#'   dnastringsetGenome = myGenome,
+#'   nUpstreamBpToAdd = 0,
+#'   nDownstreamBpToAdd = 1
+#' )
 #'
-#' #FDR estimation by motif associated to modifications
+#' # FDR estimation by motif associated to modifications
 #' myFdr_score_per_motif_list <-
-#'   GetFdrEstListByThresh(grangesDataWithSeq = myGrangesBaseCSVWithSeq,
-#'                         cNameParamToTest = "score",
-#'                         nRoundDigits = 1,
-#'                         cModMotifsAsForeground=c("AG", "AT"))
+#'   GetFdrEstListByThresh(
+#'     grangesDataWithSeq = myGrangesBaseCSVWithSeq,
+#'     cNameParamToTest = "score",
+#'     nRoundDigits = 1,
+#'     cModMotifsAsForeground = c("AG", "AT")
+#'   )
 #'
-#' DrawFdrEstList(listFdrEstByThr = myFdr_score_per_motif_list,
-#'                cNameParamToTest = "score",
-#'                nFdrPropForFilt = 0.05)
+#' DrawFdrEstList(
+#'   listFdrEstByThr = myFdr_score_per_motif_list,
+#'   cNameParamToTest = "score",
+#'   nFdrPropForFilt = 0.05
+#' )
 DrawFdrEstList <- function(listFdrEstByThr,
-                                   cNameParamToTest,
-                                   nFdrPropForFilt = 0.05,
-                                   lAdjustFdr = TRUE){
+                           cNameParamToTest,
+                           nFdrPropForFilt = 0.05,
+                           lAdjustFdr = TRUE) {
   i <- length(names(listFdrEstByThr))
-  layout( matrix(1:i, nrow = 1, ncol = i, byrow = FALSE) )
+  layout(matrix(1:i, nrow = 1, ncol = i, byrow = FALSE))
   for (fdr_to_plot in names(listFdrEstByThr)) {
-    if (gsub("FDRe_", "", fdr_to_plot ) == "vsCtrl") {
-      motif_fg = NULL
+    if (gsub("FDRe_", "", fdr_to_plot) == "vsCtrl") {
+      motif_fg <- NULL
     } else {
-      motif_fg = gsub("FDRe_", "", fdr_to_plot )
+      motif_fg <- gsub("FDRe_", "", fdr_to_plot)
     }
-    .DrawFdrEst(listFdrEstByThr[[fdr_to_plot]], cNameParamToTest=cNameParamToTest,
-                        cMotifFg = motif_fg,
-                        lAdjustFdr=lAdjustFdr, nFdrPropForFilt = nFdrPropForFilt)
+    .DrawFdrEst(listFdrEstByThr[[fdr_to_plot]],
+      cNameParamToTest = cNameParamToTest,
+      cMotifFg = motif_fg,
+      lAdjustFdr = lAdjustFdr, nFdrPropForFilt = nFdrPropForFilt
+    )
   }
-  layout(matrix(c(1,1,1,1), nrow = 2, ncol = 2))
+  layout(matrix(c(1, 1, 1, 1), nrow = 2, ncol = 2))
 }
 
 #' DrawFdrEst Function (FDREst)
@@ -276,27 +314,38 @@ DrawFdrEstList <- function(listFdrEstByThr,
 #' instead of fdr column. Defaults to TRUE.
 #' @keywords internal
 .DrawFdrEst <- function(dFdr, cNameParamToTest, nFdrPropForFilt,
-                                cMotifFg=NULL, lAdjustFdr=TRUE){
+                        cMotifFg = NULL, lAdjustFdr = TRUE) {
   opar <- par()
-  par(mar=c(5.1, 5.1, 4.1, 2.1))
-  plot(x = dFdr$threshold,
-       y = if(lAdjustFdr){dFdr$fdr_cummin*100} else {dFdr$fdr*100},
-       ylim = c(0,100),
-       xlab = paste(cNameParamToTest, "threshold"),
-       ylab = "False Discovery Rate Estimation (%)",
-       main = ifelse(is.null(cMotifFg),
-                     paste("FDR estimation (Sample vs Control) ",
-                           ifelse(lAdjustFdr, "(adjusted FDR)", ""),
-                           sep=""),
-                     paste("FDR estimation (", cMotifFg, " vs non-", cMotifFg, " motifs) ",
-                           ifelse(lAdjustFdr, "(adjusted FDR)", ""),
-                           sep="")),
-       cex.main = 1, cex.lab = 1.25, cex.axis = 1.25)
+  par(mar = c(5.1, 5.1, 4.1, 2.1))
+  plot(
+    x = dFdr$threshold,
+    y = if (lAdjustFdr) {
+      dFdr$fdr_cummin * 100
+    } else {
+      dFdr$fdr * 100
+    },
+    ylim = c(0, 100),
+    xlab = paste(cNameParamToTest, "threshold"),
+    ylab = "False Discovery Rate Estimation (%)",
+    main = ifelse(is.null(cMotifFg),
+      paste("FDR estimation (Sample vs Control) ",
+        ifelse(lAdjustFdr, "(adjusted FDR)", ""),
+        sep = ""
+      ),
+      paste("FDR estimation (", cMotifFg, " vs non-", cMotifFg, " motifs) ",
+        ifelse(lAdjustFdr, "(adjusted FDR)", ""),
+        sep = ""
+      )
+    ),
+    cex.main = 1, cex.lab = 1.25, cex.axis = 1.25
+  )
 
-  .DrawFdrSegmentsXYAxis(dFdr = dFdr,
-                                     nFdrPropForFilt = nFdrPropForFilt)
+  .DrawFdrSegmentsXYAxis(
+    dFdr = dFdr,
+    nFdrPropForFilt = nFdrPropForFilt
+  )
 
-  par(mar=opar$mar)
+  par(mar = opar$mar)
 }
 
 #' DrawFdrSegmentsXYAxis Function (FDREst)
@@ -312,28 +361,38 @@ DrawFdrEstList <- function(listFdrEstByThr,
 #' below this number and represent it on the plot. Defaults to 0.05 (so fdr of 5\%).
 #' @keywords internal
 .DrawFdrSegmentsXYAxis <- function(dFdr,
-                                               nFdrPropForFilt){
-  fdr_limit <- dFdr[ head(which(dFdr$fdr_cummin < nFdrPropForFilt),1), ]
-  #draw full line if no fdr below threshold
+                                   nFdrPropForFilt) {
+  fdr_limit <- dFdr[head(which(dFdr$fdr_cummin < nFdrPropForFilt), 1), ]
+  # draw full line if no fdr below threshold
   if (nrow(fdr_limit) == 0) {
-    abline(h = nFdrPropForFilt*100, col="red", lwd=2)
-    text(x = 0, y = nFdrPropForFilt*100,
-         paste(nFdrPropForFilt*100, "%", sep=""),
-         col="red", cex=1.25, xpd=TRUE, adj = c(0.5,0))
+    abline(h = nFdrPropForFilt * 100, col = "red", lwd = 2)
+    text(
+      x = 0, y = nFdrPropForFilt * 100,
+      paste(nFdrPropForFilt * 100, "%", sep = ""),
+      col = "red", cex = 1.25, xpd = TRUE, adj = c(0.5, 0)
+    )
   } else {
-    segments(x0=fdr_limit$threshold, x1= fdr_limit$threshold,
-             y0=-max(dFdr$fdr_cummin*100), y1=fdr_limit$fdr_cummin*100,
-             col="red", lwd=2)
-    segments(x0=-max(dFdr$threshold), x1= fdr_limit$threshold,
-             y0=fdr_limit$fdr_cummin*100, y1=fdr_limit$fdr_cummin*100,
-             col="red", lwd=2)
+    segments(
+      x0 = fdr_limit$threshold, x1 = fdr_limit$threshold,
+      y0 = -max(dFdr$fdr_cummin * 100), y1 = fdr_limit$fdr_cummin * 100,
+      col = "red", lwd = 2
+    )
+    segments(
+      x0 = -max(dFdr$threshold), x1 = fdr_limit$threshold,
+      y0 = fdr_limit$fdr_cummin * 100, y1 = fdr_limit$fdr_cummin * 100,
+      col = "red", lwd = 2
+    )
 
-    text(x = fdr_limit$threshold, y = 0,
-         fdr_limit$threshold,
-         col="red", cex=1.25, xpd=TRUE, adj = c(0,0.5))
-    text(x = 0, y = fdr_limit$fdr_cummin*100,
-         paste(round(fdr_limit$fdr_cummin*100, digits = 2), "%", sep=""),
-         col="red", cex=1.25, xpd=TRUE, adj = c(0.5,0))
+    text(
+      x = fdr_limit$threshold, y = 0,
+      fdr_limit$threshold,
+      col = "red", cex = 1.25, xpd = TRUE, adj = c(0, 0.5)
+    )
+    text(
+      x = 0, y = fdr_limit$fdr_cummin * 100,
+      paste(round(fdr_limit$fdr_cummin * 100, digits = 2), "%", sep = ""),
+      col = "red", cex = 1.25, xpd = TRUE, adj = c(0.5, 0)
+    )
   }
 }
 
@@ -355,41 +414,55 @@ DrawFdrEstList <- function(listFdrEstByThr,
 #' @export
 #' @examples
 #' library(Biostrings)
-#' myGenome <- readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' myGenome <- readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #' myGrangesGenome <- GetGenomeGRanges(myGenome)
 #'
-#' #Preparing a gposPacBioCSV dataset with sequences
+#' # Preparing a gposPacBioCSV dataset with sequences
 #' myGposPacBioCSV <-
-#'   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                   "ptetraurelia.bases.sca171819.csv"),
-#'                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                        "score", "ipdRatio", "coverage"),
-#'                   lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                   cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGrangesBaseCSV <- as(myGposPacBioCSV[myGposPacBioCSV$base == "A"], "GRanges")
-#' myGrangesBaseCSVWithSeq <- GetGRangesWindowSeqandParam(grangesData = myGrangesBaseCSV,
-#'                                                        grangesGenome=myGrangesGenome,
-#'                                                        dnastringsetGenome = myGenome,
-#'                                                        nUpstreamBpToAdd=0,
-#'                                                        nDownstreamBpToAdd=1)
+#' myGrangesBaseCSVWithSeq <- GetGRangesWindowSeqandParam(
+#'   grangesData = myGrangesBaseCSV,
+#'   grangesGenome = myGrangesGenome,
+#'   dnastringsetGenome = myGenome,
+#'   nUpstreamBpToAdd = 0,
+#'   nDownstreamBpToAdd = 1
+#' )
 #'
-#' #FDR estimation by motif associated to modifications
+#' # FDR estimation by motif associated to modifications
 #' myFdr_score_per_motif_list <-
-#'   GetFdrEstListByThresh(grangesDataWithSeq = myGrangesBaseCSVWithSeq,
-#'                         cNameParamToTest = "score",
-#'                         nRoundDigits = 1,
-#'                         cModMotifsAsForeground=c("AG", "AT"))
+#'   GetFdrEstListByThresh(
+#'     grangesDataWithSeq = myGrangesBaseCSVWithSeq,
+#'     cNameParamToTest = "score",
+#'     nRoundDigits = 1,
+#'     cModMotifsAsForeground = c("AG", "AT")
+#'   )
 #'
-#' GetFdrBasedThreshLimit(listFdrEstByThr = myFdr_score_per_motif_list,
-#'                        nFdrPropForFilt = 0.05,
-#'                        lUseBestThrIfNoFdrThr=TRUE)
-GetFdrBasedThreshLimit <- function(listFdrEstByThr, nFdrPropForFilt=0.05,
-                                           lUseBestThrIfNoFdrThr=TRUE){
+#' GetFdrBasedThreshLimit(
+#'   listFdrEstByThr = myFdr_score_per_motif_list,
+#'   nFdrPropForFilt = 0.05,
+#'   lUseBestThrIfNoFdrThr = TRUE
+#' )
+GetFdrBasedThreshLimit <- function(listFdrEstByThr, nFdrPropForFilt = 0.05,
+                                   lUseBestThrIfNoFdrThr = TRUE) {
   fdr_limit <- lapply(1:length(listFdrEstByThr), function(i) {
-    limit <- listFdrEstByThr[[i]][head(which(listFdrEstByThr[[i]]$fdr_cummin < nFdrPropForFilt),1), "threshold"]
-    return( limit )
-  } )
+    limit <- listFdrEstByThr[[i]][head(which(listFdrEstByThr[[i]]$fdr_cummin < nFdrPropForFilt), 1), "threshold"]
+    return(limit)
+  })
   if (lUseBestThrIfNoFdrThr) {
     fdr_limit[isEmpty(fdr_limit)] <- max(unlist(fdr_limit[!isEmpty(fdr_limit)]))
   } else {

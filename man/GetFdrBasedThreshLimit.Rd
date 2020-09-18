@@ -30,34 +30,48 @@ Return a plot describing the false discovery rate (fdr) estimations by threshold
 }
 \examples{
 library(Biostrings)
-myGenome <- readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+myGenome <- readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 myGrangesGenome <- GetGenomeGRanges(myGenome)
 
-#Preparing a gposPacBioCSV dataset with sequences
+# Preparing a gposPacBioCSV dataset with sequences
 myGposPacBioCSV <-
-  ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-                                  "ptetraurelia.bases.sca171819.csv"),
-                  cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-                                                       "score", "ipdRatio", "coverage"),
-                  lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-                  cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioCSV(
+    cPacBioCSVPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.bases.sca171819.csv"
+    ),
+    cSelectColumnsToExtract = c(
+      "refName", "tpl", "strand", "base",
+      "score", "ipdRatio", "coverage"
+    ),
+    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+    cContigToBeAnalyzed = names(myGenome)
+  )
 myGrangesBaseCSV <- as(myGposPacBioCSV[myGposPacBioCSV$base == "A"], "GRanges")
-myGrangesBaseCSVWithSeq <- GetGRangesWindowSeqandParam(grangesData = myGrangesBaseCSV,
-                                                       grangesGenome=myGrangesGenome,
-                                                       dnastringsetGenome = myGenome,
-                                                       nUpstreamBpToAdd=0,
-                                                       nDownstreamBpToAdd=1)
+myGrangesBaseCSVWithSeq <- GetGRangesWindowSeqandParam(
+  grangesData = myGrangesBaseCSV,
+  grangesGenome = myGrangesGenome,
+  dnastringsetGenome = myGenome,
+  nUpstreamBpToAdd = 0,
+  nDownstreamBpToAdd = 1
+)
 
-#FDR estimation by motif associated to modifications
+# FDR estimation by motif associated to modifications
 myFdr_score_per_motif_list <-
-  GetFdrEstListByThresh(grangesDataWithSeq = myGrangesBaseCSVWithSeq,
-                        cNameParamToTest = "score",
-                        nRoundDigits = 1,
-                        cModMotifsAsForeground=c("AG", "AT"))
+  GetFdrEstListByThresh(
+    grangesDataWithSeq = myGrangesBaseCSVWithSeq,
+    cNameParamToTest = "score",
+    nRoundDigits = 1,
+    cModMotifsAsForeground = c("AG", "AT")
+  )
 
-GetFdrBasedThreshLimit(listFdrEstByThr = myFdr_score_per_motif_list,
-                       nFdrPropForFilt = 0.05,
-                       lUseBestThrIfNoFdrThr=TRUE)
+GetFdrBasedThreshLimit(
+  listFdrEstByThr = myFdr_score_per_motif_list,
+  nFdrPropForFilt = 0.05,
+  lUseBestThrIfNoFdrThr = TRUE
+)
 }
 \keyword{GetFdrBasedThreshLimit}

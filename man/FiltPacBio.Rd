@@ -112,38 +112,54 @@ A list with filtered gposPacBioCSV and filtered gposPacBioGFF.
 Filter out data from contigs or Modifications that do not reach criterias of selection.
 }
 \examples{
-#loading genome
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# loading genome
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 myGrangesGenome <- GetGenomeGRanges(myGenome)
 
-#Preparing a gposPacBioCSV and a grangesPacBioGFF datasets
+# Preparing a gposPacBioCSV and a grangesPacBioGFF datasets
 myGrangesPacBioGFF <-
-   ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                   "ptetraurelia.modifications.sca171819.gff"),
-                   cNameModToExtract = "m6A",
-                   cModNameInOutput = "6mA",
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioGFF(
+    cPacBioGFFPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.modifications.sca171819.gff"
+    ),
+    cNameModToExtract = "m6A",
+    cModNameInOutput = "6mA",
+    cContigToBeAnalyzed = names(myGenome)
+  )
 myGposPacBioCSV <-
-   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.bases.sca171819.csv"),
-                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-                                               "score", "ipdRatio", "coverage"),
-                   lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioCSV(
+    cPacBioCSVPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.bases.sca171819.csv"
+    ),
+    cSelectColumnsToExtract = c(
+      "refName", "tpl", "strand", "base",
+      "score", "ipdRatio", "coverage"
+    ),
+    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+    cContigToBeAnalyzed = names(myGenome)
+  )
 
-#Preparing ParamByStrand Lists
+# Preparing ParamByStrand Lists
 myPct_seq_csv <- GetSeqPctByContig(myGposPacBioCSV, grangesGenome = myGrangesGenome)
-myMean_cov_list <- GetMeanParamByContig(grangesData = myGposPacBioCSV,
-                                        dnastringsetGenome = myGenome,
-                                        cParamName = "coverage")
+myMean_cov_list <- GetMeanParamByContig(
+  grangesData = myGposPacBioCSV,
+  dnastringsetGenome = myGenome,
+  cParamName = "coverage"
+)
 
-#Filtering
-myFiltered_data <- FiltPacBio(grangesPacBioGFF=myGrangesPacBioGFF,
-                              gposPacBioCSV=myGposPacBioCSV, cContigToBeRemoved = NULL,
-                              dnastringsetGenome = myGenome, nContigMinSize = 1000,
-                              listPctSeqByContig = myPct_seq_csv, nContigMinPctOfSeq = 95,
-                              listMeanCovByContig = myMean_cov_list, nContigMinCoverage = 20)
+# Filtering
+myFiltered_data <- FiltPacBio(
+  grangesPacBioGFF = myGrangesPacBioGFF,
+  gposPacBioCSV = myGposPacBioCSV, cContigToBeRemoved = NULL,
+  dnastringsetGenome = myGenome, nContigMinSize = 1000,
+  listPctSeqByContig = myPct_seq_csv, nContigMinPctOfSeq = 95,
+  listMeanCovByContig = myMean_cov_list, nContigMinCoverage = 20
+)
 myFiltered_data$csv
 myFiltered_data$gff
 }

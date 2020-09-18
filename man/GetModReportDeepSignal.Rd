@@ -34,35 +34,41 @@ Return a report with global characteristics of DNA modifications (Mod) distribut
 (adapted to data from DeepSignal software)
 }
 \examples{
-#preparing genome (simulated)
+# preparing genome (simulated)
 myGenome <- Biostrings::DNAStringSet(paste0(rep("ATCG", 100000), collapse = ""))
 names(myGenome) <- "NC_000001.11"
 myGrangesGenome <- GetGenomeGRanges(myGenome)
 
-#Loading Nanopore data
+# Loading Nanopore data
 myDeepSignalModPath <- system.file(
-  package="DNAModAnnot", "extdata",
-  "FAB39088-288418386-Chr1.CpG.call_mods.frequency.tsv")
-mygposDeepSignalModBase <- ImportDeepSignalModFrequency(cDeepSignalModPath=myDeepSignalModPath,
-                                                        lSortGPos=TRUE,
-                                                        cContigToBeAnalyzed = "all")
+  package = "DNAModAnnot", "extdata",
+  "FAB39088-288418386-Chr1.CpG.call_mods.frequency.tsv"
+)
+mygposDeepSignalModBase <- ImportDeepSignalModFrequency(
+  cDeepSignalModPath = myDeepSignalModPath,
+  lSortGPos = TRUE,
+  cContigToBeAnalyzed = "all"
+)
 
-#Filtering
-mygposDeepSignalMod <- FiltDeepSignal(gposDeepSignalModBase = mygposDeepSignalModBase,
-                                      cParamNameForFilter = "frac",
-                                      lFiltParam = TRUE,
-                                      nFiltParamLoBoundaries = 0,
-                                      nFiltParamUpBoundaries = 1,
-                                      cFiltParamBoundariesToInclude = "upperOnly")$Mod
+# Filtering
+mygposDeepSignalMod <- FiltDeepSignal(
+  gposDeepSignalModBase = mygposDeepSignalModBase,
+  cParamNameForFilter = "frac",
+  lFiltParam = TRUE,
+  nFiltParamLoBoundaries = 0,
+  nFiltParamUpBoundaries = 1,
+  cFiltParamBoundariesToInclude = "upperOnly"
+)$Mod
 
-#Mod report
+# Mod report
 myReport_Mod <- GetModReportDeepSignal(
   dnastringsetGenome = myGenome,
   grangesGenome = myGrangesGenome,
   gposDeepSignalMod = as(mygposDeepSignalMod, "GRanges"),
   gposDeepSignalModBase = as(mygposDeepSignalModBase, "GRanges"),
   cOrgAssemblyName = "Test_function",
-  cBaseLetterForMod = "C", cModNameInOutput = "5mC")
+  cBaseLetterForMod = "C", cModNameInOutput = "5mC"
+)
 myReport_Mod
 }
 \keyword{GetModReportDeepSignal}

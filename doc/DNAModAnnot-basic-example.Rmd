@@ -36,15 +36,16 @@ This documentation provides a guided use of this package using PacBio input data
 This package is available via GitHub ( [https://github.com/AlexisHardy/DNAModAnnot](https://github.com/AlexisHardy/DNAModAnnot) ) and can be installed using the following code:
 
 ```{r eval=FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
 
-BiocManager::install(c('Biostrings', 'BSgenome', 'Gviz', 'Logolas'))
+BiocManager::install(c("Biostrings", "BSgenome", "Gviz", "Logolas"))
 
 # Installation from tar.gz file
 setwd("path/to/package/file/")
 
-install.packages("DNAModAnnot_0.0.0.9014.tar.gz", repos = NULL, type = 'source')
+install.packages("DNAModAnnot_0.0.0.9015.tar.gz", repos = NULL, type = "source")
 ```
 
 You should then be able to load the package into your R session with:
@@ -247,9 +248,9 @@ Again, you can draw a barplot by strand using `DrawBarplotBothStrands` function 
 ```{r barplotfig3, fig.width = 7, fig.asp = .62, fig.align = "center"}
 # Modif ratio by scaffold and by strand
 contig_modification_ratio <- GetModRatioByContig(PacBioGFF_granges_filt1,
-                                                 PacBioCSV_gpos_filt1[PacBioCSV_gpos_filt1$base == "A"],
-                                                 dnastringsetGenome = ptetraurelia_genome,
-                                                 cBaseLetterForMod = "A"
+  PacBioCSV_gpos_filt1[PacBioCSV_gpos_filt1$base == "A"],
+  dnastringsetGenome = ptetraurelia_genome,
+  cBaseLetterForMod = "A"
 )
 DrawBarplotBothStrands(
   nParamByContigForward = contig_modification_ratio$f_strand$Mod_ratio,
@@ -295,11 +296,11 @@ The `FiltPacBio` function can be used to filter PacBioGFF GRanges only depending
 # Second filter: fraction
 PacBioGFF_granges_filt2 <- FiltPacBio(
   grangesPacBioGFF = PacBioGFF_granges_filt1,
-  cParamNameForFilter = "frac", 
+  cParamNameForFilter = "frac",
   lFiltParam = TRUE,
-  nFiltParamLoBoundaries = 0.05, nFiltParamUpBoundaries = 1, 
+  nFiltParamLoBoundaries = 0.05, nFiltParamUpBoundaries = 1,
   cFiltParamBoundariesToInclude = "upperOnly"
-)$gff 
+)$gff
 ```
 
 
@@ -612,15 +613,21 @@ ptet51GenesBam <- system.file(package = "DNAModAnnot", "extdata", "ptet51Genes.b
 ```
 ```{r eval=FALSE}
 # #Gviz file making for vignette (not run)
-ExportFilesForGViz(cFileNames = c(ipdRatio6mABigwig,
-                                  ptet51GenesBam), 
-                   listObjects = list(PacBioGFF_granges_filtAT,
-                                             annotations_range[annotations_range$type == "gene"]),
-                   cFileFormats = c("bw", "bam"),  
-                   lBigwigParametersByStrand = c(TRUE, NA),
-                   cBigwigParameters = c("ipdRatio",NA), 
-                   cBamXaParameters = c(NA, "Name"),
-                   dnastringsetGenome = ptetraurelia_genome)
+ExportFilesForGViz(
+  cFileNames = c(
+    ipdRatio6mABigwig,
+    ptet51GenesBam
+  ),
+  listObjects = list(
+    PacBioGFF_granges_filtAT,
+    annotations_range[annotations_range$type == "gene"]
+  ),
+  cFileFormats = c("bw", "bam"),
+  lBigwigParametersByStrand = c(TRUE, NA),
+  cBigwigParameters = c("ipdRatio", NA),
+  cBamXaParameters = c(NA, "Name"),
+  dnastringsetGenome = ptetraurelia_genome
+)
 ```
 
 To plot an Ideogram, you can use the `IdeogramTrack` function from *Gviz* package. But if you do not have any information on cytobands, you can use the `AdaptedIdeogramTrackWithoutBandsData` function to plot an empty representation of chromosome.
@@ -630,39 +637,42 @@ To plot an Ideogram, you can use the `IdeogramTrack` function from *Gviz* packag
 ```{r}
 cContigToViz <- unique(GenomicRanges::seqnames(ptetraurelia_genome_range))
 
-#Generating Ideogram TRACK--------
-options(ucscChromosomeNames=FALSE)
-trackIdeogram <- AdaptedIdeogramTrackWithoutBandsData(grangesGenome = ptetraurelia_genome_range,
-                                                      cContigToViz = cContigToViz,
-                                                      cOrgAssemblyName = "ptetraurelia_mac_51")
+# Generating Ideogram TRACK--------
+options(ucscChromosomeNames = FALSE)
+trackIdeogram <- AdaptedIdeogramTrackWithoutBandsData(
+  grangesGenome = ptetraurelia_genome_range,
+  cContigToViz = cContigToViz,
+  cOrgAssemblyName = "ptetraurelia_mac_51"
+)
 ```
 
 When making tracks using files generated with the `ExportFilesForGViz` function, you must add `stream = TRUE` to allow streaming when displaying tracks.
 
 ```{r}
-#Generating classic Gviz tracks
+# Generating classic Gviz tracks
 
-#GenomeAxis TRACK------
-trackGenomeAxis <- Gviz::GenomeAxisTrack(cex=1)
+# GenomeAxis TRACK------
+trackGenomeAxis <- Gviz::GenomeAxisTrack(cex = 1)
 
-#Sequence TRACK--------
-trackSequence <- Gviz::SequenceTrack(ptetraurelia_genome_fa, 
-                                     chromosome=cContigToViz, 
-                                     add53=TRUE,
-                                     complement=FALSE, cex=0.8, stream = TRUE)
+# Sequence TRACK--------
+trackSequence <- Gviz::SequenceTrack(ptetraurelia_genome_fa,
+  chromosome = cContigToViz,
+  add53 = TRUE,
+  complement = FALSE, cex = 0.8, stream = TRUE
+)
 
-#DATATRACK--------
-trackData6mATipdRatio <- Gviz::DataTrack(ipdRatio6mABigwig, 
-                                         stream = TRUE, name = "6mAT\nipdRatio", type="histogram", 
-                                         col.histogram=c("red"), fill = "red",
-                                         background.title = "darkred", col = NULL
+# DATATRACK--------
+trackData6mATipdRatio <- Gviz::DataTrack(ipdRatio6mABigwig,
+  stream = TRUE, name = "6mAT\nipdRatio", type = "histogram",
+  col.histogram = c("red"), fill = "red",
+  background.title = "darkred", col = NULL
 )
 
 trackDataNuclCoverage <- Gviz::DataTrack(bamfile_path,
-                                         stream = TRUE, name = "Nucleosome\ncoverage\n(MNase-seq)", 
-                                         type="histogram", 
-                                         col.histogram=c("blue"), fill="blue",
-                                         background.title = "darkblue", col = NULL
+  stream = TRUE, name = "Nucleosome\ncoverage\n(MNase-seq)",
+  type = "histogram",
+  col.histogram = c("blue"), fill = "blue",
+  background.title = "darkblue", col = NULL
 )
 ```
 
@@ -670,23 +680,23 @@ trackDataNuclCoverage <- Gviz::DataTrack(bamfile_path,
 To display genomic annotations (in adapted bam file; see `ExportFilesForGViz` function documentation) using streaming, you must use the `ImportBamExtendedAnnotationTrack` function as the import function (via `stream` and `importFunction` options while making the annotation track).
 
 ```{r}
-#Generating Annotation TRACK with streaming--------
-trackAnnotation <- Gviz::AnnotationTrack(ptet51GenesBam, 
-                                   name = "Gene", stacking = "squish", 
-                                   stream = TRUE, importFunction = ImportBamExtendedAnnotationTrack,
-                                   group="tag", groupAnnotation = "tag", 
-                                   just.group="below",
-                                   fontcolor.group = "black", fontsize.group=18,
-                                   fill="lightblue", shape="fixedArrow", 
-                                   arrowHeadWidth = 50, lwd = 3,
-                                   background.title = "darkblue"
+# Generating Annotation TRACK with streaming--------
+trackAnnotation <- Gviz::AnnotationTrack(ptet51GenesBam,
+  name = "Gene", stacking = "squish",
+  stream = TRUE, importFunction = ImportBamExtendedAnnotationTrack,
+  group = "tag", groupAnnotation = "tag",
+  just.group = "below",
+  fontcolor.group = "black", fontsize.group = 18,
+  fill = "lightblue", shape = "fixedArrow",
+  arrowHeadWidth = 50, lwd = 3,
+  background.title = "darkblue"
 )
 ```
 
 In order to allow the names of the genomic features to be displayed, the "mapping" sub-list of the generated annotation track must be completed with the new "id" and "group" values.
 
 ```{r}
-trackAnnotation@mapping <- list(id="tag", group="tag") 
+trackAnnotation@mapping <- list(id = "tag", group = "tag")
 ```
 
 
@@ -694,12 +704,16 @@ trackAnnotation@mapping <- list(id="tag", group="tag")
 Once the tracks are all generated, you can use the `plotTracks` function from *Gviz* package to display them on a chosen location (defined by the `chromosome`,`from` and `to` options).
 
 ```{r annlocalfig, fig.width=7, fig.height = 8, warning=FALSE, results="hide"}
-#Plotting Tracks--------
-Gviz::plotTracks(trackList = list(trackIdeogram, trackGenomeAxis, 
-                                  trackData6mATipdRatio, trackSequence, 
-                                  trackDataNuclCoverage, trackAnnotation),
-                 chromosome = "scaffold51_17", 
-                 from = 361000, to = 365000)
+# Plotting Tracks--------
+Gviz::plotTracks(
+  trackList = list(
+    trackIdeogram, trackGenomeAxis,
+    trackData6mATipdRatio, trackSequence,
+    trackDataNuclCoverage, trackAnnotation
+  ),
+  chromosome = "scaffold51_17",
+  from = 361000, to = 365000
+)
 ```
 <div class = "blue">
 *Local visualisation of 6mAT sites distribution along their ipdRatio and MNase-seq coverage.*
@@ -710,4 +724,3 @@ Here, clusters of 6mAT signal are more frequently enriched between peaks of MNas
 ```{r}
 sessionInfo()
 ```
-

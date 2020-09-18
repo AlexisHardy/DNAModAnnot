@@ -31,25 +31,33 @@ those new ranges will be removed. New windows with gaps are also removed. Defaul
 Return the GRanges object provided with the sequence associated to each position (and can also retrieve the sequence around each position).
 }
 \examples{
-#loading genome
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# loading genome
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 myGrangesGenome <- GetGenomeGRanges(myGenome)
 
-#Preparing a grangesPacBioGFF datasets
+# Preparing a grangesPacBioGFF datasets
 myGrangesPacBioGFF <-
-   ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.modifications.sca171819.gff"),
-                   cNameModToExtract = "m6A",
-                   cModNameInOutput = "6mA",
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioGFF(
+    cPacBioGFFPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.modifications.sca171819.gff"
+    ),
+    cNameModToExtract = "m6A",
+    cModNameInOutput = "6mA",
+    cContigToBeAnalyzed = names(myGenome)
+  )
 
-#Retrieve GRanges with sequence
-myPositions_Mod_Granges_wSeq <- GetGRangesWindowSeqandParam(grangesData=myGrangesPacBioGFF,
-                                                            grangesGenome = myGrangesGenome,
-                                                            dnastringsetGenome = myGenome,
-                                                            nUpstreamBpToAdd = 5,
-                                                            nDownstreamBpToAdd = 5)
+# Retrieve GRanges with sequence
+myPositions_Mod_Granges_wSeq <- GetGRangesWindowSeqandParam(
+  grangesData = myGrangesPacBioGFF,
+  grangesGenome = myGrangesGenome,
+  dnastringsetGenome = myGenome,
+  nUpstreamBpToAdd = 5,
+  nDownstreamBpToAdd = 5
+)
 myPositions_Mod_Granges_wSeq
 }
 \keyword{GetGRangesWindowSeqandParam}

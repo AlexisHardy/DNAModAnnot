@@ -30,12 +30,16 @@ DrawContigCumulLength(
 Return a line-plot describing the cumulative length of contigs (ordered from largest to smallest contig).
 }
 \examples{
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 
 myContig_cumul_len_t <- GetContigCumulLength(dnastringsetGenome = myGenome)
 
-DrawContigCumulLength(nContigCumsumLength = myContig_cumul_len_t$cumsum_Mbp_length,
-                             cOrgAssemblyName="ptetraurelia_mac_51")
+DrawContigCumulLength(
+  nContigCumsumLength = myContig_cumul_len_t$cumsum_Mbp_length,
+  cOrgAssemblyName = "ptetraurelia_mac_51"
+)
 }
 \keyword{DrawContigCumulLength}

@@ -30,22 +30,31 @@ boxplot if lTrimmingOutliers is TRUE). Defaults to NULL.}
 Return a line-plot describing the cumulative length of contigs (ordered from largest to smallest contig).
 }
 \examples{
-#loading genome
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# loading genome
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 
-#Preparing a gposPacBioCSV dataset
+# Preparing a gposPacBioCSV dataset
 myGposPacBioCSV <-
-   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.bases.sca171819.csv"),
-                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-                                               "score", "ipdRatio", "coverage"),
-                   lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioCSV(
+    cPacBioCSVPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.bases.sca171819.csv"
+    ),
+    cSelectColumnsToExtract = c(
+      "refName", "tpl", "strand", "base",
+      "score", "ipdRatio", "coverage"
+    ),
+    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+    cContigToBeAnalyzed = names(myGenome)
+  )
 
 DrawDistriHistBox(head(myGposPacBioCSV$coverage, 100000),
-                         cGraphName = "Coverage distribution of some bases sequenced",
-                         cParamName = "Coverage",
-                         lTrimOutliers = TRUE )
+  cGraphName = "Coverage distribution of some bases sequenced",
+  cParamName = "Coverage",
+  lTrimOutliers = TRUE
+)
 }
 \keyword{DrawDistriHistBox}

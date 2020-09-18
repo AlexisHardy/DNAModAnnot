@@ -34,36 +34,50 @@ Return a report with global characteristics of DNA modifications (Mod) distribut
 (adapted to PacBio data)
 }
 \examples{
-#loading genome
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# loading genome
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 myGrangesGenome <- GetGenomeGRanges(myGenome)
 
-#Preparing a grangesPacBioGFF datasets
+# Preparing a grangesPacBioGFF datasets
 myGrangesPacBioGFF <-
-   ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.modifications.sca171819.gff"),
-                   cNameModToExtract = "m6A",
-                   cModNameInOutput = "6mA",
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioGFF(
+    cPacBioGFFPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.modifications.sca171819.gff"
+    ),
+    cNameModToExtract = "m6A",
+    cModNameInOutput = "6mA",
+    cContigToBeAnalyzed = names(myGenome)
+  )
 
 myGposPacBioCSV <-
-   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.bases.sca171819.csv"),
-                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-                                               "score", "ipdRatio", "coverage"),
-                   lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioCSV(
+    cPacBioCSVPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.bases.sca171819.csv"
+    ),
+    cSelectColumnsToExtract = c(
+      "refName", "tpl", "strand", "base",
+      "score", "ipdRatio", "coverage"
+    ),
+    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+    cContigToBeAnalyzed = names(myGenome)
+  )
 myGposPacBioCSV <- myGposPacBioCSV[myGposPacBioCSV$base == "A"]
 
-#Mod report
-myReport_Mod <- GetModReportPacBio(grangesGenome = myGrangesGenome,
-                                 dnastringsetGenome = myGenome,
-                                 grangesPacBioGFF = myGrangesPacBioGFF,
-                                 gposPacBioCSVBase = myGposPacBioCSV,
-                                 cOrgAssemblyName="ptetraurelia_mac_51",
-                                 cBaseLetterForMod = "A",
-                                 cModNameInOutput = "6mA")
+# Mod report
+myReport_Mod <- GetModReportPacBio(
+  grangesGenome = myGrangesGenome,
+  dnastringsetGenome = myGenome,
+  grangesPacBioGFF = myGrangesPacBioGFF,
+  gposPacBioCSVBase = myGposPacBioCSV,
+  cOrgAssemblyName = "ptetraurelia_mac_51",
+  cBaseLetterForMod = "A",
+  cModNameInOutput = "6mA"
+)
 myReport_Mod
 }
 \keyword{GetModReportPacBio}

@@ -57,22 +57,30 @@ Except for gff3 format, all available format allows streaming while making and d
 Multiple objects can be exported at the same time. All arguments (except "dnastringsetGenome" argument) must have the same length.
 }
 \examples{
-#loading genome
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# loading genome
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 
-#Preparing a grangesPacBioCSV dataset
+# Preparing a grangesPacBioCSV dataset
 myGposPacBioCSV <-
-   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.bases.sca171819.csv"),
-                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-                                               "score", "ipdRatio", "coverage"),
-                   lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioCSV(
+    cPacBioCSVPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.bases.sca171819.csv"
+    ),
+    cSelectColumnsToExtract = c(
+      "refName", "tpl", "strand", "base",
+      "score", "ipdRatio", "coverage"
+    ),
+    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+    cContigToBeAnalyzed = names(myGenome)
+  )
 
-##NOT RUN!
-##Export files for Gviz
-#ExportFilesForGViz(dnastringsetGenome = myGenome,
+## NOT RUN!
+## Export files for Gviz
+# ExportFilesForGViz(dnastringsetGenome = myGenome,
 #                   cFileNames = c("ipdRatio_for_each_A.bw",
 #                                  "score_for_all_bases.bw",
 #                                  "newFastaOnlyscaffold51_17.fa"),
@@ -84,14 +92,16 @@ myGposPacBioCSV <-
 #                   lBigwigParametersByStrand = c(TRUE, TRUE, NA),
 #                   cBamXaParameters = c(NA, NA, NA))
 
-#loading annotation
+# loading annotation
 library(rtracklayer)
-myAnnotations <- readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-                                          "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
+myAnnotations <- readGFFAsGRanges(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+))
 
-##NOT RUN!
-##Export files for Gviz
-#ExportFilesForGViz(dnastringsetGenome = myGenome,
+## NOT RUN!
+## Export files for Gviz
+# ExportFilesForGViz(dnastringsetGenome = myGenome,
 #                   cFileNames = c("genes.bam"),
 #                   listGRangesObjects = list(myAnnotations[myAnnotations$type == "gene"]),
 #                   cFileFormats = c("bam"),

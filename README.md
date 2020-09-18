@@ -11,7 +11,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install(c('Biostrings', 'BSgenome', 'Gviz', 'Logolas'))`
 
 setwd("path/to/package/file/")
-install.packages("DNAModAnnot_0.0.0.9014.tar.gz", repos = NULL, type = 'source')
+install.packages("DNAModAnnot_0.0.0.9015.tar.gz", repos = NULL, type = 'source')
 ```
 
 You should then be able to load the package into your R session with:

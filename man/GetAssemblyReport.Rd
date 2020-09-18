@@ -17,11 +17,15 @@ GetAssemblyReport(dnastringsetGenome, cOrgAssemblyName)
 Return a report with global characteristics of genome assembly.
 }
 \examples{
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 
-myReport <- GetAssemblyReport(dnastringsetGenome = myGenome,
-                                  cOrgAssemblyName = "ptetraurelia_mac_51")
+myReport <- GetAssemblyReport(
+  dnastringsetGenome = myGenome,
+  cOrgAssemblyName = "ptetraurelia_mac_51"
+)
 
 myReport
 }

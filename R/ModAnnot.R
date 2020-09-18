@@ -59,49 +59,65 @@
 #' @importFrom S4Vectors countQueryHits
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
-#' #loading annotation
+#' # loading annotation
 #' library(rtracklayer)
-#' myAnnotations <- readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-#'                                           "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
+#' myAnnotations <- readGFFAsGRanges(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+#' ))
 #'
-#' #Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
+#' # Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
 #' myGrangesPacBioGFF <-
-#'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.modifications.sca171819.gff"),
-#'                    cNameModToExtract = "m6A",
-#'                    cModNameInOutput = "6mA",
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #'
-#' #Retrieve annotations with "Mod" and "Base" counts (and counts per kbp)
-#' myAnn_ModBase_counts <- GetModBaseCountsByFeature(grangesAnnotations=myAnnotations,
-#'                                                       grangesModPos=myGrangesPacBioGFF,
-#'                                                       gposModTargetBasePos=myGposPacBioCSV)
+#' # Retrieve annotations with "Mod" and "Base" counts (and counts per kbp)
+#' myAnn_ModBase_counts <- GetModBaseCountsByFeature(
+#'   grangesAnnotations = myAnnotations,
+#'   grangesModPos = myGrangesPacBioGFF,
+#'   gposModTargetBasePos = myGposPacBioCSV
+#' )
 #' myAnn_ModBase_counts
 GetModBaseCountsByFeature <- function(grangesAnnotations,
-                                          grangesModPos,
-                                          gposModTargetBasePos,
-                                          lIgnoreStrand = FALSE){
+                                      grangesModPos,
+                                      gposModTargetBasePos,
+                                      lIgnoreStrand = FALSE) {
   gr_a <- grangesAnnotations
   features_count <- as.data.frame(table(gr_a$type))
-  features_count <- features_count[order(features_count$Var1, decreasing = FALSE),]
+  features_count <- features_count[order(features_count$Var1, decreasing = FALSE), ]
   gr_b <- grangesModPos
 
   hits <- findOverlaps(gr_a, gr_b, ignore.strand = lIgnoreStrand)
   ans <- gr_a
 
   ans$Modcount <- countQueryHits(hits)
-  ans$Modcount_perkbp <- 1000*ans$Modcount/width(ans)
+  ans$Modcount_perkbp <- 1000 * ans$Modcount / width(ans)
 
   gr_a <- ans
   gr_b <- gposModTargetBasePos
@@ -109,7 +125,7 @@ GetModBaseCountsByFeature <- function(grangesAnnotations,
   hits <- findOverlaps(gr_a, gr_b, ignore.strand = lIgnoreStrand)
   ans <- gr_a
   ans$Basecount <- countQueryHits(hits)
-  ans$Basecount_perkbp <- 1000*ans$Basecount/width(ans)
+  ans$Basecount_perkbp <- 1000 * ans$Basecount / width(ans)
 
   return(ans)
 }
@@ -137,96 +153,121 @@ GetModBaseCountsByFeature <- function(grangesAnnotations,
 #' @keywords DrawModBasePropByFeature
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #' myGrangesGenome <- GetGenomeGRanges(myGenome)
 #'
-#' #loading annotation
+#' # loading annotation
 #' library(rtracklayer)
-#' myAnnotations <- readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-#'                                           "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
-#' myAnnotations <- PredictMissingAnnotation(grangesAnnotations = myAnnotations,
-#'                                           grangesGenome = myGrangesGenome,
-#'                                           cFeaturesColName = "type",
-#'                                           cGeneCategories = c("gene"),
-#'                                           lAddIntronRangesUsingExon = TRUE)
+#' myAnnotations <- readGFFAsGRanges(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+#' ))
+#' myAnnotations <- PredictMissingAnnotation(
+#'   grangesAnnotations = myAnnotations,
+#'   grangesGenome = myGrangesGenome,
+#'   cFeaturesColName = "type",
+#'   cGeneCategories = c("gene"),
+#'   lAddIntronRangesUsingExon = TRUE
+#' )
 #'
-#' #Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
+#' # Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
 #' myGrangesPacBioGFF <-
-#'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.modifications.sca171819.gff"),
-#'                    cNameModToExtract = "m6A",
-#'                    cModNameInOutput = "6mA",
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <- myGposPacBioCSV[myGposPacBioCSV$base == "A"]
 #'
-#' #Retrieve annotations with "Mod" and "Base" counts (and counts per kbp)
-#' myAnn_ModBase_counts <- GetModBaseCountsByFeature(grangesAnnotations=myAnnotations,
-#'                                                   grangesModPos=myGrangesPacBioGFF,
-#'                                                   gposModTargetBasePos=myGposPacBioCSV)
+#' # Retrieve annotations with "Mod" and "Base" counts (and counts per kbp)
+#' myAnn_ModBase_counts <- GetModBaseCountsByFeature(
+#'   grangesAnnotations = myAnnotations,
+#'   grangesModPos = myGrangesPacBioGFF,
+#'   gposModTargetBasePos = myGposPacBioCSV
+#' )
 #'
-#' DrawModBasePropByFeature(grangesAnnotationsWithCounts=myAnn_ModBase_counts,
-#'                                 cFeaturesToCompare=c("gene", "intergenic"),
-#'                                 lUseCountsPerkbp=TRUE,
-#'                                 cBaseMotif="A",
-#'                                 cModMotif="6mA")
+#' DrawModBasePropByFeature(
+#'   grangesAnnotationsWithCounts = myAnn_ModBase_counts,
+#'   cFeaturesToCompare = c("gene", "intergenic"),
+#'   lUseCountsPerkbp = TRUE,
+#'   cBaseMotif = "A",
+#'   cModMotif = "6mA"
+#' )
 DrawModBasePropByFeature <- function(grangesAnnotationsWithCounts,
-                                            cFeaturesToCompare = c("gene", "intergenic"),
-                                            lUseCountsPerkbp = FALSE,
-                                            cBaseMotif,
-                                            cModMotif) {
+                                     cFeaturesToCompare = c("gene", "intergenic"),
+                                     lUseCountsPerkbp = FALSE,
+                                     cBaseMotif,
+                                     cModMotif) {
   opar <- par()
 
   dataToPlot <- subset(grangesAnnotationsWithCounts, type %in% cFeaturesToCompare)
   dataToPlot$type <- as.factor(as.character(dataToPlot$type))
 
-  if(lUseCountsPerkbp){
-    dataToPlot$Modprop  <- 100 * dataToPlot$Modcount_perkbp  / sum(dataToPlot$Modcount_perkbp)
+  if (lUseCountsPerkbp) {
+    dataToPlot$Modprop <- 100 * dataToPlot$Modcount_perkbp / sum(dataToPlot$Modcount_perkbp)
     dataToPlot$Baseprop <- 100 * dataToPlot$Basecount_perkbp / sum(dataToPlot$Basecount_perkbp)
   } else {
-    dataToPlot$Modprop  <- 100 * dataToPlot$Modcount  / sum(dataToPlot$Modcount)
+    dataToPlot$Modprop <- 100 * dataToPlot$Modcount / sum(dataToPlot$Modcount)
     dataToPlot$Baseprop <- 100 * dataToPlot$Basecount / sum(dataToPlot$Basecount)
   }
 
-  #Barplot
-  dataToPlot2 <- aggregate(dataToPlot$Modprop, by=list(dataToPlot$type), sum)
-  dataToPlot3 <- aggregate(dataToPlot$Baseprop, by=list(dataToPlot$type), sum)
-  dataToPlot4 <- matrix(c(dataToPlot2$x, dataToPlot3$x), nrow=2, byrow = TRUE )
+  # Barplot
+  dataToPlot2 <- aggregate(dataToPlot$Modprop, by = list(dataToPlot$type), sum)
+  dataToPlot3 <- aggregate(dataToPlot$Baseprop, by = list(dataToPlot$type), sum)
+  dataToPlot4 <- matrix(c(dataToPlot2$x, dataToPlot3$x), nrow = 2, byrow = TRUE)
   rownames(dataToPlot4) <- c(cModMotif, cBaseMotif)
   colnames(dataToPlot4) <- levels(dataToPlot$type)
 
-  layout(mat=matrix(1:2, ncol = 2), widths = c(8,2))
-  par(mar=c(5.1,5.1,3.1,0))
-  barplot(height = dataToPlot4, col=c("red3", "grey"),
-          beside = TRUE,
-          cex.names = 1.5, cex.axis = 1.5, cex.lab=1.5,
-          ylab = "Cumulated proportion (%)",
-          # main = paste0(cModMotif," (or ", cBaseMotif,
-          #               ") proportion between displayed features (% of counts",
-          #               ifelse(lUseCountsPerkbp, " per kbp)",")")),
-          ylim=c(0,100))
+  layout(mat = matrix(1:2, ncol = 2), widths = c(8, 2))
+  par(mar = c(5.1, 5.1, 3.1, 0))
+  barplot(
+    height = dataToPlot4, col = c("red3", "grey"),
+    beside = TRUE,
+    cex.names = 1.5, cex.axis = 1.5, cex.lab = 1.5,
+    ylab = "Cumulated proportion (%)",
+    # main = paste0(cModMotif," (or ", cBaseMotif,
+    #               ") proportion between displayed features (% of counts",
+    #               ifelse(lUseCountsPerkbp, " per kbp)",")")),
+    ylim = c(0, 100)
+  )
 
-  par( mar=c(0,0,0,0))
-  plot(1:10, col="transparent", bty="n", xaxt="n", yaxt="n", xlab="", ylab="")
+  par(mar = c(0, 0, 0, 0))
+  plot(1:10, col = "transparent", bty = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "")
   legend("left",
-         legend = paste0(c(cModMotif, cBaseMotif),"%"),
-         col=c("red3","grey"),
-         pch=15, cex=1.25,
-         bty="n")
+    legend = paste0(c(cModMotif, cBaseMotif), "%"),
+    col = c("red3", "grey"),
+    pch = 15, cex = 1.25,
+    bty = "n"
+  )
 
-  par(mar=opar$mar)
-  layout(mat=matrix(1:1, ncol = 2), widths = c(1,1))
-  title(main = paste0(cModMotif," (or ", cBaseMotif,
-                      ") proportion between displayed features (% of counts",
-                      ifelse(lUseCountsPerkbp, " per kbp)",")")),)
+  par(mar = opar$mar)
+  layout(mat = matrix(1:1, ncol = 2), widths = c(1, 1))
+  title(main = paste0(
+    cModMotif, " (or ", cBaseMotif,
+    ") proportion between displayed features (% of counts",
+    ifelse(lUseCountsPerkbp, " per kbp)", ")")
+  ), )
 }
 
 #' GetModBaseCountsCategories Function (ModAnnot)
@@ -244,51 +285,60 @@ DrawModBasePropByFeature <- function(grangesAnnotationsWithCounts,
 #' }
 #' The Genomic features categories must be in a column named "type".
 #' @keywords internal
-.GetModBaseCountsCategories <- function(grangesAnnotationsWithCounts){
-
+.GetModBaseCountsCategories <- function(grangesAnnotationsWithCounts) {
   breaks_v <- unique(quantile(grangesAnnotationsWithCounts$Modcount, probs = seq(0, 1, length.out = 11)))
   nLoop <- 0
-  while(length(breaks_v) < 5 & nLoop < 10){
+  while (length(breaks_v) < 5 & nLoop < 10) {
     nLoop <- nLoop + 1
     breaks_v <- unique(quantile(grangesAnnotationsWithCounts$Modcount,
-                                probs = seq(0, 1, length.out = 11+10*nLoop)))
+      probs = seq(0, 1, length.out = 11 + 10 * nLoop)
+    ))
   }
-  grangesAnnotationsWithCounts$Modcount_category <- cut(grangesAnnotationsWithCounts$Modcount, breaks= breaks_v,
-                                                        include.lowest = TRUE, right = TRUE  )
+  grangesAnnotationsWithCounts$Modcount_category <- cut(grangesAnnotationsWithCounts$Modcount,
+    breaks = breaks_v,
+    include.lowest = TRUE, right = TRUE
+  )
 
 
   breaks_v <- unique(quantile(grangesAnnotationsWithCounts$Basecount, probs = seq(0, 1, length.out = 11)))
   nLoop <- 0
-  while(length(breaks_v) < 5 & nLoop < 10){
+  while (length(breaks_v) < 5 & nLoop < 10) {
     nLoop <- nLoop + 1
     breaks_v <- unique(quantile(grangesAnnotationsWithCounts$Basecount,
-                                probs = seq(0, 1, length.out = 11+10*nLoop)))
+      probs = seq(0, 1, length.out = 11 + 10 * nLoop)
+    ))
   }
-  grangesAnnotationsWithCounts$Basecount_category <- cut(grangesAnnotationsWithCounts$Basecount, breaks= breaks_v,
-                                                         include.lowest = TRUE, right = TRUE  )
+  grangesAnnotationsWithCounts$Basecount_category <- cut(grangesAnnotationsWithCounts$Basecount,
+    breaks = breaks_v,
+    include.lowest = TRUE, right = TRUE
+  )
 
   breaks_v <- unique(quantile(grangesAnnotationsWithCounts$Modcount_perkbp, probs = seq(0, 1, length.out = 11)))
   nLoop <- 0
-  while(length(breaks_v) < 5 & nLoop < 10){
+  while (length(breaks_v) < 5 & nLoop < 10) {
     nLoop <- nLoop + 1
     breaks_v <- unique(quantile(grangesAnnotationsWithCounts$Modcount_perkbp,
-                                probs = seq(0, 1, length.out = 11+10*nLoop)))
+      probs = seq(0, 1, length.out = 11 + 10 * nLoop)
+    ))
   }
   grangesAnnotationsWithCounts$Modcount_perkbp_category <- cut(grangesAnnotationsWithCounts$Modcount_perkbp,
-                                                               breaks= breaks_v,
-                                                               include.lowest = TRUE, right = TRUE  )
+    breaks = breaks_v,
+    include.lowest = TRUE, right = TRUE
+  )
 
 
-  breaks_v <- unique(quantile(grangesAnnotationsWithCounts$Basecount_perkbp, probs = seq(0, 1, length.out = length(breaks_v) )))
+  breaks_v <- unique(quantile(grangesAnnotationsWithCounts$Basecount_perkbp, probs = seq(0, 1, length.out = length(breaks_v))))
   nLoop <- 0
-  while(length(breaks_v) < 5 & nLoop < 10){
+  while (length(breaks_v) < 5 & nLoop < 10) {
     nLoop <- nLoop + 1
     breaks_v <- unique(quantile(grangesAnnotationsWithCounts$Basecount_perkbp,
-                                probs = seq(0, 1, length.out = 11+10*nLoop)))
+      probs = seq(0, 1, length.out = 11 + 10 * nLoop)
+    ))
   }
   grangesAnnotationsWithCounts$Basecount_perkbp_category <- cut(grangesAnnotationsWithCounts$Basecount_perkbp,
-                                                                breaks= breaks_v,
-                                                                include.lowest = TRUE, right = TRUE  )
+    breaks = breaks_v,
+    include.lowest = TRUE, right = TRUE
+  )
 
   return(grangesAnnotationsWithCounts)
 }
@@ -330,134 +380,167 @@ DrawModBasePropByFeature <- function(grangesAnnotationsWithCounts,
 #' @keywords DrawParamPerModBaseCategories
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
-#' #loading annotation
+#' # loading annotation
 #' library(rtracklayer)
-#' myAnnotations <- readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-#'                                           "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
+#' myAnnotations <- readGFFAsGRanges(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+#' ))
 #'
-#' #Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
+#' # Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
 #' myGrangesPacBioGFF <-
-#'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.modifications.sca171819.gff"),
-#'                    cNameModToExtract = "m6A",
-#'                    cModNameInOutput = "6mA",
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <- myGposPacBioCSV[myGposPacBioCSV$base == "A"]
 #'
-#' #Retrieve annotations with "Mod" and "Base" counts (and counts per kbp)
-#' myAnn_ModBase_counts <- GetModBaseCountsByFeature(grangesAnnotations=myAnnotations,
-#'                                                   grangesModPos=myGrangesPacBioGFF,
-#'                                                   gposModTargetBasePos=myGposPacBioCSV)
+#' # Retrieve annotations with "Mod" and "Base" counts (and counts per kbp)
+#' myAnn_ModBase_counts <- GetModBaseCountsByFeature(
+#'   grangesAnnotations = myAnnotations,
+#'   grangesModPos = myGrangesPacBioGFF,
+#'   gposModTargetBasePos = myGposPacBioCSV
+#' )
 #'
-#' #Add Parameter by feature to annotation file
+#' # Add Parameter by feature to annotation file
 #' myAnn_ModBase_counts$ParamToPlot <- width(myAnn_ModBase_counts)
 #'
 #' DrawParamPerModBaseCategories(myAnn_ModBase_counts,
-#'                                      cParamColname="ParamToPlot",
-#'                                      cParamFullName = "Gene Width",
-#'                                      cParamYLabel = "Gene Width (bp)",
-#'                                      cSelectFeature = c("gene"),
-#'                                      lUseCountsPerkbp = TRUE,
-#'                                      lKeepOutliers = FALSE,
-#'                                      lUseSameYAxis = FALSE,
-#'                                      cBaseMotif = "A",
-#'                                      cModMotif = "6mA",
-#'                                      lBoxPropToCount=FALSE)
+#'   cParamColname = "ParamToPlot",
+#'   cParamFullName = "Gene Width",
+#'   cParamYLabel = "Gene Width (bp)",
+#'   cSelectFeature = c("gene"),
+#'   lUseCountsPerkbp = TRUE,
+#'   lKeepOutliers = FALSE,
+#'   lUseSameYAxis = FALSE,
+#'   cBaseMotif = "A",
+#'   cModMotif = "6mA",
+#'   lBoxPropToCount = FALSE
+#' )
 DrawParamPerModBaseCategories <- function(grangesAnnotationsWithCounts,
-                                                 cParamColname,
-                                                 cParamFullName = cParamColname,
-                                                 cParamYLabel = cParamColname,
-                                                 cSelectFeature = NULL,
-                                                 lUseCountsPerkbp = TRUE,
-                                                 lKeepOutliers = FALSE,
-                                                 lUseSameYAxis = FALSE,
-                                                 cBaseMotif,
-                                                 cModMotif,
-                                                 lBoxPropToCount=TRUE){
-  if(is.null(cSelectFeature)){
+                                          cParamColname,
+                                          cParamFullName = cParamColname,
+                                          cParamYLabel = cParamColname,
+                                          cSelectFeature = NULL,
+                                          lUseCountsPerkbp = TRUE,
+                                          lKeepOutliers = FALSE,
+                                          lUseSameYAxis = FALSE,
+                                          cBaseMotif,
+                                          cModMotif,
+                                          lBoxPropToCount = TRUE) {
+  if (is.null(cSelectFeature)) {
     dataToPlot <- grangesAnnotationsWithCounts
   } else {
     dataToPlot <- subset(grangesAnnotationsWithCounts, type %in% c(cSelectFeature))
     dataToPlot$type <- as.factor(as.character(dataToPlot$type))
   }
   dataToPlot <- .GetModBaseCountsCategories(dataToPlot)
-  cParamColname=mcols(dataToPlot)[[cParamColname]]
+  cParamColname <- mcols(dataToPlot)[[cParamColname]]
 
-  if(lUseCountsPerkbp){
+  if (lUseCountsPerkbp) {
     Modcount_vect <- mcols(dataToPlot)[["Modcount_perkbp_category"]]
     Basecount_vect <- mcols(dataToPlot)[["Basecount_perkbp_category"]]
-    nTextMaxMin <- round(c(min(dataToPlot$Modcount_perkbp),  max(dataToPlot$Modcount_perkbp),
-                           min(dataToPlot$Basecount_perkbp), max(dataToPlot$Basecount_perkbp)), 2)
+    nTextMaxMin <- round(c(
+      min(dataToPlot$Modcount_perkbp), max(dataToPlot$Modcount_perkbp),
+      min(dataToPlot$Basecount_perkbp), max(dataToPlot$Basecount_perkbp)
+    ), 2)
   } else {
     Modcount_vect <- mcols(dataToPlot)[["Modcount_category"]]
     Basecount_vect <- mcols(dataToPlot)[["Basecount_category"]]
-    nTextMaxMin <- c(min(dataToPlot$Modcount),  max(dataToPlot$Modcount),
-                     min(dataToPlot$Basecount), max(dataToPlot$Basecount))
+    nTextMaxMin <- c(
+      min(dataToPlot$Modcount), max(dataToPlot$Modcount),
+      min(dataToPlot$Basecount), max(dataToPlot$Basecount)
+    )
   }
 
   nBreaksVMod <- 1:length(levels(Modcount_vect))
   nBreaksVBase <- 1:length(levels(Basecount_vect))
 
-  if(lBoxPropToCount){
-    w1 <- boxplot( cParamColname~Modcount_vect, plot=FALSE)$n
-    w1 <- w1/sum(w1)
-    w2 <- boxplot( cParamColname~Basecount_vect, plot=FALSE)$n
-    w2 <- w2/sum(w2)
+  if (lBoxPropToCount) {
+    w1 <- boxplot(cParamColname ~ Modcount_vect, plot = FALSE)$n
+    w1 <- w1 / sum(w1)
+    w2 <- boxplot(cParamColname ~ Basecount_vect, plot = FALSE)$n
+    w2 <- w2 / sum(w2)
   } else {
-    w1 <- rep(1, length(levels(Modcount_vect )))
+    w1 <- rep(1, length(levels(Modcount_vect)))
     w2 <- rep(1, length(levels(Basecount_vect)))
   }
 
-  if(lUseSameYAxis){
-    if(lKeepOutliers){
+  if (lUseSameYAxis) {
+    if (lKeepOutliers) {
       ylimits <- c(min(cParamColname), max(cParamColname))
     } else {
-      b_stats1 <- boxplot( cParamColname~Modcount_vect, plot=FALSE)$stats
-      b_stats2 <- boxplot( cParamColname~Basecount_vect, plot=FALSE)$stats
-      ylimits <- c(min( b_stats1[1,], b_stats2[1,] ),
-                   max( b_stats1[5,], b_stats2[5,] ) )
+      b_stats1 <- boxplot(cParamColname ~ Modcount_vect, plot = FALSE)$stats
+      b_stats2 <- boxplot(cParamColname ~ Basecount_vect, plot = FALSE)$stats
+      ylimits <- c(
+        min(b_stats1[1, ], b_stats2[1, ]),
+        max(b_stats1[5, ], b_stats2[5, ])
+      )
     }
-  } else{
+  } else {
     ylimits <- NULL
   }
 
-  nMarBottom <- max(nchar(c(levels(Modcount_vect),levels(Basecount_vect))))*8.1/12
+  nMarBottom <- max(nchar(c(levels(Modcount_vect), levels(Basecount_vect)))) * 8.1 / 12
 
   opar <- par()
-  layout(mat = matrix(1:4, nrow = 2, ncol = 2, byrow = TRUE), heights = c(8,2))
-  par(mar=c(nMarBottom,5.1,4.1,2.1))
-  boxplot(cParamColname~Modcount_vect, col = "red3", outline=lKeepOutliers, width = w1, ylab=cParamYLabel,
-          cex.lab=1.5, cex.axis=1.5, xlab="", las=3,
-          ylim = ylimits )
+  layout(mat = matrix(1:4, nrow = 2, ncol = 2, byrow = TRUE), heights = c(8, 2))
+  par(mar = c(nMarBottom, 5.1, 4.1, 2.1))
+  boxplot(cParamColname ~ Modcount_vect,
+    col = "red3", outline = lKeepOutliers, width = w1, ylab = cParamYLabel,
+    cex.lab = 1.5, cex.axis = 1.5, xlab = "", las = 3,
+    ylim = ylimits
+  )
 
-  boxplot(cParamColname~Basecount_vect, col = "grey", outline=lKeepOutliers, width = w2, ylab=cParamYLabel,
-          cex.lab=1.5, cex.axis=1.5, xlab="", las=3,
-          ylim =  ylimits)
+  boxplot(cParamColname ~ Basecount_vect,
+    col = "grey", outline = lKeepOutliers, width = w2, ylab = cParamYLabel,
+    cex.lab = 1.5, cex.axis = 1.5, xlab = "", las = 3,
+    ylim = ylimits
+  )
 
-  par(mar=c(1.1,4.1,0.1,2.1))
-  .DrawPolygonRange(nBreaksV=nBreaksVMod, nTextMaxMin=nTextMaxMin[1:2],
-                           cAxisName=paste0(cModMotif, ifelse(lUseCountsPerkbp, " counts per kbp", " counts")),
-                           cColor = "red3")
-  .DrawPolygonRange(nBreaksV=nBreaksVBase, nTextMaxMin=nTextMaxMin[3:4],
-                           cAxisName=paste0(cBaseMotif, ifelse(lUseCountsPerkbp, " counts per kbp", " counts")),
-                           cColor = "grey")
-  par(mar=opar$mar)
-  layout(mat = matrix(1:1, nrow = 1), heights = c(1,1))
-  mtext(paste0(cParamFullName, " per ",
-               cModMotif," (or ",cBaseMotif,") count ",
-               ifelse(lUseCountsPerkbp, "per kbp",""),
-               " levels"), side=3, cex=1.5, line = 2)
+  par(mar = c(1.1, 4.1, 0.1, 2.1))
+  .DrawPolygonRange(
+    nBreaksV = nBreaksVMod, nTextMaxMin = nTextMaxMin[1:2],
+    cAxisName = paste0(cModMotif, ifelse(lUseCountsPerkbp, " counts per kbp", " counts")),
+    cColor = "red3"
+  )
+  .DrawPolygonRange(
+    nBreaksV = nBreaksVBase, nTextMaxMin = nTextMaxMin[3:4],
+    cAxisName = paste0(cBaseMotif, ifelse(lUseCountsPerkbp, " counts per kbp", " counts")),
+    cColor = "grey"
+  )
+  par(mar = opar$mar)
+  layout(mat = matrix(1:1, nrow = 1), heights = c(1, 1))
+  mtext(paste0(
+    cParamFullName, " per ",
+    cModMotif, " (or ", cBaseMotif, ") count ",
+    ifelse(lUseCountsPerkbp, "per kbp", ""),
+    " levels"
+  ), side = 3, cex = 1.5, line = 2)
 }
 
 #' DrawPolygonRange Function (ModAnnot)
@@ -471,25 +554,32 @@ DrawParamPerModBaseCategories <- function(grangesAnnotationsWithCounts,
 #' @param cColor The color of the polygon to draw.
 #' @keywords internal
 .DrawPolygonRange <- function(nBreaksV,
-                                     nTextMaxMin,
-                                     cAxisName,
-                                     cColor) {
-  plot(nBreaksV,seq(0,1,length.out = length(nBreaksV)),
-       type="n", bty="n", xaxt="n", yaxt="n", xlab="", ylab="",
-       xlim=c(nBreaksV[1]-0.5,length(nBreaksV)+0.5), ylim=c(0,1))
-  polygon(x = c(nBreaksV, length(nBreaksV)),
-          y = c(seq(0, 0.30, length.out=length(nBreaksV)), 0),
-          col=cColor)
-  par(xpd=TRUE)
-  text(x = c(nBreaksV[1], tail(nBreaksV,1)),
-       y = c(0.55,0.55),
-       nTextMaxMin,
-       cex = 1.5)
-  text(x = mean(c(nBreaksV[1], tail(nBreaksV,1))),
-       y = 0.9,
-       cAxisName,
-       cex = 1.5)
-  par(xpd=FALSE)
+                              nTextMaxMin,
+                              cAxisName,
+                              cColor) {
+  plot(nBreaksV, seq(0, 1, length.out = length(nBreaksV)),
+    type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "",
+    xlim = c(nBreaksV[1] - 0.5, length(nBreaksV) + 0.5), ylim = c(0, 1)
+  )
+  polygon(
+    x = c(nBreaksV, length(nBreaksV)),
+    y = c(seq(0, 0.30, length.out = length(nBreaksV)), 0),
+    col = cColor
+  )
+  par(xpd = TRUE)
+  text(
+    x = c(nBreaksV[1], tail(nBreaksV, 1)),
+    y = c(0.55, 0.55),
+    nTextMaxMin,
+    cex = 1.5
+  )
+  text(
+    x = mean(c(nBreaksV[1], tail(nBreaksV, 1))),
+    y = 0.9,
+    cAxisName,
+    cex = 1.5
+  )
+  par(xpd = FALSE)
 }
 
 #' GetModBaseCountsWithinFeature Function (ModAnnot)
@@ -520,45 +610,61 @@ DrawParamPerModBaseCategories <- function(grangesAnnotationsWithCounts,
 #' @keywords GetModBaseCountsWithinFeature
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
-#' #loading annotation
+#' # loading annotation
 #' library(rtracklayer)
-#' myAnnotations <- readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-#'                                           "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
+#' myAnnotations <- readGFFAsGRanges(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+#' ))
 #'
-#' #Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
+#' # Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
 #' myGrangesPacBioGFF <-
-#'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                    "ptetraurelia.modifications.sca171819.gff"),
-#'                    cNameModToExtract = "m6A",
-#'                    cModNameInOutput = "6mA",
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <- myGposPacBioCSV[myGposPacBioCSV$base == "A"]
 #'
-#' #Retrieve annotations with "Mod" and "Base" counts (and counts per kbp)
+#' # Retrieve annotations with "Mod" and "Base" counts (and counts per kbp)
 #' myAnn_ModBase_counts_by_window <-
-#'    GetModBaseCountsWithinFeature(grangesAnnotations=myAnnotations[myAnnotations$type == "gene",],
-#'                                  grangesModPos=myGrangesPacBioGFF,
-#'                                  gposModTargetBasePos=myGposPacBioCSV,
-#'                                  nWindowsNb = 20)
+#'   GetModBaseCountsWithinFeature(
+#'     grangesAnnotations = myAnnotations[myAnnotations$type == "gene", ],
+#'     grangesModPos = myGrangesPacBioGFF,
+#'     gposModTargetBasePos = myGposPacBioCSV,
+#'     nWindowsNb = 20
+#'   )
 #' myAnn_ModBase_counts_by_window
 GetModBaseCountsWithinFeature <- function(grangesAnnotations,
-                                              nWindowsNb=20,
-                                              grangesModPos,
-                                              gposModTargetBasePos,
-                                              lIgnoreStrand = FALSE){
+                                          nWindowsNb = 20,
+                                          grangesModPos,
+                                          gposModTargetBasePos,
+                                          lIgnoreStrand = FALSE) {
   gr_a <- grangesAnnotations[width(grangesAnnotations) >= nWindowsNb]
-  ans <- unlist(tile(gr_a, n=nWindowsNb))
+  ans <- unlist(tile(gr_a, n = nWindowsNb))
   win_id_pos <- rep(1:nWindowsNb, length.out = length(ans))
   win_id_neg <- rep(nWindowsNb:1, length.out = length(ans))
   ans$window_id <- ifelse(strand(ans) == "+", win_id_pos, win_id_neg)
@@ -568,10 +674,10 @@ GetModBaseCountsWithinFeature <- function(grangesAnnotations,
   hits <- findOverlaps(ans, gr_b, ignore.strand = lIgnoreStrand)
 
   ans$Modcount <- countQueryHits(hits)
-  modcountSum <- aggregate(ans$Modcount, by=list(ans$window_id2), sum)
-  ans$ModcountSum <- rep(modcountSum$x, each=nWindowsNb)
-  ans$Modprop <- 100*ans$Modcount/ans$ModcountSum
-  if(length(which(is.nan(ans$Modprop)))>0){
+  modcountSum <- aggregate(ans$Modcount, by = list(ans$window_id2), sum)
+  ans$ModcountSum <- rep(modcountSum$x, each = nWindowsNb)
+  ans$Modprop <- 100 * ans$Modcount / ans$ModcountSum
+  if (length(which(is.nan(ans$Modprop))) > 0) {
     ans[is.nan(ans$Modprop)]$Modprop <- 0
   }
 
@@ -579,10 +685,10 @@ GetModBaseCountsWithinFeature <- function(grangesAnnotations,
   hits <- findOverlaps(ans, gr_b, ignore.strand = lIgnoreStrand)
 
   ans$Basecount <- countQueryHits(hits)
-  basecountSum <- aggregate(ans$Basecount, by=list(ans$window_id2), sum)
-  ans$BasecountSum <- rep(basecountSum$x, each=nWindowsNb)
-  ans$Baseprop <- 100*ans$Basecount/ans$BasecountSum
-  if(length(which(is.nan(ans$Baseprop)))>0){
+  basecountSum <- aggregate(ans$Basecount, by = list(ans$window_id2), sum)
+  ans$BasecountSum <- rep(basecountSum$x, each = nWindowsNb)
+  ans$Baseprop <- 100 * ans$Basecount / ans$BasecountSum
+  if (length(which(is.nan(ans$Baseprop))) > 0) {
     ans[is.nan(ans$Baseprop)]$Baseprop <- 0
   }
 
@@ -610,91 +716,120 @@ GetModBaseCountsWithinFeature <- function(grangesAnnotations,
 #' @keywords DrawModBaseCountsWithinFeature
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
-#' #loading annotation
+#' # loading annotation
 #' library(rtracklayer)
-#' myAnnotations <- readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-#'                                           "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
+#' myAnnotations <- readGFFAsGRanges(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+#' ))
 #'
-#' #Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
+#' # Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
 #' myGrangesPacBioGFF <-
-#'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.modifications.sca171819.gff"),
-#'                    cNameModToExtract = "m6A",
-#'                    cModNameInOutput = "6mA",
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <- myGposPacBioCSV[myGposPacBioCSV$base == "A"]
 #'
-#' #Retrieve annotations with "Mod" and "Base" counts (and counts per kbp)
+#' # Retrieve annotations with "Mod" and "Base" counts (and counts per kbp)
 #' myAnn_ModBase_counts_by_window <-
-#'    GetModBaseCountsWithinFeature(grangesAnnotations=myAnnotations[myAnnotations$type == "gene",],
-#'                                 grangesModPos=myGrangesPacBioGFF,
-#'                                 gposModTargetBasePos=myGposPacBioCSV,
-#'                                 nWindowsNb = 20)
+#'   GetModBaseCountsWithinFeature(
+#'     grangesAnnotations = myAnnotations[myAnnotations$type == "gene", ],
+#'     grangesModPos = myGrangesPacBioGFF,
+#'     gposModTargetBasePos = myGposPacBioCSV,
+#'     nWindowsNb = 20
+#'   )
 #'
 #' DrawModBaseCountsWithinFeature(myAnn_ModBase_counts_by_window,
-#'                                       cFeatureName="gene",
-#'                                       cBaseMotif="A",
-#'                                       cModMotif="6mA")
+#'   cFeatureName = "gene",
+#'   cBaseMotif = "A",
+#'   cModMotif = "6mA"
+#' )
 DrawModBaseCountsWithinFeature <- function(grangesAnnotationsWithCountsByWindow,
                                            cFeatureName,
                                            cBaseMotif,
-                                           cModMotif){
+                                           cModMotif) {
   dataToPlot <- aggregate(grangesAnnotationsWithCountsByWindow$Modprop,
-                          by=list(grangesAnnotationsWithCountsByWindow$window_id),
-                          function(x) 100*sum(x)/sum(grangesAnnotationsWithCountsByWindow$Modprop))
+    by = list(grangesAnnotationsWithCountsByWindow$window_id),
+    function(x) 100 * sum(x) / sum(grangesAnnotationsWithCountsByWindow$Modprop)
+  )
   dataToPlot2 <- aggregate(grangesAnnotationsWithCountsByWindow$Baseprop,
-                           by=list(grangesAnnotationsWithCountsByWindow$window_id),
-                           function(x) 100*sum(x)/sum(grangesAnnotationsWithCountsByWindow$Baseprop))
+    by = list(grangesAnnotationsWithCountsByWindow$window_id),
+    function(x) 100 * sum(x) / sum(grangesAnnotationsWithCountsByWindow$Baseprop)
+  )
   ylimits <- c(0, max(dataToPlot$x, dataToPlot2$x))
 
-  layout(mat=matrix(1:2, ncol = 2), widths = c(8,2))
+  layout(mat = matrix(1:2, ncol = 2), widths = c(8, 2))
   opar <- par()
-  par(mar=c(7.1,5.1,2.1,0))
+  par(mar = c(7.1, 5.1, 2.1, 0))
 
-  bar_vect <- barplot(dataToPlot$x, col = "red3",
-                      width = 1, space = 1.5,
-                      main = paste0("Cumulated ", cModMotif," (or ", cBaseMotif,
-                                    ") proportion within ", cFeatureName),
-                      ylab = "Cumulated proportion (%)",
-                      xlab= "",
-                      cex.lab=1.5, cex.names = 1.5, cex.axis=1.5, yaxs="i", ylim = ylimits)
-  title(xlab=paste0("Relative position within ",cFeatureName, " (%)"), line=5.5, cex.lab=1.5)
-  space_vect <- c(2.5, rep(1.5, length(dataToPlot2$x)-1))
-  bar_vect2 <- barplot(dataToPlot2$x, col="grey", beside = TRUE, add = TRUE,
-                       width=1, space = space_vect, cex.axis=1.5)
-
-  t_length <- sapply(1:(length(bar_vect)),
-                     function(i) {mean(c(bar_vect[i],  bar_vect2[i]))
-                     })
-  t_text <- as.character( ( 100/length(bar_vect) ) * (1:(length(bar_vect))) )
-  t_text2 <- as.numeric(t_text) - (as.numeric(t_text)[2] - as.numeric(t_text)[1])
-  t_text <- paste0("[",t_text2, ">", t_text,"]")
-  axis(side = 1, labels = rep("", length.out=length(t_length)),
-       at = t_length, cex.axis=1.25, lwd=2, las=3, line = 0)
-  text(t_length, 0, labels = t_text, srt = 60, xpd = TRUE, adj = c(1.2,0.75), cex=1.25)
-
-  par( mar=c(0,0,0,0))
-  plot(1:10, col="transparent", bty="n", xaxt="n", yaxt="n", xlab="", ylab="")
-  legend("left",
-         legend = paste0(c(cModMotif, cBaseMotif),"%"),
-         col=c("red3","grey"),
-         pch=15, cex=1.25, bty="n"
+  bar_vect <- barplot(dataToPlot$x,
+    col = "red3",
+    width = 1, space = 1.5,
+    main = paste0(
+      "Cumulated ", cModMotif, " (or ", cBaseMotif,
+      ") proportion within ", cFeatureName
+    ),
+    ylab = "Cumulated proportion (%)",
+    xlab = "",
+    cex.lab = 1.5, cex.names = 1.5, cex.axis = 1.5, yaxs = "i", ylim = ylimits
+  )
+  title(xlab = paste0("Relative position within ", cFeatureName, " (%)"), line = 5.5, cex.lab = 1.5)
+  space_vect <- c(2.5, rep(1.5, length(dataToPlot2$x) - 1))
+  bar_vect2 <- barplot(dataToPlot2$x,
+    col = "grey", beside = TRUE, add = TRUE,
+    width = 1, space = space_vect, cex.axis = 1.5
   )
 
-  par( mar=opar$mar)
-  layout(mat=matrix(1:1, ncol = 2), widths = c(1,1))
+  t_length <- sapply(
+    1:(length(bar_vect)),
+    function(i) {
+      mean(c(bar_vect[i], bar_vect2[i]))
+    }
+  )
+  t_text <- as.character((100 / length(bar_vect)) * (1:(length(bar_vect))))
+  t_text2 <- as.numeric(t_text) - (as.numeric(t_text)[2] - as.numeric(t_text)[1])
+  t_text <- paste0("[", t_text2, ">", t_text, "]")
+  axis(
+    side = 1, labels = rep("", length.out = length(t_length)),
+    at = t_length, cex.axis = 1.25, lwd = 2, las = 3, line = 0
+  )
+  text(t_length, 0, labels = t_text, srt = 60, xpd = TRUE, adj = c(1.2, 0.75), cex = 1.25)
 
+  par(mar = c(0, 0, 0, 0))
+  plot(1:10, col = "transparent", bty = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "")
+  legend("left",
+    legend = paste0(c(cModMotif, cBaseMotif), "%"),
+    col = c("red3", "grey"),
+    pch = 15, cex = 1.25, bty = "n"
+  )
+
+  par(mar = opar$mar)
+  layout(mat = matrix(1:1, ncol = 2), widths = c(1, 1))
 }
 
 #' GetDistFromFeaturePos Function (ModAnnot)
@@ -752,32 +887,46 @@ DrawModBaseCountsWithinFeature <- function(grangesAnnotationsWithCountsByWindow,
 #' @importFrom GenomicRanges resize
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
-#' #loading annotation
+#' # loading annotation
 #' library(rtracklayer)
-#' myAnnotations <- readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-#'                                           "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
+#' myAnnotations <- readGFFAsGRanges(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+#' ))
 #'
-#' #Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
+#' # Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
 #' myGrangesPacBioGFF <-
-#'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.modifications.sca171819.gff"),
-#'                    cNameModToExtract = "m6A",
-#'                    cModNameInOutput = "6mA",
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <- myGposPacBioCSV[myGposPacBioCSV$base == "A"]
 #'
-#' #Retrieve, in a list, dataframes of Mod counts per Distance values from feature positions
+#' # Retrieve, in a list, dataframes of Mod counts per Distance values from feature positions
 #' myModDistCountsList <- GetDistFromFeaturePos(
 #'   grangesAnnotations = myAnnotations,
 #'   cSelectFeature = "gene",
@@ -790,52 +939,62 @@ DrawModBaseCountsWithinFeature <- function(grangesAnnotationsWithCountsByWindow,
 #' )
 #' myModDistCountsList
 GetDistFromFeaturePos <- function(grangesAnnotations,
-                               cSelectFeature = NULL,
-                               grangesData,
-                               lGetGRangesInsteadOfListCounts = FALSE,
-                               lGetPropInsteadOfCounts = TRUE,
-                               nWindowSizeAroundFeaturePos,
-                               cWhichStrandVsFeaturePos="both",
-                               lAddCorrectedDistFrom5pTo3p=TRUE,
-                               cFeaturePosNames=c("Start","End")){
-  if(!is.null(cSelectFeature)){grangesAnnotations <- subset(grangesAnnotations, type == cSelectFeature)}
+                                  cSelectFeature = NULL,
+                                  grangesData,
+                                  lGetGRangesInsteadOfListCounts = FALSE,
+                                  lGetPropInsteadOfCounts = TRUE,
+                                  nWindowSizeAroundFeaturePos,
+                                  cWhichStrandVsFeaturePos = "both",
+                                  lAddCorrectedDistFrom5pTo3p = TRUE,
+                                  cFeaturePosNames = c("Start", "End")) {
+  if (!is.null(cSelectFeature)) {
+    grangesAnnotations <- subset(grangesAnnotations, type == cSelectFeature)
+  }
 
-  featureIsPos <- all(width(grangesAnnotations)==1)
-  if(featureIsPos){
+  featureIsPos <- all(width(grangesAnnotations) == 1)
+  if (featureIsPos) {
     print("Features provided are 1bp positions: returning positions...")
     grangesAnnotationsPos1 <- resize(grangesAnnotations, width = 1, fix = "start") + nWindowSizeAroundFeaturePos
   } else {
     print("Features provided are not 1bp positions: returning features boundaries as positions...")
     grangesAnnotationsPos1 <- resize(grangesAnnotations, width = 1, fix = "start") + nWindowSizeAroundFeaturePos
-    grangesAnnotationsPos2 <- resize(grangesAnnotations, width = 1, fix = "end")   + nWindowSizeAroundFeaturePos
+    grangesAnnotationsPos2 <- resize(grangesAnnotations, width = 1, fix = "end") + nWindowSizeAroundFeaturePos
   }
 
   print("Returning distance from feature positions...")
-  ansStart <- .GetPosDistFromFeaturePos(grangesData=grangesData, grangesAnnotationsPos=grangesAnnotationsPos1,
-                                        cWhichStrandVsFeaturePos=cWhichStrandVsFeaturePos, nWindowSizeAroundFeaturePos=nWindowSizeAroundFeaturePos,
-                                        lAddCorrectedDistFrom5pTo3p=lAddCorrectedDistFrom5pTo3p)
+  ansStart <- .GetPosDistFromFeaturePos(
+    grangesData = grangesData, grangesAnnotationsPos = grangesAnnotationsPos1,
+    cWhichStrandVsFeaturePos = cWhichStrandVsFeaturePos, nWindowSizeAroundFeaturePos = nWindowSizeAroundFeaturePos,
+    lAddCorrectedDistFrom5pTo3p = lAddCorrectedDistFrom5pTo3p
+  )
 
-  if(!featureIsPos){
+  if (!featureIsPos) {
     print("Returning distance from feature end positions...")
-    ansEnd <- .GetPosDistFromFeaturePos(grangesData=grangesData, grangesAnnotationsPos=grangesAnnotationsPos2,
-                                        cWhichStrandVsFeaturePos=cWhichStrandVsFeaturePos, nWindowSizeAroundFeaturePos=nWindowSizeAroundFeaturePos,
-                                        lAddCorrectedDistFrom5pTo3p=lAddCorrectedDistFrom5pTo3p)
+    ansEnd <- .GetPosDistFromFeaturePos(
+      grangesData = grangesData, grangesAnnotationsPos = grangesAnnotationsPos2,
+      cWhichStrandVsFeaturePos = cWhichStrandVsFeaturePos, nWindowSizeAroundFeaturePos = nWindowSizeAroundFeaturePos,
+      lAddCorrectedDistFrom5pTo3p = lAddCorrectedDistFrom5pTo3p
+    )
     ans_list <- GRangesList(ansStart, ansEnd)
-    names(ans_list) <- paste0(rep(cFeaturePosNames,   each=1), "GR")
+    names(ans_list) <- paste0(rep(cFeaturePosNames, each = 1), "GR")
 
-    if(!lGetGRangesInsteadOfListCounts) {
-      ans_list <- GetListCountsByDist(listGRangesDist = ans_list,
-                                      lGetPropInsteadOfCounts = lGetPropInsteadOfCounts,
-                                      lAddCorrectedDistFrom5pTo3p = lAddCorrectedDistFrom5pTo3p)
+    if (!lGetGRangesInsteadOfListCounts) {
+      ans_list <- GetListCountsByDist(
+        listGRangesDist = ans_list,
+        lGetPropInsteadOfCounts = lGetPropInsteadOfCounts,
+        lAddCorrectedDistFrom5pTo3p = lAddCorrectedDistFrom5pTo3p
+      )
     }
   } else {
     ans_list <- GRangesList(ansStart)
     names(ans_list) <- paste0(cFeaturePosNames[1], "GR")
 
-    if(!lGetGRangesInsteadOfListCounts) {
-      ans_list <- GetListCountsByDist(listGRangesDist = ans_list,
-                                      lGetPropInsteadOfCounts = lGetPropInsteadOfCounts,
-                                      lAddCorrectedDistFrom5pTo3p = lAddCorrectedDistFrom5pTo3p)
+    if (!lGetGRangesInsteadOfListCounts) {
+      ans_list <- GetListCountsByDist(
+        listGRangesDist = ans_list,
+        lGetPropInsteadOfCounts = lGetPropInsteadOfCounts,
+        lAddCorrectedDistFrom5pTo3p = lAddCorrectedDistFrom5pTo3p
+      )
     }
   }
 
@@ -865,19 +1024,19 @@ GetDistFromFeaturePos <- function(grangesAnnotations,
 #' @keywords internal
 #' @importFrom S4Vectors Pairs
 .GetPosDistFromFeaturePos <- function(grangesData, grangesAnnotationsPos, cWhichStrandVsFeaturePos,
-                                      nWindowSizeAroundFeaturePos, lAddCorrectedDistFrom5pTo3p){
-  if (cWhichStrandVsFeaturePos=="both") {
+                                      nWindowSizeAroundFeaturePos, lAddCorrectedDistFrom5pTo3p) {
+  if (cWhichStrandVsFeaturePos == "both") {
     hits <- findOverlaps(grangesData, grangesAnnotationsPos, ignore.strand = TRUE)
-  } else if (cWhichStrandVsFeaturePos=="same") {
+  } else if (cWhichStrandVsFeaturePos == "same") {
     hits <- findOverlaps(grangesData, grangesAnnotationsPos, ignore.strand = FALSE)
-  } else if (cWhichStrandVsFeaturePos=="opposite") {
+  } else if (cWhichStrandVsFeaturePos == "opposite") {
     hits <- findOverlaps(grangesData, invertStrand(grangesAnnotationsPos), ignore.strand = FALSE)
   }
   pairs <- Pairs(grangesData, grangesAnnotationsPos, hits = hits)
 
   pairs@first$dist_v <- (start(pairs@first) - start(pairs@second)) - nWindowSizeAroundFeaturePos
   ans <- pairs@first
-  if(lAddCorrectedDistFrom5pTo3p){
+  if (lAddCorrectedDistFrom5pTo3p) {
     ansf <- ans[which(strand(pairs@second) == "+")]
     ansr <- ans[which(strand(pairs@second) == "-")]
     ansf$dist_5to3 <- ansf$dist_v
@@ -910,32 +1069,46 @@ GetDistFromFeaturePos <- function(grangesAnnotations,
 #' @keywords GetListCountsByDist
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
-#' #loading annotation
+#' # loading annotation
 #' library(rtracklayer)
-#' myAnnotations <- readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-#'                                           "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
+#' myAnnotations <- readGFFAsGRanges(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+#' ))
 #'
-#' #Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
+#' # Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
 #' myGrangesPacBioGFF <-
-#'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.modifications.sca171819.gff"),
-#'                    cNameModToExtract = "m6A",
-#'                    cModNameInOutput = "6mA",
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <- myGposPacBioCSV[myGposPacBioCSV$base == "A"]
 #'
-#' #Retrieve, in a list, dataframes of ModBase counts per Distance values from feature positions
+#' # Retrieve, in a list, dataframes of ModBase counts per Distance values from feature positions
 #' myModDistGRangesList <- GetDistFromFeaturePos(
 #'   grangesAnnotations = myAnnotations,
 #'   cSelectFeature = "gene",
@@ -945,29 +1118,36 @@ GetDistFromFeaturePos <- function(grangesAnnotations,
 #'   lAddCorrectedDistFrom5pTo3p = TRUE,
 #'   cFeaturePosNames = c("TSS", "TTS")
 #' )
-#' myModDistCountsList <- GetListCountsByDist(listGRangesDist = myModDistGRangesList,
-#'                                            lAddCorrectedDistFrom5pTo3p = TRUE,
-#'                                            lGetPropInsteadOfCounts = TRUE)
+#' myModDistCountsList <- GetListCountsByDist(
+#'   listGRangesDist = myModDistGRangesList,
+#'   lAddCorrectedDistFrom5pTo3p = TRUE,
+#'   lGetPropInsteadOfCounts = TRUE
+#' )
 #' myModDistCountsList
 GetListCountsByDist <- function(listGRangesDist, lAddCorrectedDistFrom5pTo3p = TRUE,
-                                lGetPropInsteadOfCounts = TRUE){
-  twoPositions <- (length(listGRangesDist)==2)
-  returnPropByfPos <- ifelse(twoPositions, FALSE, TRUE)
+                                lGetPropInsteadOfCounts = TRUE) {
+  twoPositions <- (length(listGRangesDist) == 2)
 
-  table1 <- .GetCountsByDist(grangesDist=listGRangesDist[[1]],
-                             lAddCorrectedDistFrom5pTo3p=lAddCorrectedDistFrom5pTo3p)
-  if(twoPositions){
-    table2 <- .GetCountsByDist(grangesDist=listGRangesDist[[2]],
-                               lAddCorrectedDistFrom5pTo3p=lAddCorrectedDistFrom5pTo3p)
+  table1 <- .GetCountsByDist(
+    grangesDist = listGRangesDist[[1]],
+    lAddCorrectedDistFrom5pTo3p = lAddCorrectedDistFrom5pTo3p
+  )
+  if (twoPositions) {
+    table2 <- .GetCountsByDist(
+      grangesDist = listGRangesDist[[2]],
+      lAddCorrectedDistFrom5pTo3p = lAddCorrectedDistFrom5pTo3p
+    )
 
-    if(lGetPropInsteadOfCounts){
-      table1_freq <- 100*table1$Freq / sum(c(table1$Freq, table2$Freq))
-      table2$Freq <- 100*table2$Freq / sum(c(table1$Freq, table2$Freq))
+    if (lGetPropInsteadOfCounts) {
+      table1_freq <- 100 * table1$Freq / sum(c(table1$Freq, table2$Freq))
+      table2$Freq <- 100 * table2$Freq / sum(c(table1$Freq, table2$Freq))
       table1$Freq <- table1_freq
     }
     table <- list(table1, table2)
   } else {
-    if(lGetPropInsteadOfCounts){ table1$Freq <- 100*table1$Freq / sum(table1$Freq)  }
+    if (lGetPropInsteadOfCounts) {
+      table1$Freq <- 100 * table1$Freq / sum(table1$Freq)
+    }
     table <- list(table1)
   }
   names(table) <- names(listGRangesDist)
@@ -987,9 +1167,9 @@ GetListCountsByDist <- function(listGRangesDist, lAddCorrectedDistFrom5pTo3p = T
 #' positions: this "Mod" (or "Base")
 #' will then reported x times with the distance to each feature position.
 #' @keywords internal
-.GetCountsByDist <- function(grangesDist, lAddCorrectedDistFrom5pTo3p=TRUE){
+.GetCountsByDist <- function(grangesDist, lAddCorrectedDistFrom5pTo3p = TRUE) {
   tableCounts <- as.data.frame(table(
-    mcols(grangesDist)[[ifelse(lAddCorrectedDistFrom5pTo3p,"dist_5to3","dist_v")]]
+    mcols(grangesDist)[[ifelse(lAddCorrectedDistFrom5pTo3p, "dist_5to3", "dist_v")]]
   ))
   tableCounts$Var1 <- as.numeric(as.character(tableCounts$Var1))
   return(tableCounts)
@@ -1027,32 +1207,46 @@ GetListCountsByDist <- function(listGRangesDist, lAddCorrectedDistFrom5pTo3p = T
 #' @keywords DrawModBasePropDistFromFeature
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
-#' #loading annotation
+#' # loading annotation
 #' library(rtracklayer)
-#' myAnnotations <- readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-#'                                           "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
+#' myAnnotations <- readGFFAsGRanges(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+#' ))
 #'
-#' #Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
+#' # Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
 #' myGrangesPacBioGFF <-
-#'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.modifications.sca171819.gff"),
-#'                    cNameModToExtract = "m6A",
-#'                    cModNameInOutput = "6mA",
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <- myGposPacBioCSV[myGposPacBioCSV$base == "A"]
 #'
-#' #Retrieve, in a list, dataframes of ModBase counts per Distance values from feature positions
+#' # Retrieve, in a list, dataframes of ModBase counts per Distance values from feature positions
 #' myModDistCountsList <- GetDistFromFeaturePos(
 #'   grangesAnnotations = myAnnotations,
 #'   cSelectFeature = "gene",
@@ -1082,80 +1276,92 @@ GetListCountsByDist <- function(listGRangesDist, lAddCorrectedDistFrom5pTo3p = T
 #' )
 DrawModBasePropDistFromFeature <- function(listModCountsDistDataframe,
                                            listBaseCountsDistDataframe,
-                                           cFeaturePosNames=c("Start","End"),
+                                           cFeaturePosNames = c("Start", "End"),
                                            cBaseMotif,
                                            cModMotif,
-                                           nDensityBaseMotif=50){
-  if(length(listModCountsDistDataframe) == length(listBaseCountsDistDataframe)){
-    twoPositions <- (length(listModCountsDistDataframe)==2)
+                                           nDensityBaseMotif = 50) {
+  if (length(listModCountsDistDataframe) == length(listBaseCountsDistDataframe)) {
+    twoPositions <- (length(listModCountsDistDataframe) == 2)
 
     dataToPlot1 <- listModCountsDistDataframe[[1]]
     dataToPlot2 <- listBaseCountsDistDataframe[[1]]
 
     opar <- par()
-    if(twoPositions){
+    if (twoPositions) {
       dataToPlot3 <- listModCountsDistDataframe[[2]]
       dataToPlot4 <- listBaseCountsDistDataframe[[2]]
       ylimits <- c(0, max(dataToPlot1$Freq, dataToPlot2$Freq, dataToPlot3$Freq, dataToPlot4$Freq))
       layout(mat = matrix(1:2, ncol = 2))
-      par(mar=c(5.1,10.2,4.1,1.1))
+      par(mar = c(5.1, 10.2, 4.1, 1.1))
     } else {
       ylimits <- c(0, max(dataToPlot1$Freq, dataToPlot2$Freq))
-      par(mar=c(5.1,10.2,4.1,10.2))
+      par(mar = c(5.1, 10.2, 4.1, 10.2))
     }
 
-    plot(x=dataToPlot1$Var1, y=dataToPlot1$Freq, ylim=ylimits, col="white",
-         xaxs="i", yaxs="i",yaxt="n", bty=ifelse(twoPositions,"C","o"),
-         xlab=paste0("Distance from ", cFeaturePosNames[1]),
-         ylab="", cex.axis=1.25, cex.lab=2)
-    polygon(x=c(min(dataToPlot1$Var1), dataToPlot1$Var1, max(dataToPlot1$Var1)) ,
-            y=c( 0, dataToPlot1$Freq, 0),
-            col='red2', border="red2")
-    polygon(x=c(min(dataToPlot2$Var1), dataToPlot2$Var1, max(dataToPlot2$Var1)) ,
-            y=c( 0, dataToPlot2$Freq, 0),
-            col='grey50',density = nDensityBaseMotif)
-    abline(v=0, lty=2, lwd=2, col=rgb(0,0,0,0.3))
+    plot(
+      x = dataToPlot1$Var1, y = dataToPlot1$Freq, ylim = ylimits, col = "white",
+      xaxs = "i", yaxs = "i", yaxt = "n", bty = ifelse(twoPositions, "C", "o"),
+      xlab = paste0("Distance from ", cFeaturePosNames[1]),
+      ylab = "", cex.axis = 1.25, cex.lab = 2
+    )
+    polygon(
+      x = c(min(dataToPlot1$Var1), dataToPlot1$Var1, max(dataToPlot1$Var1)),
+      y = c(0, dataToPlot1$Freq, 0),
+      col = "red2", border = "red2"
+    )
+    polygon(
+      x = c(min(dataToPlot2$Var1), dataToPlot2$Var1, max(dataToPlot2$Var1)),
+      y = c(0, dataToPlot2$Freq, 0),
+      col = "grey50", density = nDensityBaseMotif
+    )
+    abline(v = 0, lty = 2, lwd = 2, col = rgb(0, 0, 0, 0.3))
 
-    axis(side = 2, lwd = 3, col = "red2", cex.axis=1.25 )
-    mtext(paste0(cModMotif,  " proportion"), col = "red2", side = 2, line = 2.5, cex=2)
+    axis(side = 2, lwd = 3, col = "red2", cex.axis = 1.25)
+    mtext(paste0(cModMotif, " proportion"), col = "red2", side = 2, line = 2.5, cex = 2)
 
-    if(!twoPositions){
-      axis(side = 4, lwd = 3, col = "grey50", cex.axis=1.25 )
-      mtext(paste0(cBaseMotif, " proportion"), col = "grey50", side = 4, line = 2.5, cex=2)
+    if (!twoPositions) {
+      axis(side = 4, lwd = 3, col = "grey50", cex.axis = 1.25)
+      mtext(paste0(cBaseMotif, " proportion"), col = "grey50", side = 4, line = 2.5, cex = 2)
     } else {
-      par(mar=c(5.1,1.1,4.1,10.2))
-      plot(x=dataToPlot3$Var1, y=dataToPlot3$Freq, ylim=ylimits, col="white",
-           xaxs="i", yaxs="i",yaxt="n", bty="]",
-           xlab=paste0("Distance from ", cFeaturePosNames[2]),
-           ylab="", cex.axis=1.25, cex.lab=2)
-      polygon(x=c(min(dataToPlot3$Var1), dataToPlot3$Var1, max(dataToPlot3$Var1)) ,
-              y=c( 0, dataToPlot3$Freq, 0),
-              col='red2', border="red2")
-      polygon(x=c(min(dataToPlot4$Var1), dataToPlot4$Var1, max(dataToPlot4$Var1)) ,
-              y=c( 0, dataToPlot4$Freq, 0),
-              col='grey50',density = nDensityBaseMotif)
-      abline(v=0, lty=2, lwd=2, col=rgb(0,0,0,0.3))
+      par(mar = c(5.1, 1.1, 4.1, 10.2))
+      plot(
+        x = dataToPlot3$Var1, y = dataToPlot3$Freq, ylim = ylimits, col = "white",
+        xaxs = "i", yaxs = "i", yaxt = "n", bty = "]",
+        xlab = paste0("Distance from ", cFeaturePosNames[2]),
+        ylab = "", cex.axis = 1.25, cex.lab = 2
+      )
+      polygon(
+        x = c(min(dataToPlot3$Var1), dataToPlot3$Var1, max(dataToPlot3$Var1)),
+        y = c(0, dataToPlot3$Freq, 0),
+        col = "red2", border = "red2"
+      )
+      polygon(
+        x = c(min(dataToPlot4$Var1), dataToPlot4$Var1, max(dataToPlot4$Var1)),
+        y = c(0, dataToPlot4$Freq, 0),
+        col = "grey50", density = nDensityBaseMotif
+      )
+      abline(v = 0, lty = 2, lwd = 2, col = rgb(0, 0, 0, 0.3))
 
-      axis(side = 4, lwd = 3, col = "grey50", cex.axis=1.25 )
-      mtext(paste0(cBaseMotif, " proportion"), col = "grey50", side = 4, line = 2.5, cex=2)
-      par(xpd=NA)
-      segments(x0=0, x1=min(dataToPlot3$Var1)*2, y0=0,            lty=2, lwd=1, col="black")
-      segments(x0=0, x1=min(dataToPlot3$Var1)*2, y0=max(ylimits), lty=2, lwd=1, col="black")
-      par(xpd=FALSE)
+      axis(side = 4, lwd = 3, col = "grey50", cex.axis = 1.25)
+      mtext(paste0(cBaseMotif, " proportion"), col = "grey50", side = 4, line = 2.5, cex = 2)
+      par(xpd = NA)
+      segments(x0 = 0, x1 = min(dataToPlot3$Var1) * 2, y0 = 0, lty = 2, lwd = 1, col = "black")
+      segments(x0 = 0, x1 = min(dataToPlot3$Var1) * 2, y0 = max(ylimits), lty = 2, lwd = 1, col = "black")
+      par(xpd = FALSE)
     }
-    par(mar=opar$mar)
+    par(mar = opar$mar)
     layout(mat = matrix(1:1, ncol = 1))
-    if(twoPositions){
-      title(paste0(cModMotif, " and ", cBaseMotif, " distance from ", cFeaturePosNames[1],
-                   " and ", cFeaturePosNames[2]), line = 2.5 )
+    if (twoPositions) {
+      title(paste0(
+        cModMotif, " and ", cBaseMotif, " distance from ", cFeaturePosNames[1],
+        " and ", cFeaturePosNames[2]
+      ), line = 2.5)
     } else {
-      title(paste0(cModMotif, " and ", cBaseMotif, " distance from ", cFeaturePosNames[1]), line = 2.5 )
+      title(paste0(cModMotif, " and ", cBaseMotif, " distance from ", cFeaturePosNames[1]), line = 2.5)
     }
-
   } else {
     print("Error: listModCountsDistDataframe and listBaseCountsDistDataframe must have a same length.")
   }
-
 }
 
 #' AddToModBasePropDistFromFeaturePlot Function (ModAnnot)
@@ -1178,30 +1384,44 @@ DrawModBasePropDistFromFeature <- function(listModCountsDistDataframe,
 #' @keywords AddToModBasePropDistFromFeaturePlot
 #' @export
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
-#' #loading annotation
-#' myAnnotations <- rtracklayer::readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-#'                                           "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
+#' # loading annotation
+#' myAnnotations <- rtracklayer::readGFFAsGRanges(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+#' ))
 #'
-#' #Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
+#' # Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
 #' myGrangesPacBioGFF <-
-#'    ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.modifications.sca171819.gff"),
-#'                    cNameModToExtract = "m6A",
-#'                    cModNameInOutput = "6mA",
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioGFF(
+#'     cPacBioGFFPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.modifications.sca171819.gff"
+#'     ),
+#'     cNameModToExtract = "m6A",
+#'     cModNameInOutput = "6mA",
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #'
-#' #Retrieve, in a list, dataframes of ModBase counts per Distance values from feature positions
+#' # Retrieve, in a list, dataframes of ModBase counts per Distance values from feature positions
 #' myModDistCountsList <- GetDistFromFeaturePos(
 #'   grangesAnnotations = myAnnotations,
 #'   cSelectFeature = "gene",
@@ -1230,100 +1450,113 @@ DrawModBasePropDistFromFeature <- function(listModCountsDistDataframe,
 #'   cModMotif = "6mA"
 #' )
 #'
-#' #Loading Bam data
-#' myBamfile <- Rsamtools::BamFile(file = system.file(package="DNAModAnnot", "extdata",
-#'                      "PTET_MonoNuc_3-2new.pe.sca171819.sorted.bam"))
+#' # Loading Bam data
+#' myBamfile <- Rsamtools::BamFile(file = system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "PTET_MonoNuc_3-2new.pe.sca171819.sorted.bam"
+#' ))
 #' myBam_GRanges <- as(GenomicAlignments::readGAlignments(myBamfile), "GRanges")
-#' myBam_GRanges <- GetGposCenterFromGRanges(grangesData=myBam_GRanges)
+#' myBam_GRanges <- GetGposCenterFromGRanges(grangesData = myBam_GRanges)
 #'
-#' #Retrieve dataframes of Read center counts per Distance values in a list
-#' myCountsDist_List_bamfile <- GetDistFromFeaturePos(grangesAnnotations=myAnnotations,
-#'                                                    cSelectFeature="gene",
-#'                                                    lGetGRangesInsteadOfListCounts =  FALSE,
-#'                                                    lGetPropInsteadOfCounts = FALSE,
-#'                                                    grangesData = myBam_GRanges,
-#'                                                    cWhichStrandVsFeaturePos="both",
-#'                                                    nWindowSizeAroundFeaturePos=600,
-#'                                                    lAddCorrectedDistFrom5pTo3p=TRUE,
-#'                                                    cFeaturePosNames=c("TSS","TTS"))
+#' # Retrieve dataframes of Read center counts per Distance values in a list
+#' myCountsDist_List_bamfile <- GetDistFromFeaturePos(
+#'   grangesAnnotations = myAnnotations,
+#'   cSelectFeature = "gene",
+#'   lGetGRangesInsteadOfListCounts = FALSE,
+#'   lGetPropInsteadOfCounts = FALSE,
+#'   grangesData = myBam_GRanges,
+#'   cWhichStrandVsFeaturePos = "both",
+#'   nWindowSizeAroundFeaturePos = 600,
+#'   lAddCorrectedDistFrom5pTo3p = TRUE,
+#'   cFeaturePosNames = c("TSS", "TTS")
+#' )
 #'
-#' #adding new axis to plot from DrawModBasePropDistFromFeature function
+#' # adding new axis to plot from DrawModBasePropDistFromFeature function
 #' AddToModBasePropDistFromFeaturePlot(
-#'    dPosCountsDistFeatureStart=myCountsDist_List_bamfile[[1]],
-#'    dPosCountsDistFeatureEnd=myCountsDist_List_bamfile[[2]],
-#'    cSubtitleContent="Along with nucleosome center distance (MonoNuc_3-2newreplicate)",
-#'    cParamYLabel="Nucleosome center count (MonoNuc_3-2newreplicate)",
-#'    cParamColor="cyan3",
-#'    lAddAxisOnLeftSide=TRUE)
+#'   dPosCountsDistFeatureStart = myCountsDist_List_bamfile[[1]],
+#'   dPosCountsDistFeatureEnd = myCountsDist_List_bamfile[[2]],
+#'   cSubtitleContent = "Along with nucleosome center distance (MonoNuc_3-2newreplicate)",
+#'   cParamYLabel = "Nucleosome center count (MonoNuc_3-2newreplicate)",
+#'   cParamColor = "cyan3",
+#'   lAddAxisOnLeftSide = TRUE
+#' )
 AddToModBasePropDistFromFeaturePlot <- function(dPosCountsDistFeatureStart,
-                                                       dPosCountsDistFeatureEnd=NULL,
-                                                       cSubtitleContent,
-                                                       cParamYLabel,
-                                                       cParamColor="cyan3", cParamType="l",
-                                                       cParamLwd=3, cParamLty=3,
-                                                       lAddAxisOnLeftSide=TRUE,
-                                                       nYLimits=NULL){
+                                                dPosCountsDistFeatureEnd = NULL,
+                                                cSubtitleContent,
+                                                cParamYLabel,
+                                                cParamColor = "cyan3", cParamType = "l",
+                                                cParamLwd = 3, cParamLty = 3,
+                                                lAddAxisOnLeftSide = TRUE,
+                                                nYLimits = NULL) {
   twoPositions <- (!is.null(dPosCountsDistFeatureEnd))
 
   dataToPlot1 <- dPosCountsDistFeatureStart
 
   opar <- par()
-  if(twoPositions){
+  if (twoPositions) {
     dataToPlot2 <- dPosCountsDistFeatureEnd
     if (is.null(nYLimits)) {
       nYLimits <- c(min(dataToPlot1$Freq, dataToPlot2$Freq), max(dataToPlot1$Freq, dataToPlot2$Freq))
     }
-    par(new=TRUE)
+    par(new = TRUE)
     layout(mat = matrix(1:2, ncol = 2))
-    par(mar=c(5.1,10.2,4.1,1.1))
+    par(mar = c(5.1, 10.2, 4.1, 1.1))
   } else {
-    if (is.null(nYLimits)) {nYLimits <- c(min(dataToPlot1$Freq), max(dataToPlot1$Freq))}
-    par(new=TRUE)
-    par(mar=c(5.1,10.2,4.1,10.2))
+    if (is.null(nYLimits)) {
+      nYLimits <- c(min(dataToPlot1$Freq), max(dataToPlot1$Freq))
+    }
+    par(new = TRUE)
+    par(mar = c(5.1, 10.2, 4.1, 10.2))
   }
 
-  par(mfg=c(1,1))
-  plot(x=dataToPlot1$Var1,
-       y=dataToPlot1$Freq,
-       ylim=nYLimits, col=cParamColor,
-       xaxs="i", yaxs="i", yaxt="n", xaxt="n", bty="n",
-       xlab="", ylab="", type=cParamType, lwd=cParamLwd, lty=cParamLty)
-  lines(x=dataToPlot1$Var1, y=dataToPlot1$Freq, col=cParamColor, lwd=0.5, lty=1)
+  par(mfg = c(1, 1))
+  plot(
+    x = dataToPlot1$Var1,
+    y = dataToPlot1$Freq,
+    ylim = nYLimits, col = cParamColor,
+    xaxs = "i", yaxs = "i", yaxt = "n", xaxt = "n", bty = "n",
+    xlab = "", ylab = "", type = cParamType, lwd = cParamLwd, lty = cParamLty
+  )
+  lines(x = dataToPlot1$Var1, y = dataToPlot1$Freq, col = cParamColor, lwd = 0.5, lty = 1)
 
-  if(twoPositions){
-    par(mar=c(5.1,1.1,4.1,10.2))
-    par(mfg=c(1,2))
-    plot(x=dataToPlot2$Var1,
-         y=dataToPlot2$Freq,
-         ylim=nYLimits, col=cParamColor,
-         xaxs="i", yaxs="i", yaxt="n", xaxt="n", bty="n",
-         xlab="", ylab="", type=cParamType, lwd=cParamLwd, lty=cParamLty)
-    lines(x=dataToPlot2$Var1, y=dataToPlot2$Freq, col=cParamColor, lwd=0.5, lty=1)
+  if (twoPositions) {
+    par(mar = c(5.1, 1.1, 4.1, 10.2))
+    par(mfg = c(1, 2))
+    plot(
+      x = dataToPlot2$Var1,
+      y = dataToPlot2$Freq,
+      ylim = nYLimits, col = cParamColor,
+      xaxs = "i", yaxs = "i", yaxt = "n", xaxt = "n", bty = "n",
+      xlab = "", ylab = "", type = cParamType, lwd = cParamLwd, lty = cParamLty
+    )
+    lines(x = dataToPlot2$Var1, y = dataToPlot2$Freq, col = cParamColor, lwd = 0.5, lty = 1)
   }
-  if(twoPositions){
+  if (twoPositions) {
     if (lAddAxisOnLeftSide) {
-      par(mfg=c(1,1))
-      par(mar=c(5.1,4.1,4.1,1.1))
+      par(mfg = c(1, 1))
+      par(mar = c(5.1, 4.1, 4.1, 1.1))
     } else {
-      par(mfg=c(1,2))
-      par(mar=c(5.1,1.1,4.1,4.1))
+      par(mfg = c(1, 2))
+      par(mar = c(5.1, 1.1, 4.1, 4.1))
     }
   } else {
-    par(mfg=c(1,1))
-    par(mar=c(5.1,4.1,4.1,4.1))
+    par(mfg = c(1, 1))
+    par(mar = c(5.1, 4.1, 4.1, 4.1))
   }
-  axis(side = ifelse(lAddAxisOnLeftSide, 2, 4), lwd = 3, col = cParamColor, cex.axis=1.25,
-       at=pretty(range(dataToPlot1$Freq),n = 10), line=-1,
-       labels = pretty(range(dataToPlot1$Freq),n = 10))
+  axis(
+    side = ifelse(lAddAxisOnLeftSide, 2, 4), lwd = 3, col = cParamColor, cex.axis = 1.25,
+    at = pretty(range(dataToPlot1$Freq), n = 10), line = -1,
+    labels = pretty(range(dataToPlot1$Freq), n = 10)
+  )
 
-  mtext(cParamYLabel, col = cParamColor, side = ifelse(lAddAxisOnLeftSide, 2, 4), line = 1.5, cex=2)
+  mtext(cParamYLabel, col = cParamColor, side = ifelse(lAddAxisOnLeftSide, 2, 4), line = 1.5, cex = 2)
 
   layout(mat = matrix(1, ncol = 1))
-  par(mfg=c(1,1))
-  par(mar=opar$mar)
+  par(mfg = c(1, 1))
+  par(mar = opar$mar)
   title(cSubtitleContent, line = ifelse(lAddAxisOnLeftSide, 1.5, 0.5))
 
-  par(new=FALSE)
+  par(new = FALSE)
 }
 
 
@@ -1339,22 +1572,32 @@ AddToModBasePropDistFromFeaturePlot <- function(dPosCountsDistFeatureStart,
 #' @keywords internal
 AdaptedIdeogramTrackWithoutBandsData <- function(grangesGenome,
                                                  cContigToViz,
-                                                 cOrgAssemblyName){
-  tmp_start= as.vector(sapply(cContigToViz, function(x){round(seq(from=start(grangesGenome[seqnames(grangesGenome)==x & strand(grangesGenome)=="+"]),
-                                                                  to=end(grangesGenome[seqnames(grangesGenome)==x][1]),
-                                                                  length.out = 5), 0)[1:4]}))
+                                                 cOrgAssemblyName) {
+  tmp_start <- as.vector(sapply(cContigToViz, function(x) {
+    round(seq(
+      from = start(grangesGenome[seqnames(grangesGenome) == x & strand(grangesGenome) == "+"]),
+      to = end(grangesGenome[seqnames(grangesGenome) == x][1]),
+      length.out = 5
+    ), 0)[1:4]
+  }))
 
-  tmp_end= as.vector(sapply(cContigToViz, function(x){1 + round(seq(from=start(grangesGenome[seqnames(grangesGenome)==x & strand(grangesGenome)=="+"]),
-                                                                    to=end(grangesGenome[seqnames(grangesGenome)==x][1]),
-                                                                    length.out = 5), 0)[2:5]}))
+  tmp_end <- as.vector(sapply(cContigToViz, function(x) {
+    1 + round(seq(
+      from = start(grangesGenome[seqnames(grangesGenome) == x & strand(grangesGenome) == "+"]),
+      to = end(grangesGenome[seqnames(grangesGenome) == x][1]),
+      length.out = 5
+    ), 0)[2:5]
+  }))
 
-  dCytoBandsDataframe <- data.frame(chrom=rep(cContigToViz, each=4),
-                                    chromStart=tmp_start,
-                                    chromEnd=tmp_end,
-                                    name=rep(cContigToViz, each=4),
-                                    gieStain="gneg")
+  dCytoBandsDataframe <- data.frame(
+    chrom = rep(cContigToViz, each = 4),
+    chromStart = tmp_start,
+    chromEnd = tmp_end,
+    name = rep(cContigToViz, each = 4),
+    gieStain = "gneg"
+  )
 
-  return(IdeogramTrack(genome=cOrgAssemblyName,chromosome=cContigToViz,name=cOrgAssemblyName,bands=dCytoBandsDataframe, cex=1))
+  return(IdeogramTrack(genome = cOrgAssemblyName, chromosome = cContigToViz, name = cOrgAssemblyName, bands = dCytoBandsDataframe, cex = 1))
 }
 
 
@@ -1393,25 +1636,34 @@ AdaptedIdeogramTrackWithoutBandsData <- function(grangesGenome,
 #' Use NA as value in the vector if the associated file is not to be exported as a bam.
 #' If the exported file is a bam and if the value is NA or NULL, the bam will be exported without the "Xa" optional field.
 #' Defaults to "rep(NA, length(cFileNames)))"
+#' @importFrom rtracklayer export.gff3
 #' @export
 #' @keywords ExportFilesForGViz
 #' @examples
-#' #loading genome
-#' myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-#'                                          "ptetraurelia_mac_51_sca171819.fa"))
+#' # loading genome
+#' myGenome <- Biostrings::readDNAStringSet(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_sca171819.fa"
+#' ))
 #'
-#' #Preparing a grangesPacBioCSV dataset
+#' # Preparing a grangesPacBioCSV dataset
 #' myGposPacBioCSV <-
-#'    ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-#'                                  "ptetraurelia.bases.sca171819.csv"),
-#'                    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-#'                                                "score", "ipdRatio", "coverage"),
-#'                    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-#'                    cContigToBeAnalyzed = names(myGenome))
+#'   ImportPacBioCSV(
+#'     cPacBioCSVPath = system.file(
+#'       package = "DNAModAnnot", "extdata",
+#'       "ptetraurelia.bases.sca171819.csv"
+#'     ),
+#'     cSelectColumnsToExtract = c(
+#'       "refName", "tpl", "strand", "base",
+#'       "score", "ipdRatio", "coverage"
+#'     ),
+#'     lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+#'     cContigToBeAnalyzed = names(myGenome)
+#'   )
 #'
-#' ##NOT RUN!
-#' ##Export files for Gviz
-#' #ExportFilesForGViz(dnastringsetGenome = myGenome,
+#' ## NOT RUN!
+#' ## Export files for Gviz
+#' # ExportFilesForGViz(dnastringsetGenome = myGenome,
 #' #                   cFileNames = c("ipdRatio_for_each_A.bw",
 #' #                                  "score_for_all_bases.bw",
 #' #                                  "newFastaOnlyscaffold51_17.fa"),
@@ -1423,14 +1675,16 @@ AdaptedIdeogramTrackWithoutBandsData <- function(grangesGenome,
 #' #                   lBigwigParametersByStrand = c(TRUE, TRUE, NA),
 #' #                   cBamXaParameters = c(NA, NA, NA))
 #'
-#' #loading annotation
+#' # loading annotation
 #' library(rtracklayer)
-#' myAnnotations <- readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-#'                                           "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
+#' myAnnotations <- readGFFAsGRanges(system.file(
+#'   package = "DNAModAnnot", "extdata",
+#'   "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+#' ))
 #'
-#' ##NOT RUN!
-#' ##Export files for Gviz
-#' #ExportFilesForGViz(dnastringsetGenome = myGenome,
+#' ## NOT RUN!
+#' ## Export files for Gviz
+#' # ExportFilesForGViz(dnastringsetGenome = myGenome,
 #' #                   cFileNames = c("genes.bam"),
 #' #                   listGRangesObjects = list(myAnnotations[myAnnotations$type == "gene"]),
 #' #                   cFileFormats = c("bam"),
@@ -1441,35 +1695,40 @@ ExportFilesForGViz <- function(dnastringsetGenome,
                                cFileFormats,
                                cBigwigParameters = rep(NA, length(cFileNames)),
                                lBigwigParametersByStrand = rep(NA, length(cFileNames)),
-                               cBamXaParameters = rep(NA, length(cFileNames))){
-  if(is.list(listObjects)){
-    nCheckLength <- unique(c(length(cFileNames), length(listObjects), length(cFileFormats),
-                             length(cBigwigParameters), length(lBigwigParametersByStrand),
-                             length(cBamXaParameters)))
-    if(length(nCheckLength)==1){
-
-
-      sapply(1:length(cFileNames), function(x){
-        switch (cFileFormats[x],
-                bw = .ExportBigwigForGviz(cFileName = cFileNames[x],
-                                          grangesObject = listObjects[[x]],
-                                          cBigwigParameter = cBigwigParameters[x],
-                                          lBigwigParametersByStrand = lBigwigParametersByStrand[x],
-                                          dnastringsetGenome = dnastringsetGenome),
-                bam = .ExportBamForGviz(cFileName = cFileNames[x],
-                                        grangesObject = listObjects[[x]],
-                                        cBamXaParameter = cBamXaParameters[[x]],
-                                        dnastringsetGenome = dnastringsetGenome),
-                fa = .ExportFastaForGviz(cFileName = cFileNames[x],
-                                         dnastringsetObject = listObjects[[x]]),
-                gff3 = rtracklayer::export.gff3(con = cFileNames[x],
-                                                object = listObjects[[x]])
+                               cBamXaParameters = rep(NA, length(cFileNames))) {
+  if (is.list(listObjects)) {
+    nCheckLength <- unique(c(
+      length(cFileNames), length(listObjects), length(cFileFormats),
+      length(cBigwigParameters), length(lBigwigParametersByStrand),
+      length(cBamXaParameters)
+    ))
+    if (length(nCheckLength) == 1) {
+      sapply(1:length(cFileNames), function(x) {
+        switch(cFileFormats[x],
+          bw = .ExportBigwigForGviz(
+            cFileName = cFileNames[x],
+            grangesObject = listObjects[[x]],
+            cBigwigParameter = cBigwigParameters[x],
+            lBigwigParametersByStrand = lBigwigParametersByStrand[x],
+            dnastringsetGenome = dnastringsetGenome
+          ),
+          bam = .ExportBamForGviz(
+            cFileName = cFileNames[x],
+            grangesObject = listObjects[[x]],
+            cBamXaParameter = cBamXaParameters[[x]],
+            dnastringsetGenome = dnastringsetGenome
+          ),
+          fa = .ExportFastaForGviz(
+            cFileName = cFileNames[x],
+            dnastringsetObject = listObjects[[x]]
+          ),
+          gff3 = export.gff3(
+            con = cFileNames[x],
+            object = listObjects[[x]]
+          )
         )
         print(paste0(cFileNames[x], " Finished."))
-
       })
-
-
     } else {
       print("Error: all parameters provided must be of same length (except for dnastringsetGenome).")
     }
@@ -1486,12 +1745,16 @@ ExportFilesForGViz <- function(dnastringsetGenome,
 #' @export
 #' @keywords internal
 .ExportFastaForGviz <- function(cFileName,
-                                dnastringsetObject){
-  Biostrings::writeXStringSet(filepath = cFileName,
-                              x = dnastringsetObject)
-  write.table(x = Biostrings::fasta.index(filepath = cFileName, seqtype = "DNA"),
-              file = paste0(cFileName,".fai"),
-              quote = FALSE, sep = "\t")
+                                dnastringsetObject) {
+  writeXStringSet(
+    filepath = cFileName,
+    x = dnastringsetObject
+  )
+  write.table(
+    x = fasta.index(filepath = cFileName, seqtype = "DNA"),
+    file = paste0(cFileName, ".fai"),
+    quote = FALSE, sep = "\t"
+  )
 }
 
 #' .ExportBigwigForGviz Function (ModAnnot)
@@ -1502,24 +1765,26 @@ ExportFilesForGViz <- function(dnastringsetGenome,
 #' @param cBigwigParameter The name of the parameter to be exported within the bigwig file.
 #' @param lBigwigParametersByStrand If TRUE, the parameter is negative if associated range is on the reverse strand.
 #' @param dnastringsetGenome A DNAStringSet object containing the sequence for each contig.
+#' @importFrom BSgenome seqinfo
+#' @importFrom rtracklayer export.bw
 #' @export
 #' @keywords internal
 .ExportBigwigForGviz <- function(cFileName,
                                  grangesObject,
                                  cBigwigParameter,
                                  lBigwigParametersByStrand,
-                                 dnastringsetGenome){
+                                 dnastringsetGenome) {
   grangesObjectTmp <- grangesObject
-  GenomicRanges::mcols(grangesObjectTmp) <- NULL
-  grangesObjectTmp$score <- GenomicRanges::mcols(grangesObject)[[cBigwigParameter]]
-  if(lBigwigParametersByStrand){
-    grangesObjectTmp[GenomicRanges::strand(grangesObject)=="-"]$score <-
-      grangesObjectTmp[GenomicRanges::strand(grangesObject)=="-"]$score * -1
+  mcols(grangesObjectTmp) <- NULL
+  grangesObjectTmp$score <- mcols(grangesObject)[[cBigwigParameter]]
+  if (lBigwigParametersByStrand) {
+    grangesObjectTmp[strand(grangesObject) == "-"]$score <-
+      grangesObjectTmp[strand(grangesObject) == "-"]$score * -1
   }
-  GenomicRanges::strand(grangesObjectTmp) <- "*"
-  BSgenome::seqinfo(grangesObjectTmp) <-
-    BSgenome::seqinfo(dnastringsetGenome)[BSgenome::seqnames(BSgenome::seqinfo(grangesObjectTmp))]
-  rtracklayer::export.bw(grangesObjectTmp, con = cFileName)
+  strand(grangesObjectTmp) <- "*"
+  seqinfo(grangesObjectTmp) <-
+    seqinfo(dnastringsetGenome)[seqnames(seqinfo(grangesObjectTmp))]
+  export.bw(grangesObjectTmp, con = cFileName)
 }
 
 #' .ExportBamForGviz Function (ModAnnot)
@@ -1529,25 +1794,28 @@ ExportFilesForGViz <- function(dnastringsetGenome,
 #' @param grangesObject A GRanges object to be exported.
 #' @param cBamXaParameter The name of the parameter to be exported as a "Xa" optional field within the bam file.
 #' @param dnastringsetGenome A DNAStringSet object containing the sequence for each contig.
+#' @importFrom rtracklayer export
+#' @importFrom Rsamtools BamFile
 #' @export
 #' @keywords internal
 .ExportBamForGviz <- function(cFileName,
                               grangesObject,
                               cBamXaParameter,
-                              dnastringsetGenome){
-  grangesObject <- as(grangesObject,"GAlignments")
+                              dnastringsetGenome) {
+  grangesObject <- as(grangesObject, "GAlignments")
   names(grangesObject) <- 1:length(grangesObject)
 
-  if( (!is.na(cBamXaParameter)) | !is.null(cBamXaParameter)) {
-    GenomicRanges::mcols(grangesObject)$Xa <- GenomicRanges::mcols(grangesObject)[[cBamXaParameter]]
+  if ((!is.na(cBamXaParameter)) | !is.null(cBamXaParameter)) {
+    mcols(grangesObject)$Xa <- mcols(grangesObject)[[cBamXaParameter]]
   }
 
-  BSgenome::seqinfo(grangesObject) <-
-    BSgenome::seqinfo(dnastringsetGenome)[BSgenome::seqnames(BSgenome::seqinfo(grangesObject))]
+  seqinfo(grangesObject) <-
+    seqinfo(dnastringsetGenome)[seqnames(seqinfo(grangesObject))]
 
-  rtracklayer::export(grangesObject,
-                      Rsamtools::BamFile(cFileName),
-                      format = "bam")
+  export(grangesObject,
+    BamFile(cFileName),
+    format = "bam"
+  )
 }
 
 #' ImportBamExtendedAnnotationTrack Function (ModAnnot)
@@ -1559,32 +1827,36 @@ ExportFilesForGViz <- function(dnastringsetGenome,
 #' in order to allow the names of the genomic features to be displayed, the "mapping" sub-list of
 #' the generated annotation track must be completed with the new "id" and "group" values chosen while making the annotationTrack.
 #' Example: trackAnnotation@mapping <- list(id="tag", group="tag")
+#' @importFrom Rsamtools scanBamHeader ScanBamParam scanBam scanBamFlag
+#' @importFrom S4Vectors DataFrame
 #' @export
 #' @keywords internal
 ImportBamExtendedAnnotationTrack <- function(file, selection) {
   if (!file.exists(paste(file, "bai", sep = ".")) &&
-      !file.exists(paste(paste(head(strsplit("xxx.bam", ".", fixed = TRUE)[[1]], -1), collapse = "."), "bai", sep = "."))) {
+    !file.exists(paste(paste(head(strsplit("xxx.bam", ".", fixed = TRUE)[[1]], -1), collapse = "."), "bai", sep = "."))) {
     stop(
       "Unable to find index for BAM file '", file, "'. You can build an index using the following command:\n\t",
       "library(Rsamtools)\n\tindexBam(\"", file, "\")"
     )
   }
-  sinfo <- Rsamtools::scanBamHeader(file)[[1]]
+  sinfo <- scanBamHeader(file)[[1]]
 
-  res <- if (!as.character(GenomicRanges::seqnames(selection)[1]) %in% names(sinfo$targets)) {
-    GenomicRanges::mcols(selection) <- S4Vectors::DataFrame(id = "NA", group = "NA")
+  res <- if (!as.character(seqnames(selection)[1]) %in% names(sinfo$targets)) {
+    mcols(selection) <- DataFrame(id = "NA", group = "NA")
     selection[0]
   } else {
-    param <- Rsamtools::ScanBamParam(what = c("pos", "qwidth", "strand", "qname"), tag="Xa",
-                                     which = selection, flag = Rsamtools::scanBamFlag(isUnmappedQuery = FALSE))
-    x <- Rsamtools::scanBam(file, param = param)[[1]]
-    GenomicRanges::GRanges(
-      seqnames = GenomicRanges::seqnames(selection), ranges = IRanges::IRanges(start = x[["pos"]], width = x[["qwidth"]]), strand = x[["strand"]],
+    param <- ScanBamParam(
+      what = c("pos", "qwidth", "strand", "qname"), tag = "Xa",
+      which = selection, flag = scanBamFlag(isUnmappedQuery = FALSE)
+    )
+    x <- scanBam(file, param = param)[[1]]
+    GRanges(
+      seqnames = seqnames(selection), ranges = IRanges(start = x[["pos"]], width = x[["qwidth"]]), strand = x[["strand"]],
       id = make.unique(x[["qname"]]), group = x[["qname"]]
     )
   }
 
-  x <- Rsamtools::scanBam(file, param = Rsamtools::ScanBamParam(which = selection, tag="Xa"))[[1]]$tag
+  x <- scanBam(file, param = ScanBamParam(which = selection, tag = "Xa"))[[1]]$tag
   res$tag <- x[[which(names(x) == "Xa")]]
 
   return(res)

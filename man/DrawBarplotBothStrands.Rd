@@ -31,10 +31,12 @@ add TRUE to display "(from largest to smallest)" below the plot. Defaults to FAL
 Return a barplot describing some parameter values provided by strand for each contig.
 }
 \examples{
-DrawBarplotBothStrands(nParamByContigForward = c(100,86,75,56),
-                              nParamByContigReverse = c(96,88,80,83),
-                              cContigNames = c("chrI","chrII","chrIII","chrIV"),
-                              cGraphName = "Mean Coverage per contig",
-                              lIsOrderedLargestToSmallest = TRUE)
+DrawBarplotBothStrands(
+  nParamByContigForward = c(100, 86, 75, 56),
+  nParamByContigReverse = c(96, 88, 80, 83),
+  cContigNames = c("chrI", "chrII", "chrIII", "chrIV"),
+  cGraphName = "Mean Coverage per contig",
+  lIsOrderedLargestToSmallest = TRUE
+)
 }
 \keyword{DrawBarplotBothStrands}

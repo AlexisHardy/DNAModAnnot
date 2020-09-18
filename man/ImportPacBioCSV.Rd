@@ -37,30 +37,42 @@ Otherwise, it will be discarded to reduce object size. Defaults to TRUE.}
 Import PacBio CSV file and convert it as an UnStitched GPos object.
 }
 \examples{
-#Loading genome data
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# Loading genome data
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 names(myGenome)
 
-#Loading PacBio data
+# Loading PacBio data
 myGrangesPacBioCSV <-
- ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
- "ptetraurelia.bases.sca171819.csv"),
-cSelectColumnsToExtract = c("refName", "tpl", "strand", "base", "score", "ipdRatio", "coverage"),
-lKeepExtraColumnsInGPos = TRUE,
-lSortGPos = TRUE,
-cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioCSV(
+    cPacBioCSVPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.bases.sca171819.csv"
+    ),
+    cSelectColumnsToExtract = c("refName", "tpl", "strand", "base", "score", "ipdRatio", "coverage"),
+    lKeepExtraColumnsInGPos = TRUE,
+    lSortGPos = TRUE,
+    cContigToBeAnalyzed = names(myGenome)
+  )
 myGrangesPacBioCSV
 
-#Loading PacBio data for 2 scaffolds only
+# Loading PacBio data for 2 scaffolds only
 myGrangesPacBioCSV <-
-   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.bases.sca171819.csv"),
-                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-                                               "score", "ipdRatio", "coverage"),
-                   lKeepExtraColumnsInGPos = TRUE,
-                   lSortGPos = TRUE,
-                   cContigToBeAnalyzed = c("scaffold51_18", "scaffold51_19"))
+  ImportPacBioCSV(
+    cPacBioCSVPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.bases.sca171819.csv"
+    ),
+    cSelectColumnsToExtract = c(
+      "refName", "tpl", "strand", "base",
+      "score", "ipdRatio", "coverage"
+    ),
+    lKeepExtraColumnsInGPos = TRUE,
+    lSortGPos = TRUE,
+    cContigToBeAnalyzed = c("scaffold51_18", "scaffold51_19")
+  )
 myGrangesPacBioCSV
 }
 \keyword{ImportPacBioCSV}

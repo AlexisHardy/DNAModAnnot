@@ -13,8 +13,8 @@ GetGposCenterFromGRanges(grangesData)
 Retrieve, in a GPos object, the positions of the center of the ranges from a GRanges object.
 }
 \examples{
-myRanges <- as(c("chrI:300-500:+", "chrI:308-680:+" , "chrII:30-550:-"), "GRanges")
-myCenterPos <- GetGposCenterFromGRanges(grangesData=myRanges)
+myRanges <- as(c("chrI:300-500:+", "chrI:308-680:+", "chrII:30-550:-"), "GRanges")
+myCenterPos <- GetGposCenterFromGRanges(grangesData = myRanges)
 myCenterPos
 }
 \keyword{GetGposCenterFromGRanges}

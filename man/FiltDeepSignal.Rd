@@ -95,22 +95,27 @@ Filter out data from contigs or Modifications that do not reach criterias of sel
 Can also be used to obtain a gposDeepSignalMod object by simply filtering target sites which have a fraction above 0.
 }
 \examples{
-#Loading Nanopore data
+# Loading Nanopore data
 myDeepSignalModPath <- system.file(
-  package="DNAModAnnot", "extdata",
-  "FAB39088-288418386-Chr1.CpG.call_mods.frequency.tsv")
-mygposDeepSignalModBase <- ImportDeepSignalModFrequency(cDeepSignalModPath=myDeepSignalModPath,
-                                                        lSortGPos=TRUE,
-                                                        cContigToBeAnalyzed = "all")
+  package = "DNAModAnnot", "extdata",
+  "FAB39088-288418386-Chr1.CpG.call_mods.frequency.tsv"
+)
+mygposDeepSignalModBase <- ImportDeepSignalModFrequency(
+  cDeepSignalModPath = myDeepSignalModPath,
+  lSortGPos = TRUE,
+  cContigToBeAnalyzed = "all"
+)
 mygposDeepSignalModBase
 
-#Filtering
-mygposDeepSignalMod <- FiltDeepSignal(gposDeepSignalModBase = mygposDeepSignalModBase,
-                                      cParamNameForFilter = "frac",
-                                      lFiltParam = TRUE,
-                                      nFiltParamLoBoundaries = 0,
-                                      nFiltParamUpBoundaries = 1,
-                                      cFiltParamBoundariesToInclude = "upperOnly")$Mod
+# Filtering
+mygposDeepSignalMod <- FiltDeepSignal(
+  gposDeepSignalModBase = mygposDeepSignalModBase,
+  cParamNameForFilter = "frac",
+  lFiltParam = TRUE,
+  nFiltParamLoBoundaries = 0,
+  nFiltParamUpBoundaries = 1,
+  cFiltParamBoundariesToInclude = "upperOnly"
+)$Mod
 mygposDeepSignalMod
 }
 \keyword{FiltModDeepSignal}

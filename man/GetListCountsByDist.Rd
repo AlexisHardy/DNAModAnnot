@@ -37,32 +37,46 @@ positions. If the input list contains 2 GRanges, 2 dataframes ("Position" vs fea
 will be exported in the output instead of 1 dataframe ("Position" vs featureStart).
 }
 \examples{
-#loading genome
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# loading genome
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 
-#loading annotation
+# loading annotation
 library(rtracklayer)
-myAnnotations <- readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-                                          "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
+myAnnotations <- readGFFAsGRanges(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+))
 
-#Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
+# Preparing a grangesPacBioGFF and a grangesPacBioCSV datasets
 myGrangesPacBioGFF <-
-   ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.modifications.sca171819.gff"),
-                   cNameModToExtract = "m6A",
-                   cModNameInOutput = "6mA",
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioGFF(
+    cPacBioGFFPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.modifications.sca171819.gff"
+    ),
+    cNameModToExtract = "m6A",
+    cModNameInOutput = "6mA",
+    cContigToBeAnalyzed = names(myGenome)
+  )
 myGposPacBioCSV <-
-   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.bases.sca171819.csv"),
-                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-                                               "score", "ipdRatio", "coverage"),
-                   lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioCSV(
+    cPacBioCSVPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.bases.sca171819.csv"
+    ),
+    cSelectColumnsToExtract = c(
+      "refName", "tpl", "strand", "base",
+      "score", "ipdRatio", "coverage"
+    ),
+    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+    cContigToBeAnalyzed = names(myGenome)
+  )
 myGposPacBioCSV <- myGposPacBioCSV[myGposPacBioCSV$base == "A"]
 
-#Retrieve, in a list, dataframes of ModBase counts per Distance values from feature positions
+# Retrieve, in a list, dataframes of ModBase counts per Distance values from feature positions
 myModDistGRangesList <- GetDistFromFeaturePos(
   grangesAnnotations = myAnnotations,
   cSelectFeature = "gene",
@@ -72,9 +86,11 @@ myModDistGRangesList <- GetDistFromFeaturePos(
   lAddCorrectedDistFrom5pTo3p = TRUE,
   cFeaturePosNames = c("TSS", "TTS")
 )
-myModDistCountsList <- GetListCountsByDist(listGRangesDist = myModDistGRangesList,
-                                           lAddCorrectedDistFrom5pTo3p = TRUE,
-                                           lGetPropInsteadOfCounts = TRUE)
+myModDistCountsList <- GetListCountsByDist(
+  listGRangesDist = myModDistGRangesList,
+  lAddCorrectedDistFrom5pTo3p = TRUE,
+  lGetPropInsteadOfCounts = TRUE
+)
 myModDistCountsList
 }
 \keyword{GetListCountsByDist}

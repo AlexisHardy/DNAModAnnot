@@ -27,32 +27,42 @@ A filtered grangesModPosWithSeq.
 Filter out modifications which have a parameter (tested with FDR estimations) that do not reach criterias of selection.
 }
 \examples{
-#loading genome
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# loading genome
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 myGrangesGenome <- GetGenomeGRanges(myGenome)
 
-#Preparing a grangesPacBioGFF dataset
+# Preparing a grangesPacBioGFF dataset
 myGrangesPacBioGFF <-
-   ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                   "ptetraurelia.modifications.sca171819.gff"),
-                   cNameModToExtract = "m6A",
-                   cModNameInOutput = "6mA",
-                   cContigToBeAnalyzed = c("scaffold51_17", "scaffold51_18", "scaffold51_19"))
+  ImportPacBioGFF(
+    cPacBioGFFPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.modifications.sca171819.gff"
+    ),
+    cNameModToExtract = "m6A",
+    cModNameInOutput = "6mA",
+    cContigToBeAnalyzed = c("scaffold51_17", "scaffold51_18", "scaffold51_19")
+  )
 
-myMotif_pct_and_GRangesList <- ExtractListModPosByModMotif(grangesModPos=myGrangesPacBioGFF,
-                                                        grangesGenome = myGrangesGenome,
-                                                        dnastringsetGenome = myGenome,
-                                                        nUpstreamBpToAdd = 0,
-                                                        nDownstreamBpToAdd = 1,
-                                                        nModMotifMinProp = 0.05,
-                                                        cBaseLetterForMod = "A",
-                                                        cModNameInOutput = "6mA")
-#Filtering
+myMotif_pct_and_GRangesList <- ExtractListModPosByModMotif(
+  grangesModPos = myGrangesPacBioGFF,
+  grangesGenome = myGrangesGenome,
+  dnastringsetGenome = myGenome,
+  nUpstreamBpToAdd = 0,
+  nDownstreamBpToAdd = 1,
+  nModMotifMinProp = 0.05,
+  cBaseLetterForMod = "A",
+  cModNameInOutput = "6mA"
+)
+# Filtering
 myPosMod_GRangesbyMotif_filt <-
-   FiltFdrBased(grangesModPosWithSeq = myMotif_pct_and_GRangesList$GRangesbyMotif,
-                listFdrEstByThrIpdRatio = list(2.1,2.1, 2.1),
-                listFdrEstByThrScore= list(42,42, 42))
+  FiltFdrBased(
+    grangesModPosWithSeq = myMotif_pct_and_GRangesList$GRangesbyMotif,
+    listFdrEstByThrIpdRatio = list(2.1, 2.1, 2.1),
+    listFdrEstByThrScore = list(42, 42, 42)
+  )
 myPosMod_GRangesbyMotif_filt
 }
 \keyword{FiltFdrBased}

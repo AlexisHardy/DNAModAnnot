@@ -25,32 +25,46 @@ Return a list with the Modification ratio (Mod ratio) by strand for all scaffold
 For "b" as the base that can be modified, Mod ratio = Number of modified "b" / Total number of "b".
 }
 \examples{
-#loading genome
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# loading genome
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 
-#Preparing a grangesPacBioGFF and gposPacBioCSV datasets
+# Preparing a grangesPacBioGFF and gposPacBioCSV datasets
 myGrangesPacBioGFF <-
-   ImportPacBioGFF(cPacBioGFFPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.modifications.sca171819.gff"),
-                   cNameModToExtract = "m6A",
-                   cModNameInOutput = "6mA",
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioGFF(
+    cPacBioGFFPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.modifications.sca171819.gff"
+    ),
+    cNameModToExtract = "m6A",
+    cModNameInOutput = "6mA",
+    cContigToBeAnalyzed = names(myGenome)
+  )
 
 myGposPacBioCSV <-
-   ImportPacBioCSV(cPacBioCSVPath = system.file(package="DNAModAnnot", "extdata",
-                                 "ptetraurelia.bases.sca171819.csv"),
-                   cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
-                                               "score", "ipdRatio", "coverage"),
-                   lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
-                   cContigToBeAnalyzed = names(myGenome))
+  ImportPacBioCSV(
+    cPacBioCSVPath = system.file(
+      package = "DNAModAnnot", "extdata",
+      "ptetraurelia.bases.sca171819.csv"
+    ),
+    cSelectColumnsToExtract = c(
+      "refName", "tpl", "strand", "base",
+      "score", "ipdRatio", "coverage"
+    ),
+    lKeepExtraColumnsInGPos = TRUE, lSortGPos = TRUE,
+    cContigToBeAnalyzed = names(myGenome)
+  )
 myGposPacBioCSV <- myGposPacBioCSV[myGposPacBioCSV$base == "A"]
 
-#Mod report
-myMod_ratio_list <- GetModRatioByContig(grangesModPos = myGrangesPacBioGFF,
-                                        gposModTargetBasePos = myGposPacBioCSV,
-                                        dnastringsetGenome = myGenome,
-                                        cBaseLetterForMod = "A")
+# Mod report
+myMod_ratio_list <- GetModRatioByContig(
+  grangesModPos = myGrangesPacBioGFF,
+  gposModTargetBasePos = myGposPacBioCSV,
+  dnastringsetGenome = myGenome,
+  cBaseLetterForMod = "A"
+)
 myMod_ratio_list
 }
 \keyword{GetModRatioByContig}

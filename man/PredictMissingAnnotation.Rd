@@ -29,23 +29,29 @@ This will return an error if 2 categories among "mRNA", "exon" and "intron" are 
 Complete annotation with features, such as "intergenic", "antisense_strand_of_gene" or "exon"|"intron", using available features in the annotation.
 }
 \examples{
-#Loading genome data
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+# Loading genome data
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 myGrangesGenome <- GetGenomeGRanges(myGenome)
 
-#Loading annotation data
+# Loading annotation data
 myAnnotations <-
-  rtracklayer::readGFFAsGRanges(system.file(package="DNAModAnnot", "extdata",
-                                            "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"))
+  rtracklayer::readGFFAsGRanges(system.file(
+    package = "DNAModAnnot", "extdata",
+    "ptetraurelia_mac_51_annotation_v2.0_sca171819.gff3"
+  ))
 
-#Completing annotation data
+# Completing annotation data
 levels(myAnnotations$type)
-myAnnotations <- PredictMissingAnnotation(grangesAnnotations = myAnnotations,
-                                                    grangesGenome = myGrangesGenome,
-                                                    cFeaturesColName = "type",
-                                                    cGeneCategories = c("gene"),
-                                                    lAddIntronRangesUsingExon = TRUE)
+myAnnotations <- PredictMissingAnnotation(
+  grangesAnnotations = myAnnotations,
+  grangesGenome = myGrangesGenome,
+  cFeaturesColName = "type",
+  cGeneCategories = c("gene"),
+  lAddIntronRangesUsingExon = TRUE
+)
 levels(myAnnotations$type)
 }
 \keyword{PredictMissingAnnotation}

@@ -5,15 +5,16 @@ knitr::opts_chunk$set(
 )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  if (!requireNamespace("BiocManager", quietly = TRUE))
-#      install.packages("BiocManager")
+#  if (!requireNamespace("BiocManager", quietly = TRUE)) {
+#    install.packages("BiocManager")
+#  }
 #  
-#  BiocManager::install(c('Biostrings', 'BSgenome', 'Gviz', 'Logolas'))
+#  BiocManager::install(c("Biostrings", "BSgenome", "Gviz", "Logolas"))
 #  
 #  # Installation from tar.gz file
 #  setwd("path/to/package/file/")
 #  
-#  install.packages("DNAModAnnot_0.0.0.9014.tar.gz", repos = NULL, type = 'source')
+#  install.packages("DNAModAnnot_0.0.0.9015.tar.gz", repos = NULL, type = "source")
 
 ## ----setup--------------------------------------------------------------------
 library(DNAModAnnot)
@@ -130,9 +131,9 @@ report_modifications <- GetModReportPacBio(
 ## ----barplotfig3, fig.width = 7, fig.asp = .62, fig.align = "center"----------
 # Modif ratio by scaffold and by strand
 contig_modification_ratio <- GetModRatioByContig(PacBioGFF_granges_filt1,
-                                                 PacBioCSV_gpos_filt1[PacBioCSV_gpos_filt1$base == "A"],
-                                                 dnastringsetGenome = ptetraurelia_genome,
-                                                 cBaseLetterForMod = "A"
+  PacBioCSV_gpos_filt1[PacBioCSV_gpos_filt1$base == "A"],
+  dnastringsetGenome = ptetraurelia_genome,
+  cBaseLetterForMod = "A"
 )
 DrawBarplotBothStrands(
   nParamByContigForward = contig_modification_ratio$f_strand$Mod_ratio,
@@ -159,11 +160,11 @@ DrawModLogo(
 # Second filter: fraction
 PacBioGFF_granges_filt2 <- FiltPacBio(
   grangesPacBioGFF = PacBioGFF_granges_filt1,
-  cParamNameForFilter = "frac", 
+  cParamNameForFilter = "frac",
   lFiltParam = TRUE,
-  nFiltParamLoBoundaries = 0.05, nFiltParamUpBoundaries = 1, 
+  nFiltParamLoBoundaries = 0.05, nFiltParamUpBoundaries = 1,
   cFiltParamBoundariesToInclude = "upperOnly"
-)$gff 
+)$gff
 
 ## ----warning=FALSE, results="hide"--------------------------------------------
 # Extract Mod Data by motif over-represented (at least % of motifs)
@@ -357,74 +358,87 @@ ptet51GenesBam <- system.file(package = "DNAModAnnot", "extdata", "ptet51Genes.b
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  # #Gviz file making for vignette (not run)
-#  ExportFilesForGViz(cFileNames = c(ipdRatio6mABigwig,
-#                                    ptet51GenesBam),
-#                     listObjects = list(PacBioGFF_granges_filtAT,
-#                                               annotations_range[annotations_range$type == "gene"]),
-#                     cFileFormats = c("bw", "bam"),
-#                     lBigwigParametersByStrand = c(TRUE, NA),
-#                     cBigwigParameters = c("ipdRatio",NA),
-#                     cBamXaParameters = c(NA, "Name"),
-#                     dnastringsetGenome = ptetraurelia_genome)
+#  ExportFilesForGViz(
+#    cFileNames = c(
+#      ipdRatio6mABigwig,
+#      ptet51GenesBam
+#    ),
+#    listObjects = list(
+#      PacBioGFF_granges_filtAT,
+#      annotations_range[annotations_range$type == "gene"]
+#    ),
+#    cFileFormats = c("bw", "bam"),
+#    lBigwigParametersByStrand = c(TRUE, NA),
+#    cBigwigParameters = c("ipdRatio", NA),
+#    cBamXaParameters = c(NA, "Name"),
+#    dnastringsetGenome = ptetraurelia_genome
+#  )
 
 ## -----------------------------------------------------------------------------
 cContigToViz <- unique(GenomicRanges::seqnames(ptetraurelia_genome_range))
 
-#Generating Ideogram TRACK--------
-options(ucscChromosomeNames=FALSE)
-trackIdeogram <- AdaptedIdeogramTrackWithoutBandsData(grangesGenome = ptetraurelia_genome_range,
-                                                      cContigToViz = cContigToViz,
-                                                      cOrgAssemblyName = "ptetraurelia_mac_51")
+# Generating Ideogram TRACK--------
+options(ucscChromosomeNames = FALSE)
+trackIdeogram <- AdaptedIdeogramTrackWithoutBandsData(
+  grangesGenome = ptetraurelia_genome_range,
+  cContigToViz = cContigToViz,
+  cOrgAssemblyName = "ptetraurelia_mac_51"
+)
 
 ## -----------------------------------------------------------------------------
-#Generating classic Gviz tracks
+# Generating classic Gviz tracks
 
-#GenomeAxis TRACK------
-trackGenomeAxis <- Gviz::GenomeAxisTrack(cex=1)
+# GenomeAxis TRACK------
+trackGenomeAxis <- Gviz::GenomeAxisTrack(cex = 1)
 
-#Sequence TRACK--------
-trackSequence <- Gviz::SequenceTrack(ptetraurelia_genome_fa, 
-                                     chromosome=cContigToViz, 
-                                     add53=TRUE,
-                                     complement=FALSE, cex=0.8, stream = TRUE)
+# Sequence TRACK--------
+trackSequence <- Gviz::SequenceTrack(ptetraurelia_genome_fa,
+  chromosome = cContigToViz,
+  add53 = TRUE,
+  complement = FALSE, cex = 0.8, stream = TRUE
+)
 
-#DATATRACK--------
-trackData6mATipdRatio <- Gviz::DataTrack(ipdRatio6mABigwig, 
-                                         stream = TRUE, name = "6mAT\nipdRatio", type="histogram", 
-                                         col.histogram=c("red"), fill = "red",
-                                         background.title = "darkred", col = NULL
+# DATATRACK--------
+trackData6mATipdRatio <- Gviz::DataTrack(ipdRatio6mABigwig,
+  stream = TRUE, name = "6mAT\nipdRatio", type = "histogram",
+  col.histogram = c("red"), fill = "red",
+  background.title = "darkred", col = NULL
 )
 
 trackDataNuclCoverage <- Gviz::DataTrack(bamfile_path,
-                                         stream = TRUE, name = "Nucleosome\ncoverage\n(MNase-seq)", 
-                                         type="histogram", 
-                                         col.histogram=c("blue"), fill="blue",
-                                         background.title = "darkblue", col = NULL
+  stream = TRUE, name = "Nucleosome\ncoverage\n(MNase-seq)",
+  type = "histogram",
+  col.histogram = c("blue"), fill = "blue",
+  background.title = "darkblue", col = NULL
 )
 
 ## -----------------------------------------------------------------------------
-#Generating Annotation TRACK with streaming--------
-trackAnnotation <- Gviz::AnnotationTrack(ptet51GenesBam, 
-                                   name = "Gene", stacking = "squish", 
-                                   stream = TRUE, importFunction = ImportBamExtendedAnnotationTrack,
-                                   group="tag", groupAnnotation = "tag", 
-                                   just.group="below",
-                                   fontcolor.group = "black", fontsize.group=18,
-                                   fill="lightblue", shape="fixedArrow", 
-                                   arrowHeadWidth = 50, lwd = 3,
-                                   background.title = "darkblue"
+# Generating Annotation TRACK with streaming--------
+trackAnnotation <- Gviz::AnnotationTrack(ptet51GenesBam,
+  name = "Gene", stacking = "squish",
+  stream = TRUE, importFunction = ImportBamExtendedAnnotationTrack,
+  group = "tag", groupAnnotation = "tag",
+  just.group = "below",
+  fontcolor.group = "black", fontsize.group = 18,
+  fill = "lightblue", shape = "fixedArrow",
+  arrowHeadWidth = 50, lwd = 3,
+  background.title = "darkblue"
 )
 
 ## -----------------------------------------------------------------------------
-trackAnnotation@mapping <- list(id="tag", group="tag") 
+trackAnnotation@mapping <- list(id = "tag", group = "tag")
 
 ## ----annlocalfig, fig.width=7, fig.height = 8, warning=FALSE, results="hide"----
-#Plotting Tracks--------
-Gviz::plotTracks(trackList = list(trackIdeogram, trackGenomeAxis, 
-                                  trackData6mATipdRatio, trackSequence, 
-                                  trackDataNuclCoverage, trackAnnotation),
-                 chromosome = "scaffold51_17", 
-                 from = 361000, to = 365000)
+# Plotting Tracks--------
+Gviz::plotTracks(
+  trackList = list(
+    trackIdeogram, trackGenomeAxis,
+    trackData6mATipdRatio, trackSequence,
+    trackDataNuclCoverage, trackAnnotation
+  ),
+  chromosome = "scaffold51_17",
+  from = 361000, to = 365000
+)
 
 ## -----------------------------------------------------------------------------
 sessionInfo()

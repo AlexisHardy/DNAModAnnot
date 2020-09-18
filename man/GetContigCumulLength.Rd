@@ -21,8 +21,10 @@ A dataframe:
 Return a dataframe with the length (and cumulative length) of contigs (ordered from largest to smallest contig) provided in genome assembly.
 }
 \examples{
-myGenome <- Biostrings::readDNAStringSet(system.file(package="DNAModAnnot", "extdata",
-                                         "ptetraurelia_mac_51_sca171819.fa"))
+myGenome <- Biostrings::readDNAStringSet(system.file(
+  package = "DNAModAnnot", "extdata",
+  "ptetraurelia_mac_51_sca171819.fa"
+))
 
 myContig_cumul_len_t <- GetContigCumulLength(dnastringsetGenome = myGenome)
 

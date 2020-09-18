@@ -44,13 +44,16 @@ Otherwise, it will be discarded to reduce object size. Defaults to TRUE.}
 Import DeepSignal call_modification_frequency.py output file and convert it as an UnStitched GPos object.
 }
 \examples{
-#Loading Nanopore data
+# Loading Nanopore data
 myDeepSignalModPath <- system.file(
-  package="DNAModAnnot", "extdata",
-  "FAB39088-288418386-Chr1.CpG.call_mods.frequency.tsv")
-mygposDeepSignalModBase <- ImportDeepSignalModFrequency(cDeepSignalModPath=myDeepSignalModPath,
-                                                        lSortGPos=TRUE,
-                                                        cContigToBeAnalyzed = "all")
+  package = "DNAModAnnot", "extdata",
+  "FAB39088-288418386-Chr1.CpG.call_mods.frequency.tsv"
+)
+mygposDeepSignalModBase <- ImportDeepSignalModFrequency(
+  cDeepSignalModPath = myDeepSignalModPath,
+  lSortGPos = TRUE,
+  cContigToBeAnalyzed = "all"
+)
 mygposDeepSignalModBase
 }
 \keyword{ImportDeepSignalModFrequency}

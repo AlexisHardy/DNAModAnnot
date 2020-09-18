@@ -1,7 +1,7 @@
 Package: DNAModAnnot
 Type: Package
 Title: Toolbox for DNA Modifications filtering and annotation
-Version: 0.0.0.9014
+Version: 0.0.0.9015
 Authors@R: 
     person(given = "Alexis",
            family = "Hardy",
@@ -15,12 +15,12 @@ Description: Use modifications detection output (from
 	used for analysis.
 License: GPL-3
 Depends: R (>= 3.6.1)
-Imports: methods, Biostrings, GenomicRanges (>= 1.38.0), BSgenome, Biobase, 
-	BiocGenerics, GenomeInfoDb, Gviz, IRanges, Logolas, 
-	S4Vectors, data.table, rtracklayer
+Imports: methods, Biostrings (>= 2.10.0), GenomicRanges (>= 1.38.0), BSgenome (>= 1.28.0), Biobase (> 2.1.0), 
+	BiocGenerics (>= 0.34.0), GenomeInfoDb (>= 1.14.0), Gviz (>= 1.29.1), IRanges (>= 2.20.0), Logolas (>= 1.3.1), 
+	S4Vectors (>= 0.24.0), data.table (>= 1.13.0), rtracklayer (>= 1.30.0), Rsamtools (>= 2.0.0)
 Suggests: 
     knitr,
-	GenomicAlignments, Rsamtools	
+	GenomicAlignments	
 Encoding: UTF-8
 LazyData: true
 NeedsCompilation: no
