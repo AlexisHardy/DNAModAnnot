@@ -9,18 +9,24 @@ knitr::opts_chunk$set(
 #    install.packages("BiocManager")
 #  }
 #  
-#  BiocManager::install(c("Biostrings", "BSgenome", "Gviz", "Logolas"))
+#  BiocManager::install(c('Biostrings', 'BSgenome', 'Gviz'))
+
+## ----eval=FALSE---------------------------------------------------------------
+#  #Logolas package
+#  url="https://www.bioconductor.org/packages/3.11/bioc/src/contrib/Logolas_1.11.0.tar.gz"
+#  download.file(url, destfile = "Logolas_1.11.0.tar.gz")
 #  
-#  # Installation using tar.gz file
+#  BiocManager::install(c('SQUAREM', 'LaplacesDemon', 'gridBase'))
+#  install.packages("Logolas_1.11.0.tar.gz", repos = NULL, type = 'source')
+
+## ----eval=FALSE---------------------------------------------------------------
 #  setwd("path/to/package/file/")
-#  
-#  install.packages("DNAModAnnot_0.0.0.9016.tar.gz", repos = NULL, type = "source")
-#  
-#  # Install directly from GitHub
+#  install.packages("DNAModAnnot_0.0.0.9017.tar.gz", repos = NULL, type = 'source')
+
+## ----eval=FALSE---------------------------------------------------------------
 #  install.packages("devtools")
 #  library(devtools)
 #  install_github("AlexisHardy/DNAModAnnot")
-#  
 
 ## ----setup--------------------------------------------------------------------
 library(DNAModAnnot)

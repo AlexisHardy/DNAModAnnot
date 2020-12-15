@@ -40,18 +40,31 @@ if (!requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
 }
 
-BiocManager::install(c("Biostrings", "BSgenome", "Gviz", "Logolas"))
+BiocManager::install(c('Biostrings', 'BSgenome', 'Gviz'))
+```
 
-# Installation using tar.gz file
+Logolas package is depreciated in the latest version of Bioconductor and must be installed with a source file.
+Logolas source file can be obtained from previous versions of Bioconductor:
+```{r eval=FALSE}
+#Logolas package
+url="https://www.bioconductor.org/packages/3.11/bioc/src/contrib/Logolas_1.11.0.tar.gz"
+download.file(url, destfile = "Logolas_1.11.0.tar.gz")
+
+BiocManager::install(c('SQUAREM', 'LaplacesDemon', 'gridBase'))
+install.packages("Logolas_1.11.0.tar.gz", repos = NULL, type = 'source')
+```
+
+Then, you can install DNAModAnnot using the tar.gz file from GitHub repository:
+```{r eval=FALSE}
 setwd("path/to/package/file/")
+install.packages("DNAModAnnot_0.0.0.9017.tar.gz", repos = NULL, type = 'source')
+```
 
-install.packages("DNAModAnnot_0.0.0.9016.tar.gz", repos = NULL, type = "source")
-
-# Install directly from GitHub
+Or you can directly install from GitHub using devtools package:
+```{r eval=FALSE}
 install.packages("devtools")
 library(devtools)
 install_github("AlexisHardy/DNAModAnnot")
-
 ```
 
 You should then be able to load the package into your R session with:
