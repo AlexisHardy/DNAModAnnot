@@ -20,7 +20,18 @@ First, install required packages using BiocManager:
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-BiocManager::install(c('Biostrings', 'BSgenome', 'Gviz', 'Logolas'))
+BiocManager::install(c('Biostrings', 'BSgenome', 'Gviz'))
+```
+
+Logolas package is depreciated in the latest version of Bioconductor and must be installed with a source file.
+Logolas source file can be obtained from previous versions of Bioconductor:
+```
+#Logolas package
+url="https://www.bioconductor.org/packages/3.11/bioc/src/contrib/Logolas_1.11.0.tar.gz"
+download.file(url, destfile = "Logolas_1.11.0.tar.gz")
+
+BiocManager::install(c('SQUAREM', 'LaplacesDemon', 'gridBase'))
+install.packages("Logolas_1.11.0.tar.gz", repos = NULL, type = 'source')
 ```
 
 Then, you can install DNAModAnnot using the tar.gz file from GitHub repository:
