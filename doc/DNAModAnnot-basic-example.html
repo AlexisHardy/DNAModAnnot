@@ -349,10 +349,15 @@ div.blue {  border-left: 5px solid blue; padding: 10px}
 <span id="cb1-4"><a href="#cb1-4"></a></span>
 <span id="cb1-5"><a href="#cb1-5"></a>BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="kw">c</span>(<span class="st">&quot;Biostrings&quot;</span>, <span class="st">&quot;BSgenome&quot;</span>, <span class="st">&quot;Gviz&quot;</span>, <span class="st">&quot;Logolas&quot;</span>))</span>
 <span id="cb1-6"><a href="#cb1-6"></a></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="co"># Installation from tar.gz file</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="co"># Installation using tar.gz file</span></span>
 <span id="cb1-8"><a href="#cb1-8"></a><span class="kw">setwd</span>(<span class="st">&quot;path/to/package/file/&quot;</span>)</span>
 <span id="cb1-9"><a href="#cb1-9"></a></span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="kw">install.packages</span>(<span class="st">&quot;DNAModAnnot_0.0.0.9015.tar.gz&quot;</span>, <span class="dt">repos =</span> <span class="ot">NULL</span>, <span class="dt">type =</span> <span class="st">&quot;source&quot;</span>)</span></code></pre></div>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="kw">install.packages</span>(<span class="st">&quot;DNAModAnnot_0.0.0.9016.tar.gz&quot;</span>, <span class="dt">repos =</span> <span class="ot">NULL</span>, <span class="dt">type =</span> <span class="st">&quot;source&quot;</span>)</span>
+<span id="cb1-11"><a href="#cb1-11"></a></span>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="co"># Install directly from GitHub</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="kw">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)</span>
+<span id="cb1-14"><a href="#cb1-14"></a><span class="kw">library</span>(devtools)</span>
+<span id="cb1-15"><a href="#cb1-15"></a><span class="kw">install_github</span>(<span class="st">&quot;AlexisHardy/DNAModAnnot&quot;</span>)</span></code></pre></div>
 <p>You should then be able to load the package into your R session with:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">library</span>(DNAModAnnot)</span></code></pre></div>
 </div>
@@ -911,7 +916,7 @@ After preparing a set of tracks, you can display them using the <code>plotTracks
 <span id="cb33-16"><a href="#cb33-16"></a><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span id="cb33-17"><a href="#cb33-17"></a><span class="co">#&gt; </span></span>
 <span id="cb33-18"><a href="#cb33-18"></a><span class="co">#&gt; other attached packages:</span></span>
-<span id="cb33-19"><a href="#cb33-19"></a><span class="co">#&gt; [1] DNAModAnnot_0.0.0.9015</span></span>
+<span id="cb33-19"><a href="#cb33-19"></a><span class="co">#&gt; [1] DNAModAnnot_0.0.0.9016</span></span>
 <span id="cb33-20"><a href="#cb33-20"></a><span class="co">#&gt; </span></span>
 <span id="cb33-21"><a href="#cb33-21"></a><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span id="cb33-22"><a href="#cb33-22"></a><span class="co">#&gt;   [1] colorspace_1.4-1            ellipsis_0.3.1             </span></span>

@@ -1,20 +1,21 @@
 Package: DNAModAnnot
 Type: Package
 Title: Toolbox for DNA Modifications filtering and annotation
-Version: 0.0.0.9015
+Version: 0.0.0.9016
 Authors@R: 
     person(given = "Alexis",
            family = "Hardy",
            role = c("aut", "cre"),
            email = "alexis.hardy1994@outlook.fr")
 Description: Use modifications detection output (from 
-    kineticsTools and PacBio sequencing data) to filter out 
+    kineticsTools using PacBio sequencing data; or from 
+	DeepSignal using Nanopore data) to filter out 
 	potential false positives and analyze the distribution 
 	of DNA modifications in the genome assembly provided. 
 	Aligned Illumina sequencing data (bam files) can also be
 	used for analysis.
 License: GPL-3
-Depends: R (>= 3.6.1)
+Depends: R (>= 4.0.0)
 Imports: methods, Biostrings (>= 2.10.0), GenomicRanges (>= 1.38.0), BSgenome (>= 1.28.0), Biobase (> 2.1.0), 
 	BiocGenerics (>= 0.34.0), GenomeInfoDb (>= 1.14.0), Gviz (>= 1.29.1), IRanges (>= 2.20.0), Logolas (>= 1.3.1), 
 	S4Vectors (>= 0.24.0), data.table (>= 1.13.0), rtracklayer (>= 1.30.0), Rsamtools (>= 2.0.0)
