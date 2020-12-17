@@ -1,12 +1,11 @@
-<img src="vignettes/DNAModAnnot_logo.jpg" alt="DNAModAnnot_Logo" width="400"/>
-
+<img src="vignettes/DNAModAnnot_logo.jpg" alt="DNAModAnnot_Logo" width="400"/>  
 # DNAModAnnot: DNA Modification filtering and Annotation using long-read sequencing data
 
 ## Introduction
 DNAModAnnot is a R package providing a comprehensive toolkit for the genome-wide analysis and annotation of DNA modifications (Mod) (e.g. 6-methyladenine (6mA) or 5-methylcytosine (5mC)). Its modular architecture allows the analysis of Mod detection performed using Pacific Biosciences (PacBio) kineticsTools or Oxford Nanopore Technologies via DeepSignal software. DNAModAnnot also provides customized visualization functions to describe DNA modification patterns.
 
-## Description  
-<img src="vignettes/DNAModAnnot_diagram_and_example.jpg" alt="DNAModAnnot_Diagram" width="800"/>  
+## Description    
+<img src="vignettes/DNAModAnnot_diagram_and_example.jpg" alt="DNAModAnnot_Diagram" width="700"/>   
 
 Functions from the following modules can be combined according to the upper diagram.
 1.	“Data loading” module – Functions such as `ImportPacBioCSV` or `ImportDeepSignalModFrequency` can be used to import input files and convert them as GRanges-like objects.
@@ -47,9 +46,9 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install(c('Biostrings', 'BSgenome', 'Gviz'))
 ```
 
-Logolas package is depreciated in the latest version of Bioconductor and must be installed with a source file.
-(This dependency will be replaced in future versions of the DNAModAnnot package.)
-Logolas source file can be obtained from previous versions of Bioconductor:
+Logolas package is depreciated in the latest version of Bioconductor and must be installed with a source file.  
+(This dependency will be replaced in future versions of the DNAModAnnot package.)  
+Logolas source file can be obtained from previous versions of Bioconductor:  
 ```
 #Logolas package
 url="https://www.bioconductor.org/packages/3.11/bioc/src/contrib/Logolas_1.11.0.tar.gz"
@@ -58,7 +57,9 @@ download.file(url, destfile = "Logolas_1.11.0.tar.gz")
 BiocManager::install(c('SQUAREM', 'LaplacesDemon', 'gridBase'))
 install.packages("Logolas_1.11.0.tar.gz", repos = NULL, type = 'source')
 ```
-Then you can directly install from GitHub using devtools package:
+
+Next, you can directly install from GitHub using devtools package:
+
 ```
 install.packages("devtools")
 library(devtools)
@@ -68,9 +69,8 @@ install_github("AlexisHardy/DNAModAnnot")
 You should then be able to load the package into your R session with:
 `library(DNAModAnnot)`
 
-
 ### Alternative installation
-You can install DNAModAnnot using the tar.gz file from GitHub repository:
+You can also install DNAModAnnot using the tar.gz file from GitHub repository once required dependencies have been installed:  
 ```
 setwd("path/to/package/file/")
 install.packages("DNAModAnnot_0.0.0.9015.tar.gz", repos = NULL, type = 'source')
