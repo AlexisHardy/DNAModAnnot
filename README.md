@@ -6,7 +6,7 @@
 DNAModAnnot is a R package providing a comprehensive toolkit for the genome-wide analysis and annotation of DNA modifications (Mod) (e.g. 6-methyladenine (6mA) or 5-methylcytosine (5mC)). Its modular architecture allows the analysis of Mod detection performed using Pacific Biosciences (PacBio) kineticsTools or Oxford Nanopore Technologies via DeepSignal software. DNAModAnnot also provides customized visualization functions to describe DNA modification patterns.
 
 ## Description  
-<img src="vignettes/DNAModAnnot_diagram_and_example.jpg" alt="DNAModAnnot_Diagram" width="600"/>  
+<img src="vignettes/DNAModAnnot_diagram_and_example.jpg" alt="DNAModAnnot_Diagram" width="800"/>  
 
 Functions from the following modules can be combined according to the upper diagram.
 1.	“Data loading” module – Functions such as `ImportPacBioCSV` or `ImportDeepSignalModFrequency` can be used to import input files and convert them as GRanges-like objects.
