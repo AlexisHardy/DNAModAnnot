@@ -1,4 +1,4 @@
-![DNAModAnnot_Logo](vignettes/DNAModAnnot_logo.jpg =100x20)
+<img src="vignettes/DNAModAnnot_logo.jpg" alt="DNAModAnnot_Logo" width="200"/>
 # DNAModAnnot: DNA Modification filtering and Annotation using long-read sequencing data
 
 ## Introduction
