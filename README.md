@@ -1,4 +1,5 @@
 <img src="vignettes/DNAModAnnot_logo.jpg" alt="DNAModAnnot_Logo" width="400"/>  
+
 # DNAModAnnot: DNA Modification filtering and Annotation using long-read sequencing data
 
 ## Introduction
