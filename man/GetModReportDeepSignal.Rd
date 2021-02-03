@@ -54,7 +54,6 @@ mygposDeepSignalModBase <- ImportDeepSignalModFrequency(
 mygposDeepSignalMod <- FiltDeepSignal(
   gposDeepSignalModBase = mygposDeepSignalModBase,
   cParamNameForFilter = "frac",
-  lFiltParam = TRUE,
   nFiltParamLoBoundaries = 0,
   nFiltParamUpBoundaries = 1,
   cFiltParamBoundariesToInclude = "upperOnly"

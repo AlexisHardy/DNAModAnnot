@@ -367,7 +367,7 @@ div.blue {  border-left: 5px solid blue; padding: 10px}
 <span id="cb2-6"><a href="#cb2-6"></a><span class="kw">install.packages</span>(<span class="st">&quot;Logolas_1.11.0.tar.gz&quot;</span>, <span class="dt">repos =</span> <span class="ot">NULL</span>, <span class="dt">type =</span> <span class="st">&#39;source&#39;</span>)</span></code></pre></div>
 <p>Then, you can install DNAModAnnot using the tar.gz file from GitHub repository:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">setwd</span>(<span class="st">&quot;path/to/package/file/&quot;</span>)</span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">install.packages</span>(<span class="st">&quot;DNAModAnnot_0.0.0.9017.tar.gz&quot;</span>, <span class="dt">repos =</span> <span class="ot">NULL</span>, <span class="dt">type =</span> <span class="st">&#39;source&#39;</span>)</span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">install.packages</span>(<span class="st">&quot;DNAModAnnot_0.0.0.9018.tar.gz&quot;</span>, <span class="dt">repos =</span> <span class="ot">NULL</span>, <span class="dt">type =</span> <span class="st">&#39;source&#39;</span>)</span></code></pre></div>
 <p>Or you can directly install from GitHub using devtools package:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)</span>
 <span id="cb4-2"><a href="#cb4-2"></a><span class="kw">library</span>(devtools)</span>
@@ -565,10 +565,9 @@ You can decide the length of the sequence to be compared around the modification
 <span id="cb17-2"><a href="#cb17-2"></a>PacBioGFF_granges_filt2 &lt;-<span class="st"> </span><span class="kw">FiltPacBio</span>(</span>
 <span id="cb17-3"><a href="#cb17-3"></a>  <span class="dt">grangesPacBioGFF =</span> PacBioGFF_granges_filt1,</span>
 <span id="cb17-4"><a href="#cb17-4"></a>  <span class="dt">cParamNameForFilter =</span> <span class="st">&quot;frac&quot;</span>,</span>
-<span id="cb17-5"><a href="#cb17-5"></a>  <span class="dt">lFiltParam =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb17-6"><a href="#cb17-6"></a>  <span class="dt">nFiltParamLoBoundaries =</span> <span class="fl">0.05</span>, <span class="dt">nFiltParamUpBoundaries =</span> <span class="dv">1</span>,</span>
-<span id="cb17-7"><a href="#cb17-7"></a>  <span class="dt">cFiltParamBoundariesToInclude =</span> <span class="st">&quot;upperOnly&quot;</span></span>
-<span id="cb17-8"><a href="#cb17-8"></a>)<span class="op">$</span>gff</span></code></pre></div>
+<span id="cb17-5"><a href="#cb17-5"></a>  <span class="dt">nFiltParamLoBoundaries =</span> <span class="fl">0.05</span>, <span class="dt">nFiltParamUpBoundaries =</span> <span class="dv">1</span>,</span>
+<span id="cb17-6"><a href="#cb17-6"></a>  <span class="dt">cFiltParamBoundariesToInclude =</span> <span class="st">&quot;upperOnly&quot;</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a>)<span class="op">$</span>gff</span></code></pre></div>
 </div>
 <div id="rd-step-filter-the-dna-modification-data-using-false-discovery-rate-estimations" class="section level2">
 <h2>3rd step: filter the DNA modification data using False Discovery Rate estimations</h2>
@@ -930,7 +929,7 @@ After preparing a set of tracks, you can display them using the <code>plotTracks
 <span id="cb36-16"><a href="#cb36-16"></a><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span id="cb36-17"><a href="#cb36-17"></a><span class="co">#&gt; </span></span>
 <span id="cb36-18"><a href="#cb36-18"></a><span class="co">#&gt; other attached packages:</span></span>
-<span id="cb36-19"><a href="#cb36-19"></a><span class="co">#&gt; [1] DNAModAnnot_0.0.0.9017</span></span>
+<span id="cb36-19"><a href="#cb36-19"></a><span class="co">#&gt; [1] DNAModAnnot_0.0.0.9018</span></span>
 <span id="cb36-20"><a href="#cb36-20"></a><span class="co">#&gt; </span></span>
 <span id="cb36-21"><a href="#cb36-21"></a><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span id="cb36-22"><a href="#cb36-22"></a><span class="co">#&gt;   [1] colorspace_2.0-0            ellipsis_0.3.1             </span></span>

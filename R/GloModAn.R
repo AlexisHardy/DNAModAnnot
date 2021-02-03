@@ -2,7 +2,7 @@
 ### Functions from ModAn and ModAnPlot categories
 ### -------------------------------------------------------------------------
 ###
-### DNAModAnnot v.0.0.0.9014 - 2020/09/10
+### DNAModAnnot v.0.0.0.9018 - 2021/02/03
 ### Licence GPL-3
 ###
 ### Contributor:
@@ -439,7 +439,6 @@ GetModReportPacBio <- function(dnastringsetGenome,
 #' mygposDeepSignalMod <- FiltDeepSignal(
 #'   gposDeepSignalModBase = mygposDeepSignalModBase,
 #'   cParamNameForFilter = "frac",
-#'   lFiltParam = TRUE,
 #'   nFiltParamLoBoundaries = 0,
 #'   nFiltParamUpBoundaries = 1,
 #'   cFiltParamBoundariesToInclude = "upperOnly"

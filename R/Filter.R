@@ -2,7 +2,7 @@
 ### Functions from Filter category
 ### -------------------------------------------------------------------------
 ###
-### DNAModAnnot v.0.0.0.9014 - 2020/09/10
+### DNAModAnnot v.0.0.0.9018 - 2021/01/23
 ### Licence GPL-3
 ###
 ### Contributor:
@@ -149,17 +149,27 @@ FiltContig <- function(gposModBasePos,
 #' @param grangesModPos A GRanges object containing Modifications positions data to be filtered.
 #' @param cParamNameForFilter A character vector giving the name of the parameter to be filtered.
 #' Must correspond to the name of one column in the object provided with grangesModPos.
-#' @param lFiltParam If TRUE, remove modifications which have values of the given parameter that are not included
-#' in the intervals provided with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries". Defaults to FALSE.
+#' 
 #' @param nFiltParamLoBoundaries A numeric vector returning the lower boundaries of intervals.
 #' Must have the same length as "nFiltParamUpBoundaries". Defaults to NULL.
+#' 
+#' If this parameter is provided, the function will remove modifications which have values 
+#' of the given parameter that are not included in the intervals provided 
+#' with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".
+#' 
 #' @param nFiltParamUpBoundaries A numeric vector returning the upper boundaries of intervals.
 #' Must have the same length as "nFiltParamLoBoundaries". Defaults to NULL.
+#' 
+#' If this parameter is provided, the function will remove modifications which have values 
+#' of the given parameter that are not included in the intervals provided 
+#' with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".
+#' 
 #' @param cFiltParamBoundariesToInclude A character vector describing which interval boundaries
 #' must be included in the intervals provided. Can be "upperOnly" (only upper boundaries), "lowerOnly" (only lower boundaries),
 #' "both" (both upper and lower boundaries) or "none" (do not include upper and lower boundaries).
 #' If NULL, both upper and lower boundaries will be included (= "both"). Defaults to NULL.
 #' cFiltParamBoundariesToInclude = NULL #can be "upperOnly","lowerOnly","both", "none' (NULL = "both" for all)
+#' 
 #' @param listMeanParamByContig List containing, for each strand, the mean of a given parameter for each contig.
 #' This list must be composed of 2 dataframes (one by strand) called f_strand and r_strand.
 #' In each dataframe, "refName" column returning names of contigs and "mean_"[parameter name] column returning the mean of the given parameter.
@@ -214,7 +224,6 @@ FiltContig <- function(gposModBasePos,
 #'   grangesModPos = myGrangesPacBioGFF,
 #'   cParamNameForFilter = "frac",
 #'   listMeanParamByContig = myMean_fra_list,
-#'   lFiltParam = TRUE,
 #'   nFiltParamLoBoundaries = 0.05,
 #'   nFiltParamUpBoundaries = 1.00
 #' )
@@ -225,13 +234,11 @@ FiltContig <- function(gposModBasePos,
 #' myGRangesPacBioGFF_filt <- FiltParam(
 #'   grangesModPos = myGrangesPacBioGFF,
 #'   cParamNameForFilter = "frac",
-#'   lFiltParam = TRUE,
 #'   nFiltParamLoBoundaries = c(0.40, 0.90),
 #'   nFiltParamUpBoundaries = c(0.60, 1.00)
 #' )
 FiltParam <- function(grangesModPos,
                       cParamNameForFilter,
-                      lFiltParam = FALSE,
                       nFiltParamLoBoundaries = NULL,
                       nFiltParamUpBoundaries = NULL,
                       cFiltParamBoundariesToInclude = NULL,
@@ -253,7 +260,7 @@ FiltParam <- function(grangesModPos,
     grangesModPos <- grangesModPos[which(!seqnames(grangesModPos) %in% sca_to_remove)]
   }
 
-  if (lFiltParam) {
+  if (!is.null(nFiltParamLoBoundaries) | !is.null(nFiltParamUpBoundaries)) {
     # keep 6mA that are included in the intervals of parameter provided
     if (length(nFiltParamLoBoundaries) != length(nFiltParamUpBoundaries)) {
       print("ERROR: there must be an equal number of lower and upper bounds.")
@@ -393,12 +400,21 @@ FiltFdrBased <- function(grangesModPosWithSeq,
 #' gposPacBioCSV must be provided if using this argument. Defaults to 20.
 #' @param cParamNameForFilter A character vector giving the name of the parameter to be filtered.
 #' Must correspond to the name of one column in the object provided with grangesModPos.
-#' @param lFiltParam If TRUE, remove modifications which have values of the given parameter that are not included
-#' in the intervals provided with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries". Defaults to FALSE.
+#' 
 #' @param nFiltParamLoBoundaries A numeric vector returning the lower boundaries of intervals.
 #' Must have the same length as "nFiltParamUpBoundaries". Defaults to NULL.
+#' 
+#' If this parameter is provided, the function will remove modifications which have values 
+#' of the given parameter that are not included in the intervals provided 
+#' with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".
+#' 
 #' @param nFiltParamUpBoundaries A numeric vector returning the upper boundaries of intervals.
 #' Must have the same length as "nFiltParamLoBoundaries". Defaults to NULL.
+#' 
+#' If this parameter is provided, the function will remove modifications which have values 
+#' of the given parameter that are not included in the intervals provided 
+#' with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".
+#' 
 #' @param cFiltParamBoundariesToInclude A character vector describing which interval boundaries
 #' must be included in the intervals provided. Can be "upperOnly" (only upper boundaries), "lowerOnly" (only lower boundaries),
 #' "both" (both upper and lower boundaries) or "none" (do not include upper and lower boundaries).
@@ -490,7 +506,6 @@ FiltPacBio <- function(grangesPacBioGFF, # PacBioGFF: granges or grangesList
                        listMeanParamByContig = NULL,
                        nContigFiltParamLoBound = NULL,
                        nContigFiltParamUpBound = NULL,
-                       lFiltParam = FALSE,
                        nFiltParamLoBoundaries = NULL,
                        nFiltParamUpBoundaries = NULL,
                        cFiltParamBoundariesToInclude = NULL,
@@ -530,7 +545,6 @@ FiltPacBio <- function(grangesPacBioGFF, # PacBioGFF: granges or grangesList
           listMeanParamByContig = listMeanParamByContig,
           nContigFiltParamLoBound = nContigFiltParamLoBound,
           nContigFiltParamUpBound = nContigFiltParamUpBound,
-          lFiltParam = lFiltParam,
           nFiltParamLoBoundaries = nFiltParamLoBoundaries,
           nFiltParamUpBoundaries = nFiltParamUpBoundaries,
           cFiltParamBoundariesToInclude = cFiltParamBoundariesToInclude
@@ -600,12 +614,21 @@ FiltPacBio <- function(grangesPacBioGFF, # PacBioGFF: granges or grangesList
 #' gposPacBioCSV must be provided if using this argument. Defaults to 20.
 #' @param cParamNameForFilter A character vector giving the name of the parameter to be filtered.
 #' Must correspond to the name of one column in the object provided with grangesModPos.
-#' @param lFiltParam If TRUE, remove modifications which have values of the given parameter that are not included
-#' in the intervals provided with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries". Defaults to FALSE.
+#' 
 #' @param nFiltParamLoBoundaries A numeric vector returning the lower boundaries of intervals.
 #' Must have the same length as "nFiltParamUpBoundaries". Defaults to NULL.
+#' 
+#' If this parameter is provided, the function will remove modifications which have values 
+#' of the given parameter that are not included in the intervals provided 
+#' with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".
+#' 
 #' @param nFiltParamUpBoundaries A numeric vector returning the upper boundaries of intervals.
 #' Must have the same length as "nFiltParamLoBoundaries". Defaults to NULL.
+#' 
+#' If this parameter is provided, the function will remove modifications which have values 
+#' of the given parameter that are not included in the intervals provided 
+#' with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".
+#' 
 #' @param cFiltParamBoundariesToInclude A character vector describing which interval boundaries
 #' must be included in the intervals provided. Can be "upperOnly" (only upper boundaries), "lowerOnly" (only lower boundaries),
 #' "both" (both upper and lower boundaries) or "none" (do not include upper and lower boundaries).
@@ -641,7 +664,6 @@ FiltPacBio <- function(grangesPacBioGFF, # PacBioGFF: granges or grangesList
 #' mygposDeepSignalMod <- FiltDeepSignal(
 #'   gposDeepSignalModBase = mygposDeepSignalModBase,
 #'   cParamNameForFilter = "frac",
-#'   lFiltParam = TRUE,
 #'   nFiltParamLoBoundaries = 0,
 #'   nFiltParamUpBoundaries = 1,
 #'   cFiltParamBoundariesToInclude = "upperOnly"
@@ -657,7 +679,6 @@ FiltDeepSignal <- function(gposDeepSignalModBase = NULL,
                            listMeanCovByContig,
                            nContigMinCoverage = -1,
                            cParamNameForFilter = NULL,
-                           lFiltParam = FALSE,
                            nFiltParamLoBoundaries = NULL,
                            nFiltParamUpBoundaries = NULL,
                            cFiltParamBoundariesToInclude = NULL,
@@ -691,7 +712,6 @@ FiltDeepSignal <- function(gposDeepSignalModBase = NULL,
       listMeanParamByContig = listMeanParamByContig,
       nContigFiltParamLoBound = nContigFiltParamLoBound,
       nContigFiltParamUpBound = nContigFiltParamUpBound,
-      lFiltParam = lFiltParam,
       nFiltParamLoBoundaries = nFiltParamLoBoundaries,
       nFiltParamUpBoundaries = nFiltParamUpBoundaries,
       cFiltParamBoundariesToInclude = cFiltParamBoundariesToInclude

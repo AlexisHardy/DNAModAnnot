@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  setwd("path/to/package/file/")
-#  install.packages("DNAModAnnot_0.0.0.9017.tar.gz", repos = NULL, type = 'source')
+#  install.packages("DNAModAnnot_0.0.0.9018.tar.gz", repos = NULL, type = 'source')
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  install.packages("devtools")
@@ -173,7 +173,6 @@ DrawModLogo(
 PacBioGFF_granges_filt2 <- FiltPacBio(
   grangesPacBioGFF = PacBioGFF_granges_filt1,
   cParamNameForFilter = "frac",
-  lFiltParam = TRUE,
   nFiltParamLoBoundaries = 0.05, nFiltParamUpBoundaries = 1,
   cFiltParamBoundariesToInclude = "upperOnly"
 )$gff

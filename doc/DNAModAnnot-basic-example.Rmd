@@ -57,7 +57,7 @@ install.packages("Logolas_1.11.0.tar.gz", repos = NULL, type = 'source')
 Then, you can install DNAModAnnot using the tar.gz file from GitHub repository:
 ```{r eval=FALSE}
 setwd("path/to/package/file/")
-install.packages("DNAModAnnot_0.0.0.9017.tar.gz", repos = NULL, type = 'source')
+install.packages("DNAModAnnot_0.0.0.9018.tar.gz", repos = NULL, type = 'source')
 ```
 
 Or you can directly install from GitHub using devtools package:
@@ -316,7 +316,6 @@ The `FiltPacBio` function can be used to filter PacBioGFF GRanges only depending
 PacBioGFF_granges_filt2 <- FiltPacBio(
   grangesPacBioGFF = PacBioGFF_granges_filt1,
   cParamNameForFilter = "frac",
-  lFiltParam = TRUE,
   nFiltParamLoBoundaries = 0.05, nFiltParamUpBoundaries = 1,
   cFiltParamBoundariesToInclude = "upperOnly"
 )$gff
