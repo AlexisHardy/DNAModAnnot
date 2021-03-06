@@ -9,15 +9,7 @@ knitr::opts_chunk$set(
 #    install.packages("BiocManager")
 #  }
 #  
-#  BiocManager::install(c('Biostrings', 'BSgenome', 'Gviz'))
-
-## ----eval=FALSE---------------------------------------------------------------
-#  #Logolas package
-#  url="https://www.bioconductor.org/packages/3.11/bioc/src/contrib/Logolas_1.11.0.tar.gz"
-#  download.file(url, destfile = "Logolas_1.11.0.tar.gz")
-#  
-#  BiocManager::install(c('SQUAREM', 'LaplacesDemon', 'gridBase'))
-#  install.packages("Logolas_1.11.0.tar.gz", repos = NULL, type = 'source')
+#  BiocManager::install(c('Biostrings', 'BSgenome', 'Gviz', 'seqLogo'))
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  setwd("path/to/package/file/")
@@ -164,8 +156,8 @@ PacBioGFF_granges_with_sequence <- GetGRangesWindowSeqandParam(PacBioGFF_granges
 )
 DrawModLogo(
   dnastringsetSeqAroundMod = as(PacBioGFF_granges_with_sequence$sequence, "DNAStringSet"),
-  cLogoType = "EDLogo",
-  nGenomicBgACGT = c(0.35, 0.15, 0.15, 0.35)
+  nGenomicBgACGT = c(0.35, 0.15, 0.15, 0.35), cYunit = "ic_hide_bg",
+  nPositionsToAnnotate = c(6), cAnnotationText = c("6mA"), nTagTextFontSize = 12
 )
 
 ## -----------------------------------------------------------------------------

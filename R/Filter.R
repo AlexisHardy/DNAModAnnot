@@ -149,27 +149,27 @@ FiltContig <- function(gposModBasePos,
 #' @param grangesModPos A GRanges object containing Modifications positions data to be filtered.
 #' @param cParamNameForFilter A character vector giving the name of the parameter to be filtered.
 #' Must correspond to the name of one column in the object provided with grangesModPos.
-#' 
+#'
 #' @param nFiltParamLoBoundaries A numeric vector returning the lower boundaries of intervals.
 #' Must have the same length as "nFiltParamUpBoundaries". Defaults to NULL.
-#' 
-#' If this parameter is provided, the function will remove modifications which have values 
-#' of the given parameter that are not included in the intervals provided 
+#'
+#' If this parameter is provided, the function will remove modifications which have values
+#' of the given parameter that are not included in the intervals provided
 #' with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".
-#' 
+#'
 #' @param nFiltParamUpBoundaries A numeric vector returning the upper boundaries of intervals.
 #' Must have the same length as "nFiltParamLoBoundaries". Defaults to NULL.
-#' 
-#' If this parameter is provided, the function will remove modifications which have values 
-#' of the given parameter that are not included in the intervals provided 
+#'
+#' If this parameter is provided, the function will remove modifications which have values
+#' of the given parameter that are not included in the intervals provided
 #' with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".
-#' 
+#'
 #' @param cFiltParamBoundariesToInclude A character vector describing which interval boundaries
 #' must be included in the intervals provided. Can be "upperOnly" (only upper boundaries), "lowerOnly" (only lower boundaries),
 #' "both" (both upper and lower boundaries) or "none" (do not include upper and lower boundaries).
 #' If NULL, both upper and lower boundaries will be included (= "both"). Defaults to NULL.
 #' cFiltParamBoundariesToInclude = NULL #can be "upperOnly","lowerOnly","both", "none' (NULL = "both" for all)
-#' 
+#'
 #' @param listMeanParamByContig List containing, for each strand, the mean of a given parameter for each contig.
 #' This list must be composed of 2 dataframes (one by strand) called f_strand and r_strand.
 #' In each dataframe, "refName" column returning names of contigs and "mean_"[parameter name] column returning the mean of the given parameter.
@@ -400,21 +400,21 @@ FiltFdrBased <- function(grangesModPosWithSeq,
 #' gposPacBioCSV must be provided if using this argument. Defaults to 20.
 #' @param cParamNameForFilter A character vector giving the name of the parameter to be filtered.
 #' Must correspond to the name of one column in the object provided with grangesModPos.
-#' 
+#'
 #' @param nFiltParamLoBoundaries A numeric vector returning the lower boundaries of intervals.
 #' Must have the same length as "nFiltParamUpBoundaries". Defaults to NULL.
-#' 
-#' If this parameter is provided, the function will remove modifications which have values 
-#' of the given parameter that are not included in the intervals provided 
+#'
+#' If this parameter is provided, the function will remove modifications which have values
+#' of the given parameter that are not included in the intervals provided
 #' with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".
-#' 
+#'
 #' @param nFiltParamUpBoundaries A numeric vector returning the upper boundaries of intervals.
 #' Must have the same length as "nFiltParamLoBoundaries". Defaults to NULL.
-#' 
-#' If this parameter is provided, the function will remove modifications which have values 
-#' of the given parameter that are not included in the intervals provided 
+#'
+#' If this parameter is provided, the function will remove modifications which have values
+#' of the given parameter that are not included in the intervals provided
 #' with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".
-#' 
+#'
 #' @param cFiltParamBoundariesToInclude A character vector describing which interval boundaries
 #' must be included in the intervals provided. Can be "upperOnly" (only upper boundaries), "lowerOnly" (only lower boundaries),
 #' "both" (both upper and lower boundaries) or "none" (do not include upper and lower boundaries).
@@ -614,21 +614,21 @@ FiltPacBio <- function(grangesPacBioGFF, # PacBioGFF: granges or grangesList
 #' gposPacBioCSV must be provided if using this argument. Defaults to 20.
 #' @param cParamNameForFilter A character vector giving the name of the parameter to be filtered.
 #' Must correspond to the name of one column in the object provided with grangesModPos.
-#' 
+#'
 #' @param nFiltParamLoBoundaries A numeric vector returning the lower boundaries of intervals.
 #' Must have the same length as "nFiltParamUpBoundaries". Defaults to NULL.
-#' 
-#' If this parameter is provided, the function will remove modifications which have values 
-#' of the given parameter that are not included in the intervals provided 
+#'
+#' If this parameter is provided, the function will remove modifications which have values
+#' of the given parameter that are not included in the intervals provided
 #' with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".
-#' 
+#'
 #' @param nFiltParamUpBoundaries A numeric vector returning the upper boundaries of intervals.
 #' Must have the same length as "nFiltParamLoBoundaries". Defaults to NULL.
-#' 
-#' If this parameter is provided, the function will remove modifications which have values 
-#' of the given parameter that are not included in the intervals provided 
+#'
+#' If this parameter is provided, the function will remove modifications which have values
+#' of the given parameter that are not included in the intervals provided
 #' with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".
-#' 
+#'
 #' @param cFiltParamBoundariesToInclude A character vector describing which interval boundaries
 #' must be included in the intervals provided. Can be "upperOnly" (only upper boundaries), "lowerOnly" (only lower boundaries),
 #' "both" (both upper and lower boundaries) or "none" (do not include upper and lower boundaries).
