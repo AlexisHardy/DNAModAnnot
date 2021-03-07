@@ -18,7 +18,6 @@ FiltPacBio(
   listMeanParamByContig = NULL,
   nContigFiltParamLoBound = NULL,
   nContigFiltParamUpBound = NULL,
-  lFiltParam = FALSE,
   nFiltParamLoBoundaries = NULL,
   nFiltParamUpBoundaries = NULL,
   cFiltParamBoundariesToInclude = NULL,
@@ -77,14 +76,19 @@ lower bound of the interval centered on the mean). Defaults to NULL.}
 \item{nContigFiltParamUpBound}{A numeric value to be added to the mean of the given parameter of all contigs (calculates the
 upper bound of the interval centered on the mean). Defaults to NULL.}
 
-\item{lFiltParam}{If TRUE, remove modifications which have values of the given parameter that are not included
-in the intervals provided with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries". Defaults to FALSE.}
-
 \item{nFiltParamLoBoundaries}{A numeric vector returning the lower boundaries of intervals.
-Must have the same length as "nFiltParamUpBoundaries". Defaults to NULL.}
+Must have the same length as "nFiltParamUpBoundaries". Defaults to NULL.
+
+If this parameter is provided, the function will remove modifications which have values
+of the given parameter that are not included in the intervals provided
+with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".}
 
 \item{nFiltParamUpBoundaries}{A numeric vector returning the upper boundaries of intervals.
-Must have the same length as "nFiltParamLoBoundaries". Defaults to NULL.}
+Must have the same length as "nFiltParamLoBoundaries". Defaults to NULL.
+
+If this parameter is provided, the function will remove modifications which have values
+of the given parameter that are not included in the intervals provided
+with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".}
 
 \item{cFiltParamBoundariesToInclude}{A character vector describing which interval boundaries
 must be included in the intervals provided. Can be "upperOnly" (only upper boundaries), "lowerOnly" (only lower boundaries),

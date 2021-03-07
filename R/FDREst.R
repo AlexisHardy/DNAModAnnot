@@ -29,11 +29,12 @@
 #'
 #' Return a list with the false discovery rate estimated by threshold on the parameter provided with the GRanges object(s).
 #' The thresholds to test are determined by all the possible values of the parameter provided.
-#' @param grangesDataWithSeq A GRanges-like object containing, in the extra columns, the parameter to be tested.
-#' @param grangesDataWithSeqControl A GRanges-like object containing, in the extra columns, the parameter to be used as a control
-#' (usually a non-methylated sample (example: Whole-Genome Amplified/PCR Amplified) ).
-#' If not NULL, false discovery rate estimation will be calculated using parameter from grangesDataWithSeq and grangesDataWithSeqControl.
-#' For example, with "b" as any adenine and with "param" as the parameter to be tested, and for each threshold:
+#' @param grangesDataWithSeq A GRanges-like object containing, in the extra columns, the parameter to be tested 
+#' and the sequence of the associated window.
+#' @param grangesDataWithSeqControl A GRanges-like object to be used as a control containing, in the extra columns, the parameter to be tested  
+#' and the sequence of the associated window. This control is usually a non-methylated sample (example: Whole-Genome Amplified/PCR Amplified).
+#' If not NULL, false discovery rate estimation will be calculated using the associated parameter from grangesDataWithSeq and 
+#' grangesDataWithSeqControl. For example, by defining "b" as any adenine and defining "param" as the parameter to be tested, and for each threshold:
 #' \itemize{
 #'   \item foreground = proportion, in the sample, of modified "b" among total "b" = (number of "b" with "param" >= threshold) / total number of "b" in the grangesDataWithSeq
 #'   \item background = proportion, in the control, of modified "b" among total "b" = (number of "b" with "param" >= threshold) / total number of "b" in the grangesDataWithSeqControl
@@ -41,7 +42,7 @@
 #' }
 #' If NULL, only the parameter from grangesDataWithSeq will be used:
 #' here the background and foreground will be estimated using motifs associated to modifications (provided with cModMotifsAsForeground) versus other motifs.
-#' For example, with "m" as one motif associated to modifications, with "b" as any adenine and with "param" as the parameter to be tested,
+#' For example, by defining "m" as one motif associated to modifications, defining "b" as any adenine and defining "param" as the parameter to be tested,
 #' for each "m" (provided with cModMotifsAsForeground) and for each threshold:
 #' \itemize{
 #'   \item foreground = proportion of modified "b",     in "m", among total "b" = (number of "b",     in "m", with "param" >= threshold) / total number of "b"     in "m"

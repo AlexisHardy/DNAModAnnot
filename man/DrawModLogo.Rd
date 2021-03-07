@@ -6,33 +6,63 @@
 \usage{
 DrawModLogo(
   dnastringsetSeqAroundMod,
-  cLogoType = "EDLogo",
-  nGenomicBgACGT = c(0.25, 0.25, 0.25, 0.25),
-  cColorsCTAG = c("orange2", "green3", "red2", "blue2")
+  nGenomicBgACGT = c(A = 0.25, C = 0.25, G = 0.25, T = 0.25),
+  cYunit = "ic_hide_bg",
+  lPlotNegYAxis = TRUE,
+  cColorsACGT = c(A = "#4daf4a", C = "#377eb8", G = "#ffd92f", T = "#e41a1c"),
+  nPositionsToAnnotate = NULL,
+  cAnnotationText = NULL,
+  nTagTextFontSize = 20,
+  lXAxis = TRUE,
+  lYAxis = TRUE,
+  nXFontSize = 15,
+  nYFontSize = 15
 )
 }
 \arguments{
 \item{dnastringsetSeqAroundMod}{A DNAStringSet object containing the sequence around each DNA modification.
-All these sequences must have the same size and the modification must have the same position in each sequence (example: at the center).}
-
-\item{cLogoType}{Can be "Logo" or "EDLogo". Defaults to "EDLogo".
-\itemize{
-  \item Logo: A classic logo showing sequence enrichment around the modification.
-  \item EDLogo: A logo showing sequence enrichment and depletion around the modification.
-}}
+All these sequences must have the same size and the modification must have the same position in each sequence (e.g. at the center).}
 
 \item{nGenomicBgACGT}{A numeric vector giving the background to be corrected with the genomic composition
-in Adenine (A) then Cytosine (C) then Guanine (G) then Thymine (T). Defaults to c(0.25, 0.25, 0.25, 0.25).}
+in Adenine (A) then Cytosine (C) then Guanine (G) then Thymine (T). Defaults to c(A=0.25, C=0.25, G=0.25, T=0.25).}
 
-\item{cColorsCTAG}{A character vector giving the color for the Cytosine (C) then Thymine (T) then
-Adenine (A) then Guanine (G) letters on the plot. Defaults to c("orange2","green3","red2","blue2").}
+\item{cYunit}{Units to be used for the y axis. Can be "ic" (information content),
+"ic_hide_bg" (information content + hide low signal) or "prob" (probability).
+"ic_hide_bg" will hide the letters on the upper panel (OR the lower panel) if these letters
+have probabilities above (OR below) the background signal based on the genomic composition.
+Defaults to "ic_hide_bg".}
+
+\item{lPlotNegYAxis}{If TRUE, allow plotting the lower panel to show depletion among the sequences provided. Defaults to TRUE.}
+
+\item{cColorsACGT}{A character vector giving the color for the Adenine (A) then Cytosine (C) then Guanine (G)
+then Thymine (T) letters on the plot. Defaults to c(A="red2", C="blue2", G="orange2", T="green3").}
+
+\item{nPositionsToAnnotate}{A numeric vector giving the positions to highlight on the logo using small triangular tags
+(e.g. DNA modifications on a fixed position). Defaults to NULL.}
+
+\item{cAnnotationText}{A character vector. If nPositionsToAnnotate is not NULL, this option can provide labels to be associated to
+each annotation tag. If the vector's length is 1, it will be used for all tags to be displayed. Defaults to NULL.}
+
+\item{nTagTextFontSize}{Font size for the text associated to the annotation tags. Defaults to 20.}
+
+\item{lXAxis}{If TRUE, the x-axis is plotted. Defaults to TRUE.}
+
+\item{lYAxis}{If TRUE, the y-axis is plotted. Defaults to TRUE.}
+
+\item{nXFontSize}{Font size for the text associated to the x axis. Defaults to 15.}
+
+\item{nYFontSize}{Font size for the text associated to the y axis. Defaults to 15.}
 }
 \description{
 Return a plot describing the sequence motif associated to the sequences provided.
 Sequences that do not have full width and sequences that have some
 N or some gaps "-" are automatically removed before drawing the sequence plot.
-If a position is fixed with one base only, that position will not be corrected with
-the background in order to avoid other letters to appear below this base if using cLogoType="EDLogo".
+}
+\details{
+This function reduce the background signal using the genomic composition and also computes
+the signal of depleted bases among the sequence provided.
+Positions that are fixed and displaying only one base are taken in account and avoid these two corrections.
+It is also possible to tag some positions (+/- labels) in the logo.
 }
 \examples{
 # loading genome
@@ -65,8 +95,8 @@ myPositions_Mod_Granges_wSeq <- GetGRangesWindowSeqandParam(
 
 DrawModLogo(
   dnastringsetSeqAroundMod = as(myPositions_Mod_Granges_wSeq$sequence, "DNAStringSet"),
-  cLogoType = "EDLogo",
-  nGenomicBgACGT = c(0.35, 0.15, 0.15, 0.35)
+  nGenomicBgACGT = c(0.35, 0.15, 0.15, 0.35),
+  nPositionsToAnnotate = c(6), cAnnotationText = c("6mA")
 )
 }
 \keyword{DrawModLogo}

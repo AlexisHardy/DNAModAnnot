@@ -322,7 +322,8 @@ ImportPacBioGFF <- function(cPacBioGFFPath,
 #'       package = "DNAModAnnot", "extdata",
 #'       "ptetraurelia.bases.sca171819.csv"
 #'     ),
-#'     cSelectColumnsToExtract = c("refName", "tpl", "strand", "base", "score", "ipdRatio", "coverage"),
+#'     cSelectColumnsToExtract = c("refName", "tpl", "strand", "base",
+#'                                 "score", "ipdRatio", "coverage"),
 #'     lKeepExtraColumnsInGPos = TRUE,
 #'     lSortGPos = TRUE,
 #'     cContigToBeAnalyzed = names(myGenome)

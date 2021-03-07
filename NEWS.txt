@@ -1,0 +1,35 @@
+CHANGES IN VERSION 0.0.0.9018
+-------------------------
+NEW FEATURES
+
+    o Additional optional arguments were provided for the DrawModLogo 
+	  function, allowing the user to label some positions and to modify the 
+	  axis and labels.
+	
+	o The DrawLogoPosNegAxes function has been added and is mostly adapted
+	  from functions from the seqLogo package. This function is directly 
+	  used by the updated DrawModLogo function.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o Logolas dependency has been replaced by the seqLogo and grid packages.
+
+    o The DrawModLogo function has been reworked using seqLogo and grid: 
+	  cLogoType argument has been removed (the cYunit and lPlotNegYAxis 
+	  arguments should be used instead), cColorsCTAG argument has been 
+	  replaced by the cColorsACGT to be more consistent with the 
+	  nGenomicBgACGT argument, and default color values have been modified.
+	
+	o lFiltParam argument has been removed from the FiltPacBio and 
+	  FiltDeepSignal functions: the parameter will be filtered using 
+	  intervals as long as nFiltParamLoBoundaries and nFiltParamHiBoundaries
+	  arguments are provided.
+
+BUG FIXES
+
+    o Various bug fixes and documentation updates. 
+	
+
+CHANGES IN VERSION 0.0.0.9017
+------------------------- 
+-------------------------

@@ -2,7 +2,7 @@
 ### Functions from ModAn and ModAnPlot categories
 ### -------------------------------------------------------------------------
 ###
-### DNAModAnnot v.0.0.0.9014 - 2020/09/10
+### DNAModAnnot v.0.0.0.9018 - 2021/02/03
 ### Licence GPL-3
 ###
 ### Contributor:
@@ -25,6 +25,7 @@
 ### .IncludeModPosInMot
 ### GetModRatioByContig
 ### DrawModLogo
+### DrawLogoPosNegAxes
 ### ExtractListModPosByModMotif
 ###
 ### -------------------------------------------------------------------------
@@ -439,7 +440,6 @@ GetModReportPacBio <- function(dnastringsetGenome,
 #' mygposDeepSignalMod <- FiltDeepSignal(
 #'   gposDeepSignalModBase = mygposDeepSignalModBase,
 #'   cParamNameForFilter = "frac",
-#'   lFiltParam = TRUE,
 #'   nFiltParamLoBoundaries = 0,
 #'   nFiltParamUpBoundaries = 1,
 #'   cFiltParamBoundariesToInclude = "upperOnly"
@@ -781,22 +781,37 @@ GetModRatioByContig <- function(grangesModPos,
 #' Return a plot describing the sequence motif associated to the sequences provided.
 #' Sequences that do not have full width and sequences that have some
 #' N or some gaps "-" are automatically removed before drawing the sequence plot.
-#' If a position is fixed with one base only, that position will not be corrected with
-#' the background in order to avoid other letters to appear below this base if using cLogoType="EDLogo".
+#'
+#' This function reduce the background signal using the genomic composition and also computes
+#' the signal of depleted bases among the sequence provided.
+#' Positions that are fixed and displaying only one base are taken in account and avoid these two corrections.
+#' It is also possible to tag some positions (+/- labels) in the logo.
+#'
 #' @param dnastringsetSeqAroundMod A DNAStringSet object containing the sequence around each DNA modification.
-#' All these sequences must have the same size and the modification must have the same position in each sequence (example: at the center).
-#' @param cLogoType Can be "Logo" or "EDLogo". Defaults to "EDLogo".
-#' \itemize{
-#'   \item Logo: A classic logo showing sequence enrichment around the modification.
-#'   \item EDLogo: A logo showing sequence enrichment and depletion around the modification.
-#' }
+#' All these sequences must have the same size and the modification must have the same position in each sequence (e.g. at the center).
+#' @param cYunit Units to be used for the y axis. Can be "ic" (information content),
+#' "ic_hide_bg" (information content + hide low signal) or "prob" (probability).
+#' "ic_hide_bg" will hide the letters on the upper panel (OR the lower panel) if these letters
+#' have probabilities above (OR below) the background signal based on the genomic composition.
+#' Defaults to "ic_hide_bg".
 #' @param nGenomicBgACGT A numeric vector giving the background to be corrected with the genomic composition
-#' in Adenine (A) then Cytosine (C) then Guanine (G) then Thymine (T). Defaults to c(0.25, 0.25, 0.25, 0.25).
-#' @param cColorsCTAG A character vector giving the color for the Cytosine (C) then Thymine (T) then
-#' Adenine (A) then Guanine (G) letters on the plot. Defaults to c("orange2","green3","red2","blue2").
+#' in Adenine (A) then Cytosine (C) then Guanine (G) then Thymine (T). Defaults to c(A=0.25, C=0.25, G=0.25, T=0.25).
+#' @param cColorsACGT A character vector giving the color for the Adenine (A) then Cytosine (C) then Guanine (G)
+#' then Thymine (T) letters on the plot. Defaults to c(A="red2", C="blue2", G="orange2", T="green3").
+#' @param lPlotNegYAxis If TRUE, allow plotting the lower panel to show depletion among the sequences provided. Defaults to TRUE.
+#' @param nPositionsToAnnotate A numeric vector giving the positions to highlight on the logo using small triangular tags
+#' (e.g. DNA modifications on a fixed position). Defaults to NULL.
+#' @param cAnnotationText A character vector. If nPositionsToAnnotate is not NULL, this option can provide labels to be associated to
+#' each annotation tag. If the vector's length is 1, it will be used for all tags to be displayed. Defaults to NULL.
+#' @param nTagTextFontSize Font size for the text associated to the annotation tags. Defaults to 20.
+#' @param nXFontSize Font size for the text associated to the x axis. Defaults to 15.
+#' @param nYFontSize Font size for the text associated to the y axis. Defaults to 15.
+#' @param lXAxis If TRUE, the x-axis is plotted. Defaults to TRUE.
+#' @param lYAxis If TRUE, the y-axis is plotted. Defaults to TRUE.
 #' @keywords DrawModLogo
-#' @importFrom Logolas logomaker
 #' @importFrom Biostrings consensusMatrix
+#' @importFrom seqLogo makePWM
+#' @importFrom stats setNames
 #' @export
 #' @examples
 #' # loading genome
@@ -829,35 +844,521 @@ GetModRatioByContig <- function(grangesModPos,
 #'
 #' DrawModLogo(
 #'   dnastringsetSeqAroundMod = as(myPositions_Mod_Granges_wSeq$sequence, "DNAStringSet"),
-#'   cLogoType = "EDLogo",
-#'   nGenomicBgACGT = c(0.35, 0.15, 0.15, 0.35)
+#'   nGenomicBgACGT = c(0.35, 0.15, 0.15, 0.35),
+#'   nPositionsToAnnotate = c(6), cAnnotationText = c("6mA")
 #' )
 DrawModLogo <- function(dnastringsetSeqAroundMod,
-                        cLogoType = "EDLogo",
-                        nGenomicBgACGT = c(0.25, 0.25, 0.25, 0.25),
-                        cColorsCTAG = c("orange2", "green3", "red2", "blue2")) {
-  names(nGenomicBgACGT) <- c("A", "C", "G", "T")
-
-  mConsensus <- consensusMatrix(dnastringsetSeqAroundMod, as.prob = TRUE)
-  nFixedPositions <- which(apply(mConsensus, 2, function(x) any(x == 1)))
-
+                        nGenomicBgACGT = c(A = 0.25, C = 0.25, G = 0.25, T = 0.25),
+                        cYunit = "ic_hide_bg",
+                        lPlotNegYAxis = TRUE,
+                        cColorsACGT = c(A = "#4daf4a", C = "#377eb8", G = "#ffd92f", T = "#e41a1c"),
+                        nPositionsToAnnotate = NULL,
+                        cAnnotationText = NULL,
+                        nTagTextFontSize = 20,
+                        lXAxis = TRUE, lYAxis = TRUE,
+                        nXFontSize = 15, nYFontSize = 15) {
   # remove all sequences that do not have full width
   dnastringsetSeqAroundMod <- dnastringsetSeqAroundMod[which(width(dnastringsetSeqAroundMod) == max(width(dnastringsetSeqAroundMod)))]
   # remove all sequences that have some N or some gaps "-"
   dnastringsetSeqAroundMod <- dnastringsetSeqAroundMod[which(letterFrequency(dnastringsetSeqAroundMod, letters = "N-") == 0)]
 
-  bgmatrix <- matrix(rep(nGenomicBgACGT, max(width(dnastringsetSeqAroundMod))),
-    ncol = max(width(dnastringsetSeqAroundMod)), byrow = FALSE
-  )
-  # remove background correction for fixed positions (example: Position Of The Modification)
-  bgmatrix[, nFixedPositions] <- c(0.25, 0.25, 0.25, 0.25)
 
-  logomaker(as.character(dnastringsetSeqAroundMod),
-    type = cLogoType,
-    color_type = "per_row",
-    colors = cColorsCTAG,
-    bg = bgmatrix
+  mConsensus <- consensusMatrix(dnastringsetSeqAroundMod, as.prob = TRUE)
+  mConsensus <- mConsensus[c("A", "C", "G", "T"), ]
+  nFixedPositions <- which(apply(mConsensus, 2, function(x) any(x == 1)))
+
+  # Background correction
+  if (cYunit %in% c("ic", "ic_hide_bg")) {
+    mConsensus <- t(t(mConsensus / nGenomicBgACGT) / colSums(mConsensus / nGenomicBgACGT))
+  }
+
+  pConsensus <- makePWM(mConsensus)
+
+  nConsensus <- round(1 / (mConsensus + 0.00001), 4)
+  nConsensus <- t(t(nConsensus) / colSums(nConsensus))
+
+  if (cYunit %in% c("ic", "ic_hide_bg")) {
+    nConsensus[, nFixedPositions] <- c(0.25, 0.25, 0.25, 0.25)
+  } else {
+    # if prob_scale: correct values for fixed positions
+    nConsensus <- lapply(1:ncol(nConsensus), function(x) {
+      if (any(mConsensus[, x] == 1)) {
+        n <- setNames(rep(0, 4), nm = rownames(nConsensus))
+        switch(names(mConsensus[mConsensus[, x] == 1, x]),
+          "A" = n["T"] <- 1,
+          "T" = n["A"] <- 1,
+          "G" = n["C"] <- 1,
+          "C" = n["G"] <- 1
+        )
+        return(n)
+      }
+      return(nConsensus[, x])
+    })
+    nConsensus <- do.call(cbind, nConsensus)
+  }
+  nConsensus <- makePWM(nConsensus)
+
+  DrawLogoPosNegAxes(
+    pwmUp = pConsensus, pwmDown = nConsensus, cColorsACGT = cColorsACGT,
+    nPositionsToAnnotate = nPositionsToAnnotate,
+    cAnnotationText = cAnnotationText, cYunit = cYunit,
+    lPlotNegYAxis = lPlotNegYAxis,
+    nGenomicBgACGT = nGenomicBgACGT,
+    nTagTextFontSize = nTagTextFontSize,
+    lXAxis = lXAxis, lYAxis = lYAxis, nXFontSize = nXFontSize, nYFontSize = nYFontSize
   )
+}
+
+#' DrawLogoPosNegAxes Function (GloModAn)
+#'
+#' Return a plot describing the sequence motif associated to the sequences provided.
+#' Two panels are plotted: if cYunit option is used with "ic_hide_bg", data
+#' from the lower panel should correspond to the depleted signal by comparison with upper panel
+#' that should described the enriched signal.
+#'
+#' It is also possible to tag some positions (+/- labels) in the logo.
+#'
+#' @param pwmUp A seqLogo PWM (position weight matrix) object to be used for the upper panel.
+#' @param pwmDown A seqLogo PWM (position weight matrix) object to be used for the lower panel. Should correspond to the depleted signal
+#' (by comparison to the data provided with the pwmUp option).
+#' @param cYunit Units to be used for the y axis. Can be "ic" (information content),
+#' "ic_hide_bg" (information content + hide low signal) or "prob" (probability).
+#' "ic_hide_bg" will hide the letters on the upper panel (OR the lower panel) if these letters
+#' have probabilities above (OR below) the background signal based on the genomic composition.
+#' Defaults to "ic_hide_bg".
+#' @param nGenomicBgACGT A numeric vector giving the background to be corrected with the genomic composition
+#' in Adenine (A) then Cytosine (C) then Guanine (G) then Thymine (T). Defaults to c(A=0.25, C=0.25, G=0.25, T=0.25).
+#' @param cColorsACGT A character vector giving the color for the Adenine (A) then Cytosine (C) then Guanine (G)
+#' then Thymine (T) letters on the plot. Defaults to c(A="red2", C="blue2", G="orange2", T="green3").
+#' @param lPlotNegYAxis If TRUE, allow plotting the lower panel to show depletion among the sequences provided. Defaults to TRUE.
+#' @param nPositionsToAnnotate A numeric vector giving the positions to highlight on the logo using small triangular tags
+#' (e.g. DNA modifications on a fixed position). Defaults to NULL.
+#' @param cAnnotationText A character vector. If nPositionsToAnnotate is not NULL, this option can provide labels to be associated to
+#' each annotation tag. If the vector's length is 1, it will be used for all tags to be displayed. Defaults to NULL.
+#' @param nTagTextFontSize Font size for the text associated to the annotation tags. Defaults to 20.
+#' @param nXFontSize Font size for the text associated to the x axis. Defaults to 15.
+#' @param nYFontSize Font size for the text associated to the y axis. Defaults to 15.
+#' @param lXAxis If TRUE, the x-axis is plotted. Defaults to TRUE.
+#' @param lYAxis If TRUE, the y-axis is plotted. Defaults to TRUE.
+#' @keywords DrawLogoPosNegAxes
+#' @importFrom seqLogo pwm ic
+#' @importFrom grid grid.newpage plotViewport pushViewport dataViewport grid.abline grid.polygon unit grid.xaxis grid.yaxis grid.text gpar popViewport
+#' @export
+#' @examples
+#' pwm1 <- matrix(c(
+#'   0.25, 0.25, 0.25, 0.25,
+#'   0.8, 0.05, 0.05, 0.1,
+#'   0.33, 0.33, 0.33, 0.01
+#' ), nrow = 4, byrow = FALSE)
+#' row.names(pwm1) <- c("A", "C", "G", "T")
+#' pwm2 <- t(t(1 / pwm1) / colSums((1 / pwm1)))
+#'
+#' pwm1 <- seqLogo::makePWM(pwm1)
+#' pwm2 <- seqLogo::makePWM(pwm2)
+#'
+#' DrawLogoPosNegAxes(
+#'   pwmUp = pwm1, pwmDown = pwm2,
+#'   nPositionsToAnnotate = c(1, 3), cAnnotationText = c("Text?", "Depletion of T")
+#' )
+DrawLogoPosNegAxes <- function(pwmUp, pwmDown,
+                               nGenomicBgACGT = c(A = 0.25, C = 0.25, G = 0.25, T = 0.25),
+                               cYunit = "ic_hide_bg",
+                               lPlotNegYAxis = TRUE,
+                               cColorsACGT = c(A = "#4daf4a", C = "#377eb8", G = "#ffd92f", T = "#e41a1c"),
+                               nPositionsToAnnotate = NULL,
+                               cAnnotationText = NULL,
+                               nTagTextFontSize = 20,
+                               lXAxis = TRUE, lYAxis = TRUE,
+                               nXFontSize = 15, nYFontSize = 15) {
+  pUp <- pwm(pwmUp)
+  pDo <- pwm(pwmDown)
+
+  if (ncol(pUp) != ncol(pDo)) {
+    stop("Error: pwmUp and pwmDown must have the same number of columns!")
+  }
+  npos <- ncol(pUp)
+
+  if (cYunit == "ic_hide_bg") {
+    ylim <- 2
+    ylab <- "Information content"
+    facs_up <- ic(pwmUp)
+    facs_down <- ic(pwmDown)
+    hideLetterUp <- pUp - nGenomicBgACGT <= 0
+    hideLetterDo <- !hideLetterUp
+  } else if (cYunit == "ic") {
+    ylim <- 2
+    ylab <- "Information content"
+    facs_up <- ic(pwmUp)
+    facs_down <- ic(pwmDown)
+    hideLetterUp <- pUp == 0
+    hideLetterDo <- pDo == 0
+  } else if (cYunit == "prob") {
+    ylim <- 1
+    ylab <- "Probability"
+    facs_up <- rep(1, npos)
+    facs_down <- rep(1, npos)
+    hideLetterUp <- pUp == 0
+    hideLetterDo <- pDo == 0
+  }
+
+  charsUp <- rownames(pUp)
+  charsDo <- rownames(pDo)
+  lettersUp <- list(x = NULL, y = NULL, id = NULL, fill = NULL)
+  lettersDo <- list(x = NULL, y = NULL, id = NULL, fill = NULL)
+
+  wt <- 1
+  x.pos <- 0
+
+  for (j in 1:npos) {
+    column <- pUp[, j]
+    hts <- 0.95 * column * facs_up[j]
+    letterOrder <- order(hts)
+
+    y.pos <- 0
+    for (i in 1:4) {
+      letter <- charsUp[letterOrder[i]]
+      ht <- hts[letterOrder[i]]
+      if (hideLetterUp[letter, j]) {
+        ht <- 0
+      }
+
+      lettersUp <- addLetter(
+        lettersUp, letter, x.pos,
+        y.pos, ht, wt, cColorsACGT
+      )
+      y.pos <- y.pos + ht + 0.01
+    }
+
+    column <- pDo[, j]
+    hts <- -0.95 * column * facs_down[j]
+    letterOrder <- order(-hts)
+
+    y.pos <- 0
+    for (i in 1:4) {
+      letter <- charsDo[letterOrder[i]]
+      ht <- hts[letterOrder[i]]
+      if (hideLetterDo[letter, j]) {
+        ht <- 0
+      }
+
+      oldYLen <- length(lettersDo$y)
+      lettersDo <- addLetter(
+        lettersDo, letter, x.pos,
+        y.pos, ht, wt, cColorsACGT
+      )
+      newYLen <- length(lettersDo$y)
+
+      # retrieve index of new values
+      newValues <- seq(from = oldYLen + 1, to = newYLen, by = 1)
+
+      # invert y-values of new letter
+      old.y <- lettersDo$y[newValues]
+      new.y <- (max(old.y) - old.y) + min(old.y)
+      lettersDo$y[newValues] <- new.y
+
+      y.pos <- y.pos + ht - 0.01
+    }
+    x.pos <- x.pos + wt
+  }
+
+
+  grid.newpage()
+
+  bottomMargin <- ifelse(lXAxis, 2 + nXFontSize / 3.5, 2)
+  leftMargin <- ifelse(lYAxis, 2 + nYFontSize / 3.5, 2)
+  pushViewport(plotViewport(c(bottomMargin, leftMargin, 2, 2)))
+
+
+  if (lPlotNegYAxis) {
+    ylim1 <- min(lettersDo$y)
+    ylim2 <- max(lettersUp$y) * 1.25
+    if (tail(min(lettersDo$y):ylim2, 1) <= ylim) {
+      ylim2 <- ylim * 1.25
+      if (tail(min(lettersDo$y):ylim2, 1) <= ylim) {
+        ylim2 <- ylim * 1.5
+      }
+    }
+  } else {
+    ylim1 <- 0
+    ylim2 <- ylim
+  }
+
+  pushViewport(dataViewport(0:npos, ylim1:ylim2, name = "vp1"))
+
+  grid.polygon(
+    x = unit(lettersUp$x, "native"), y = unit(lettersUp$y, "native"),
+    id = lettersUp$id, gp = gpar(fill = lettersUp$fill, col = "transparent")
+  )
+  if (lPlotNegYAxis) {
+    grid.polygon(
+      x = unit(lettersDo$x, "native"), y = unit(lettersDo$y, "native"),
+      id = lettersDo$id, gp = gpar(fill = lettersDo$fill, col = "transparent")
+    )
+  }
+
+  grid.abline(intercept = 0, slope = 0)
+
+  if (!is.null(nPositionsToAnnotate)) {
+    tag_x <- rep(nPositionsToAnnotate, each = 3) - rep(c(1, 0.5, 0), length(nPositionsToAnnotate))
+    tag_y <- rep(ylim * 1.1, 3 * length(nPositionsToAnnotate)) - rep(c(0, 0.1, 0), length(nPositionsToAnnotate))
+
+    # tag
+    grid.polygon(
+      x = unit(tag_x, "native"), y = unit(tag_y, "native"),
+      id = rep(nPositionsToAnnotate, each = 3), gp = gpar(fill = c("orange"), col = "black")
+    )
+
+    if (!is.null(cAnnotationText)) {
+      # text
+      grid.text(
+        label = cAnnotationText, x = unit(nPositionsToAnnotate - 0.5, "native"),
+        y = unit(rep(ylim * 1.2, each = length(nPositionsToAnnotate)), "native"),
+        gp = gpar(fontsize = nTagTextFontSize, col = "black")
+      )
+    }
+  }
+
+  if (lXAxis) {
+    grid.xaxis(
+      at = seq(0.5, npos - 0.5), label = seq_len(npos),
+      gp = gpar(fontsize = nXFontSize)
+    )
+    grid.text("Position",
+      y = unit(-3, "lines"),
+      gp = gpar(fontsize = nXFontSize)
+    )
+  }
+  if (lYAxis) {
+    grid.yaxis(gp = gpar(fontsize = nYFontSize))
+    grid.text(ylab,
+      x = unit(-3, "lines"), rot = 90,
+      gp = gpar(fontsize = nYFontSize)
+    )
+  }
+  popViewport()
+  popViewport()
+}
+
+#' addLetter Function from seqLogo package (GloModAn)
+#'
+#' Internal function from seqLogo package. See seqLogo documentation for more details.
+#' User should use the addLetter function from seqLogo and should not use directly this version.
+#' @keywords internal
+addLetter <- function(letters, which, x.pos, y.pos, ht, wt, fill) {
+  if (which == "A") {
+    letter <- letterA(x.pos, y.pos, ht, wt, fill = fill["A"])
+  }
+  else if (which == "C") {
+    letter <- letterC(x.pos, y.pos, ht, wt, fill = fill["C"])
+  }
+  else if (which == "G") {
+    letter <- letterG(x.pos, y.pos, ht, wt, fill = fill["G"])
+  }
+  else if (which == "T") {
+    letter <- letterT(x.pos, y.pos, ht, wt, fill = fill["T"])
+  }
+  else if (which == "U") {
+    letter <- letterU(x.pos, y.pos, ht, wt, fill = fill["U"])
+  }
+  else {
+    stop(sprintf("\"which\" must be one of %s", paste(names(fill),
+      collapse = ", "
+    )))
+  }
+  letters$x <- c(letters$x, letter$x)
+  letters$y <- c(letters$y, letter$y)
+  lastID <- ifelse(is.null(letters$id), 0, max(letters$id))
+  letters$id <- c(letters$id, lastID + letter$id)
+  letters$fill <- c(letters$fill, as.character(letter$fill))
+  letters
+}
+
+#' letterA Function from seqLogo package (GloModAn)
+#'
+#' Internal function from seqLogo package. See seqLogo documentation for more details.
+#' User should use the letterA function from seqLogo and should not use directly this version.
+#' @keywords internal
+letterA <- function(x.pos, y.pos, ht, wt, fill = "#61D04F", id = NULL) {
+  x <- c(
+    0, 4, 6, 2, 0, 4, 6, 10, 8, 4, 3.2, 6.8, 6.4, 3.6,
+    3.2
+  )
+  y <- c(0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 3, 3, 4, 4, 3)
+  x <- 0.1 * x
+  y <- 0.1 * y
+  x <- .rescale(x)
+  x <- x.pos + wt * x
+  y <- y.pos + ht * y
+  if (is.null(id)) {
+    id <- c(rep(1L, 5), rep(2L, 5), rep(3L, 5))
+  }
+  else {
+    id <- c(rep(id, 5), rep(id + 1L, 5), rep(id + 2L, 5))
+  }
+  fill <- rep(fill, 3)
+  list(x = x, y = y, id = id, fill = fill)
+}
+
+#' letterG Function from seqLogo package (GloModAn)
+#'
+#' Internal function from seqLogo package. See seqLogo documentation for more details.
+#' User should use the letterG function from seqLogo and should not use directly this version.
+#' @keywords internal
+letterG <- function(x.pos, y.pos, ht, wt, fill = "#F5C710", id = NULL) {
+  angle1 <- seq(0.3 + pi / 2, pi, length = 100)
+  angle2 <- seq(pi, 1.5 * pi, length = 100)
+  x.l1 <- 0.5 + 0.5 * sin(angle1)
+  y.l1 <- 0.5 + 0.5 * cos(angle1)
+  x.l2 <- 0.5 + 0.5 * sin(angle2)
+  y.l2 <- 0.5 + 0.5 * cos(angle2)
+  x.l <- c(x.l1, x.l2)
+  y.l <- c(y.l1, y.l2)
+  x <- c(x.l, rev(x.l))
+  y <- c(y.l, 1 - rev(y.l))
+  x.i1 <- 0.5 + 0.35 * sin(angle1)
+  y.i1 <- 0.5 + 0.35 * cos(angle1)
+  x.i1 <- x.i1[y.i1 <= max(y.l1)]
+  y.i1 <- y.i1[y.i1 <= max(y.l1)]
+  y.i1[1] <- max(y.l1)
+  x.i2 <- 0.5 + 0.35 * sin(angle2)
+  y.i2 <- 0.5 + 0.35 * cos(angle2)
+  x.i <- c(x.i1, x.i2)
+  y.i <- c(y.i1, y.i2)
+  x1 <- c(x.i, rev(x.i))
+  y1 <- c(y.i, 1 - rev(y.i))
+  x <- c(x, rev(x1))
+  y <- c(y, rev(y1))
+  h1 <- max(y.l1)
+  r1 <- max(x.l1)
+  h1 <- 0.4
+  x.add <- c(r1, 0.5, 0.5, r1 - 0.2, r1 - 0.2, r1, r1)
+  y.add <- c(h1, h1, h1 - 0.1, h1 - 0.1, 0, 0, h1)
+  if (is.null(id)) {
+    id <- c(rep(1, length(x)), rep(2, length(x.add)))
+  }
+  else {
+    id <- c(rep(id, length(x)), rep(id + 1, length(x.add)))
+  }
+  x <- c(rev(x), x.add)
+  y <- c(rev(y), y.add)
+  x <- .rescale(x)
+  x <- x.pos + wt * x
+  y <- y.pos + ht * y
+  fill <- rep(fill, 2)
+  list(x = x, y = y, id = id, fill = fill)
+}
+
+#' letterC Function from seqLogo package (GloModAn)
+#'
+#' Internal function from seqLogo package. See seqLogo documentation for more details.
+#' User should use the letterC function from seqLogo and should not use directly this version.
+#' @keywords internal
+letterC <- function(x.pos, y.pos, ht, wt, fill = "#2297E6", id = NULL) {
+  angle1 <- seq(0.3 + pi / 2, pi, length = 100)
+  angle2 <- seq(pi, 1.5 * pi, length = 100)
+  x.l1 <- 0.5 + 0.5 * sin(angle1)
+  y.l1 <- 0.5 + 0.5 * cos(angle1)
+  x.l2 <- 0.5 + 0.5 * sin(angle2)
+  y.l2 <- 0.5 + 0.5 * cos(angle2)
+  x.l <- c(x.l1, x.l2)
+  y.l <- c(y.l1, y.l2)
+  x <- c(x.l, rev(x.l))
+  y <- c(y.l, 1 - rev(y.l))
+  x.i1 <- 0.5 + 0.35 * sin(angle1)
+  y.i1 <- 0.5 + 0.35 * cos(angle1)
+  x.i1 <- x.i1[y.i1 <= max(y.l1)]
+  y.i1 <- y.i1[y.i1 <= max(y.l1)]
+  y.i1[1] <- max(y.l1)
+  x.i2 <- 0.5 + 0.35 * sin(angle2)
+  y.i2 <- 0.5 + 0.35 * cos(angle2)
+  x.i <- c(x.i1, x.i2)
+  y.i <- c(y.i1, y.i2)
+  x1 <- c(x.i, rev(x.i))
+  y1 <- c(y.i, 1 - rev(y.i))
+  x <- c(x, rev(x1))
+  y <- c(y, rev(y1))
+  x <- .rescale(x)
+  x <- x.pos + wt * x
+  y <- y.pos + ht * y
+  if (is.null(id)) {
+    id <- rep(1, length(x))
+  }
+  else {
+    id <- rep(id, length(x))
+  }
+  fill <- rep(fill, 1)
+  list(x = x, y = y, id = id, fill = fill)
+}
+
+#' letterT Function from seqLogo package (GloModAn)
+#'
+#' Internal function from seqLogo package. See seqLogo documentation for more details.
+#' User should use the letterT function from seqLogo and should not use directly this version.
+#' @keywords internal
+letterT <- function(x.pos, y.pos, ht, wt, fill = "#DF536B", id = NULL) {
+  x <- c(0, 10, 10, 6, 6, 4, 4, 0)
+  y <- c(10, 10, 9, 9, 0, 0, 9, 9)
+  x <- 0.1 * x
+  y <- 0.1 * y
+  x <- .rescale(x)
+  x <- x.pos + wt * x
+  y <- y.pos + ht * y
+  if (is.null(id)) {
+    id <- rep(1, 8)
+  }
+  else {
+    id <- rep(id, 8)
+  }
+  fill <- rep(fill, 1)
+  list(x = x, y = y, id = id, fill = fill)
+}
+
+#' letterU Function from seqLogo package (GloModAn)
+#'
+#' Internal function from seqLogo package. See seqLogo documentation for more details.
+#' User should use the letterU function from seqLogo and should not use directly this version.
+#' @keywords internal
+letterU <- function(x.pos, y.pos, ht, wt, fill = "#DF536B", id = NULL) {
+  angle1 <- seq(pi / 2, pi, length = 100)
+  angle2 <- seq(pi, 1.5 * pi, length = 100)
+  x.l1 <- 0.5 + 0.5 * sin(angle1)
+  y.l1 <- 0.5 + 0.5 * cos(angle1)
+  x.l2 <- 0.5 + 0.5 * sin(angle2)
+  y.l2 <- 0.5 + 0.5 * cos(angle2)
+  x.l <- c(x.l1, x.l2)
+  y.l <- c(y.l1, y.l2)
+  x.i1 <- 0.5 + 0.3 * sin(angle1)
+  y.i1 <- 0.5 + 0.35 * cos(angle1)
+  x.i1 <- x.i1[y.i1 <= max(y.l1)]
+  y.i1 <- y.i1[y.i1 <= max(y.l1)]
+  y.i1[1] <- max(y.l1)
+  x.i2 <- 0.5 + 0.3 * sin(angle2)
+  y.i2 <- 0.5 + 0.35 * cos(angle2)
+  x.i <- c(x.i1, x.i2)
+  y.i <- c(y.i1, y.i2)
+  x <- c(x.l, 0, 0.2, 0.2, rev(x.i), 0.8, 0.8, 1, 1)
+  y <- c(y.l, 1, 1, 0.5, rev(y.i), 0.5, 1, 1, 0.85)
+  x <- .rescale(x)
+  x <- x.pos + wt * x
+  y <- y.pos + ht * y
+  if (is.null(id)) {
+    id <- rep(1, length(x))
+  }
+  else {
+    id <- rep(id, length(x))
+  }
+  fill <- rep(fill, 1)
+  list(x = x, y = y, id = id, fill = fill)
+}
+
+#' .rescale Function from seqLogo package (GloModAn)
+#'
+#' Internal function from seqLogo package. See seqLogo documentation for more details.
+#' User should use the .rescale function from seqLogo and should not use directly this version.
+#' @keywords internal
+.rescale <- function(x, to = c(0.025, 0.975)) {
+  from <- range(x, na.rm = TRUE, finite = TRUE)
+  (x - from[1]) / diff(from) * diff(to) + to[1]
 }
 
 #' ExtractListModPosByModMotif Function (GloModAn)

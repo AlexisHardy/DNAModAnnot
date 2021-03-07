@@ -40,24 +40,13 @@ if (!requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
 }
 
-BiocManager::install(c('Biostrings', 'BSgenome', 'Gviz'))
-```
-
-Logolas package is depreciated in the latest version of Bioconductor and must be installed with a source file.
-Logolas source file can be obtained from previous versions of Bioconductor:
-```{r eval=FALSE}
-#Logolas package
-url="https://www.bioconductor.org/packages/3.11/bioc/src/contrib/Logolas_1.11.0.tar.gz"
-download.file(url, destfile = "Logolas_1.11.0.tar.gz")
-
-BiocManager::install(c('SQUAREM', 'LaplacesDemon', 'gridBase'))
-install.packages("Logolas_1.11.0.tar.gz", repos = NULL, type = 'source')
+BiocManager::install(c('Biostrings', 'BSgenome', 'Gviz', 'seqLogo'))
 ```
 
 Then, you can install DNAModAnnot using the tar.gz file from GitHub repository:
 ```{r eval=FALSE}
 setwd("path/to/package/file/")
-install.packages("DNAModAnnot_0.0.0.9017.tar.gz", repos = NULL, type = 'source')
+install.packages("DNAModAnnot_0.0.0.9018.tar.gz", repos = NULL, type = 'source')
 ```
 
 Or you can directly install from GitHub using devtools package:
@@ -300,8 +289,8 @@ PacBioGFF_granges_with_sequence <- GetGRangesWindowSeqandParam(PacBioGFF_granges
 )
 DrawModLogo(
   dnastringsetSeqAroundMod = as(PacBioGFF_granges_with_sequence$sequence, "DNAStringSet"),
-  cLogoType = "EDLogo",
-  nGenomicBgACGT = c(0.35, 0.15, 0.15, 0.35)
+  nGenomicBgACGT = c(0.35, 0.15, 0.15, 0.35), cYunit = "ic_hide_bg",
+  nPositionsToAnnotate = c(6), cAnnotationText = c("6mA"), nTagTextFontSize = 12
 )
 ```
 <div class = "blue">
@@ -316,7 +305,6 @@ The `FiltPacBio` function can be used to filter PacBioGFF GRanges only depending
 PacBioGFF_granges_filt2 <- FiltPacBio(
   grangesPacBioGFF = PacBioGFF_granges_filt1,
   cParamNameForFilter = "frac",
-  lFiltParam = TRUE,
   nFiltParamLoBoundaries = 0.05, nFiltParamUpBoundaries = 1,
   cFiltParamBoundariesToInclude = "upperOnly"
 )$gff

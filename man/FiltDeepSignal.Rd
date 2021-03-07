@@ -15,7 +15,6 @@ FiltDeepSignal(
   listMeanCovByContig,
   nContigMinCoverage = -1,
   cParamNameForFilter = NULL,
-  lFiltParam = FALSE,
   nFiltParamLoBoundaries = NULL,
   nFiltParamUpBoundaries = NULL,
   cFiltParamBoundariesToInclude = NULL,
@@ -60,14 +59,19 @@ gposPacBioCSV must be provided if using this argument. Defaults to 20.}
 \item{cParamNameForFilter}{A character vector giving the name of the parameter to be filtered.
 Must correspond to the name of one column in the object provided with grangesModPos.}
 
-\item{lFiltParam}{If TRUE, remove modifications which have values of the given parameter that are not included
-in the intervals provided with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries". Defaults to FALSE.}
-
 \item{nFiltParamLoBoundaries}{A numeric vector returning the lower boundaries of intervals.
-Must have the same length as "nFiltParamUpBoundaries". Defaults to NULL.}
+Must have the same length as "nFiltParamUpBoundaries". Defaults to NULL.
+
+If this parameter is provided, the function will remove modifications which have values
+of the given parameter that are not included in the intervals provided
+with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".}
 
 \item{nFiltParamUpBoundaries}{A numeric vector returning the upper boundaries of intervals.
-Must have the same length as "nFiltParamLoBoundaries". Defaults to NULL.}
+Must have the same length as "nFiltParamLoBoundaries". Defaults to NULL.
+
+If this parameter is provided, the function will remove modifications which have values
+of the given parameter that are not included in the intervals provided
+with "nFiltParamLoBoundaries" and "nFiltParamUpBoundaries".}
 
 \item{cFiltParamBoundariesToInclude}{A character vector describing which interval boundaries
 must be included in the intervals provided. Can be "upperOnly" (only upper boundaries), "lowerOnly" (only lower boundaries),
@@ -111,7 +115,6 @@ mygposDeepSignalModBase
 mygposDeepSignalMod <- FiltDeepSignal(
   gposDeepSignalModBase = mygposDeepSignalModBase,
   cParamNameForFilter = "frac",
-  lFiltParam = TRUE,
   nFiltParamLoBoundaries = 0,
   nFiltParamUpBoundaries = 1,
   cFiltParamBoundariesToInclude = "upperOnly"
