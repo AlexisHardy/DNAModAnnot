@@ -64,7 +64,7 @@ Next, you can directly install from GitHub using devtools package:
 ```
 install.packages("devtools")
 library(devtools)
-install_github("AlexisHardy/DNAModAnnot")
+install_github("AlexisHardy/DNAModAnnot", ref = "v0.0.0.9017")
 ```
 
 You should then be able to load the package into your R session with:
@@ -80,5 +80,5 @@ install.packages("DNAModAnnot_0.0.0.9015.tar.gz", repos = NULL, type = 'source')
 ## Usage
 For detailed instructions, check the package vignette (in 'doc' directory).
 
-## Citation
-...
+## Citation  
+Hardy, A., Matelot, M., Touzeau, A., Klopp, C., Lopez-Roques, C., Duharcourt, S., & Defrance, M. (2021). DNAModAnnot: a R toolbox for DNA modification filtering and annotation. Bioinformatics.  
