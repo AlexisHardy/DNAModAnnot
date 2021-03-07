@@ -25,6 +25,7 @@
 ### .IncludeModPosInMot
 ### GetModRatioByContig
 ### DrawModLogo
+### DrawLogoPosNegAxes
 ### ExtractListModPosByModMotif
 ###
 ### -------------------------------------------------------------------------

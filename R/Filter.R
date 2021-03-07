@@ -296,7 +296,7 @@ FiltParam <- function(grangesModPos,
 #'
 #' Filter out modifications which have a parameter (tested with FDR estimations) that do not reach criterias of selection.
 #' @param grangesModPosWithSeq A List of GRanges object, with the sequence for each motif associated to the modification,
-#' and containing PacBio GFF data to be filtered.
+#' and containing PacBio GFF data to be filtered. Can be obtained using the ExtractListModPosByModMotif function.
 #' @param listFdrEstByThrIpdRatio A list of thresholds on ipdRatio for each motif associated to the modification.
 #' Defaults to NULL.
 #' @param listFdrEstByThrScore A list of thresholds on score for each motif associated to the modification.

@@ -12,7 +12,7 @@ FiltFdrBased(
 }
 \arguments{
 \item{grangesModPosWithSeq}{A List of GRanges object, with the sequence for each motif associated to the modification,
-and containing PacBio GFF data to be filtered.}
+and containing PacBio GFF data to be filtered. Can be obtained using the ExtractListModPosByModMotif function.}
 
 \item{listFdrEstByThrIpdRatio}{A list of thresholds on ipdRatio for each motif associated to the modification.
 Defaults to NULL.}
