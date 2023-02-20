@@ -62,7 +62,7 @@ You should then be able to load the package into your R session with:
 You can also install DNAModAnnot using the tar.gz file from the GitHub repository once all required dependencies have been installed:  
 ```
 setwd("path/to/package/file/")
-install.packages("DNAModAnnot_0.0.0.9018.tar.gz", repos = NULL, type = 'source')
+install.packages("DNAModAnnot_0.0.0.9019.tar.gz", repos = NULL, type = 'source')
 ```  
 You can retrieve old versions of DNAModAnnot using other branches of this repository.  
 The NEWS.txt file describes the changes for each version.  
