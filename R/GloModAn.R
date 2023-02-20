@@ -353,6 +353,8 @@ GetModReportPacBio <- function(dnastringsetGenome,
                                cOrgAssemblyName,
                                cBaseLetterForMod,
                                cModNameInOutput) {
+  lIsFracAvailable <- "frac" %in% names(mcols(grangesPacBioGFF))
+  
   dReportTable <- data.frame(
     row.names = cOrgAssemblyName,
     nbMod = length(grangesPacBioGFF),
@@ -362,10 +364,10 @@ GetModReportPacBio <- function(dnastringsetGenome,
   )
 
   dReportTable$ratioMod <- dReportTable$nbMod / dReportTable$nbBaseSequenced
-  dReportTable$ratioMod_corrected <- dReportTable$ratioMod * mean(grangesPacBioGFF$frac)
+  if(lIsFracAvailable){ dReportTable$ratioMod_corrected <- dReportTable$ratioMod * mean(grangesPacBioGFF$frac) }
   dReportTable$ratioModAllAssemblyBases <- dReportTable$nbMod / dReportTable$nbBaseAssembly
-  dReportTable$ratioModAllAssemblyBases_corrected <- dReportTable$ratioModAllAssemblyBases * mean(grangesPacBioGFF$frac)
-  dReportTable$mean_frac_Mod <- mean(grangesPacBioGFF$frac)
+  if(lIsFracAvailable){ dReportTable$ratioModAllAssemblyBases_corrected <- dReportTable$ratioModAllAssemblyBases * mean(grangesPacBioGFF$frac) }
+  if(lIsFracAvailable){ dReportTable$mean_frac_Mod <- mean(grangesPacBioGFF$frac) }
   dReportTable$mean_coverage_Mod <- mean(grangesPacBioGFF$coverage)
   dReportTable$mean_score_Mod <- mean(grangesPacBioGFF$score)
   dReportTable$mean_ipdRatio_Mod <- mean(grangesPacBioGFF$ipdRatio)

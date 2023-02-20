@@ -1,3 +1,11 @@
+CHANGES IN VERSION 0.0.0.9019
+-------------------------
+BUG FIXES
+
+    o Frac, FracLow and FracUp values are not required anymore when importing 
+          PacBio GFF file.
+	
+
 CHANGES IN VERSION 0.0.0.9018
 -------------------------
 NEW FEATURES

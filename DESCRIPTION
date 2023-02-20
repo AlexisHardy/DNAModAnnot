@@ -1,7 +1,7 @@
 Package: DNAModAnnot
 Type: Package
 Title: Toolbox for DNA Modifications filtering and annotation
-Version: 0.0.0.9018
+Version: 0.0.0.9019
 Authors@R: 
     person(given = "Alexis",
            family = "Hardy",
@@ -26,5 +26,5 @@ Suggests:
 Encoding: UTF-8
 LazyData: true
 NeedsCompilation: no
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr

@@ -257,19 +257,23 @@ ImportPacBioGFF <- function(cPacBioGFFPath,
   }
   grangesPacBioGFF <- subset(grangesPacBioGFF, type == cNameModToExtract)
   grangesPacBioGFF$type <- cModNameInOutput
-
+  
+  lIsFracAvailable <- "frac" %in% names(mcols(grangesPacBioGFF))
+  cToSubset <- c(
+    "type",
+    "coverage", "score", "IPDRatio",
+    "frac", "fracLow", "fracUp",
+    "identificationQv"
+  ) 
+  if(!lIsFracAvailable){cToSubset <- cToSubset[-5:-7]}
+  
   grangesPacBioGFF <- subset(grangesPacBioGFF,
-    select = c(
-      "type",
-      "coverage", "score", "IPDRatio",
-      "frac", "fracLow", "fracUp",
-      "identificationQv"
-    )
+                             select = cToSubset
   )
-
+  
   names(mcols(grangesPacBioGFF))[1] <- "base"
   names(mcols(grangesPacBioGFF))[4] <- "ipdRatio"
-
+  
   if (lKeepSequence) {
     grangesPacBioGFF$base <- as.character(grangesPacBioGFF$base)
   } else {
@@ -278,11 +282,13 @@ ImportPacBioGFF <- function(cPacBioGFFPath,
   grangesPacBioGFF$coverage <- as.integer(grangesPacBioGFF$coverage)
   grangesPacBioGFF$score <- as.integer(grangesPacBioGFF$score)
   grangesPacBioGFF$ipdRatio <- as.numeric(grangesPacBioGFF$ipdRatio)
-  grangesPacBioGFF$frac <- as.numeric(grangesPacBioGFF$frac)
-  grangesPacBioGFF$fracLow <- as.numeric(grangesPacBioGFF$fracLow)
-  grangesPacBioGFF$fracUp <- as.numeric(grangesPacBioGFF$fracUp)
+  if(lIsFracAvailable){
+    grangesPacBioGFF$frac <- as.numeric(grangesPacBioGFF$frac)
+    grangesPacBioGFF$fracLow <- as.numeric(grangesPacBioGFF$fracLow)
+    grangesPacBioGFF$fracUp <- as.numeric(grangesPacBioGFF$fracUp)
+  }
   grangesPacBioGFF$identificationQv <- as.integer(grangesPacBioGFF$identificationQv)
-
+  
   return(grangesPacBioGFF)
 }
 
